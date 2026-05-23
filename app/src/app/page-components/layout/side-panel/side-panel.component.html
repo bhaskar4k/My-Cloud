@@ -1,0 +1,30 @@
+<aside [ngClass]="{'side-panel': true, 'open': isOpen, 'closed': !isOpen}">
+    <div class="side-panel-content">
+        <h5 class="px-3 py-3 border-bottom mb-0">Menu</h5>
+        <nav class="nav flex-column">
+            <ng-container *ngFor="let item of menuItems">
+                <!-- Menu items with submenu -->
+                <div *ngIf="hasSubmenu(item)" class="menu-item-group">
+                    <button class="nav-link d-flex justify-content-between align-items-center"
+                        (click)="toggleSubmenu(item.id)" [class.active]="isMenuExpanded(item.id)">
+                        <span>
+                            <i [ngClass]="item.icon" class="me-2"></i>{{ item.label }}
+                        </span>
+                        <i class="bi" [ngClass]="isMenuExpanded(item.id) ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                    </button>
+                    <div *ngIf="isMenuExpanded(item.id)" class="submenu">
+                        <a *ngFor="let subitem of item.submenu" routerLink="{{ subitem.route }}"
+                            routerLinkActive="active" class="nav-link submenu-link">
+                            <i [ngClass]="subitem.icon" class="me-2"></i>{{ subitem.label }}
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Menu items without submenu -->
+                <a *ngIf="!hasSubmenu(item)" [routerLink]="item.route" routerLinkActive="active" class="nav-link">
+                    <i [ngClass]="item.icon" class="me-2"></i>{{ item.label }}
+                </a>
+            </ng-container>
+        </nav>
+    </div>
+</aside>

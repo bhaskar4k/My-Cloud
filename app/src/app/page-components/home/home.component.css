@@ -1,0 +1,23 @@
+.feature-box {
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    border-left: 4px solid #007bff;
+    transition: all 0.3s ease;
+}
+
+.feature-box:hover {
+    background-color: #e9ecef;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.feature-box h5 {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #212529;
+}
+
+.feature-box p {
+    margin-bottom: 0;
+}

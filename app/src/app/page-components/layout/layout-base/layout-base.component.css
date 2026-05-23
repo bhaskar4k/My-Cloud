@@ -1,0 +1,34 @@
+:host {
+    display: block;
+    height: 100%;
+}
+
+/* Bootstrap utility classes for local use */
+.d-flex {
+    display: flex !important;
+}
+
+.flex-column {
+    flex-direction: column !important;
+}
+
+.vh-100 {
+    height: 100vh !important;
+}
+
+.flex-grow-1 {
+    flex-grow: 1 !important;
+}
+
+.p-4 {
+    padding: 1.5rem !important;
+}
+
+.overflow-auto {
+    overflow: auto !important;
+}
+
+/* Layout-specific styles */
+main {
+    background-color: #ffffff;
+}

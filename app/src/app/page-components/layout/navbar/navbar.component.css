@@ -1,0 +1,34 @@
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #212529 !important;
+}
+
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.3rem;
+    transition: color 0.3s ease;
+}
+
+.navbar-brand:hover {
+    color: #ffffff !important;
+}
+
+.btn-outline-light {
+    border-color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+}
+
+.btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 1);
+    color: white;
+}
+
+.ms-auto {
+    margin-left: auto;
+}
+
+.me-2 {
+    margin-right: 0.5rem;
+}
