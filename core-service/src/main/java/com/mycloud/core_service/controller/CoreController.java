@@ -1,5 +1,6 @@
 package com.mycloud.core_service.controller;
 import com.mycloud.common_config.model.JwtConfig;
+import com.mycloud.common_models.database_entities.User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +18,7 @@ public class CoreController {
 
     @GetMapping("/test")
     public String test() {
-
+        User user = new User();
         return "Expiration Time -> " + jwtConfig.getExpiration();
     }
 }
