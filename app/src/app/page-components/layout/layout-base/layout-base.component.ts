@@ -11,9 +11,5 @@ import { FooterComponent } from '../footer/footer.component';
   styleUrl: './layout-base.component.css'
 })
 export class LayoutBaseComponent {
-  isSidePanelOpen = true;
 
-  toggleSidePanel() {
-    this.isSidePanelOpen = !this.isSidePanelOpen;
-  }
 }

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MenuService } from '../../../services/menu.service';
@@ -12,6 +12,7 @@ import { MenuItem } from '../../../models/menu.model';
 })
 export class SidePanelComponent implements OnInit {
   @Input() isOpen = true;
+
   menuItems: MenuItem[] = [];
   expandedMenus: Set<number> = new Set();
 
@@ -19,6 +20,10 @@ export class SidePanelComponent implements OnInit {
 
   ngOnInit() {
     this.menuItems = this.menuService.getMenu();
+  }
+
+  onToggleSidePanel() {
+
   }
 
   toggleSubmenu(menuId: number) {
