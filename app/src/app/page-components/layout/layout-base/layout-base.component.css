@@ -28,8 +28,28 @@
     overflow: auto !important;
 }
 
-/* Layout-specific styles - dark theme */
+/* Layout structure for sticky navbar and footer */
+div.d-flex.flex-column.vh-100 {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Main content area with flex grow */
+div.d-flex.flex-grow-1 {
+    display: flex;
+    flex-grow: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* Main content scrollable */
 main {
     background-color: #1f2937;
     color: #e5e7eb;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
 }
