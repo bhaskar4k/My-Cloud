@@ -28,7 +28,8 @@
     overflow: auto !important;
 }
 
-/* Layout-specific styles */
+/* Layout-specific styles - dark theme */
 main {
-    background-color: #ffffff;
+    background-color: #1f2937;
+    color: #e5e7eb;
 }

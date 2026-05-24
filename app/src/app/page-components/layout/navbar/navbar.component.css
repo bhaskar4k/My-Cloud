@@ -1,16 +1,18 @@
 .navbar {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    background-color: #212529 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    background-color: #1f2937 !important;
+    border-bottom: 1px solid #374151;
 }
 
 .navbar-brand {
     font-weight: 600;
     font-size: 1.3rem;
     transition: color 0.3s ease;
+    color: #e5e7eb !important;
 }
 
 .navbar-brand:hover {
-    color: #ffffff !important;
+    color: #60a5fa !important;
 }
 
 .btn-outline-light {

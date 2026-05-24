@@ -1,10 +1,11 @@
 footer {
-    background-color: #212529 !important;
-    border-top: 1px solid #dee2e6;
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #111827 !important;
+    border-top: 1px solid #374151;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.3);
 }
 
 footer p {
     margin: 0;
     font-size: 0.9rem;
+    color: #9ca3af;
 }
