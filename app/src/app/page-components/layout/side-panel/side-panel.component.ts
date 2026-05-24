@@ -3,10 +3,15 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MenuService } from '../../../services/menu.service';
 import { MenuItem } from '../../../models/menu.model';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-side-panel',
-  imports: [CommonModule, RouterModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    MatTooltipModule
+  ],
   templateUrl: './side-panel.component.html',
   styleUrl: './side-panel.component.css'
 })
