@@ -23,7 +23,7 @@ export class SidePanelComponent implements OnInit {
   }
 
   onToggleSidePanel() {
-
+    this.isOpen = !this.isOpen;
   }
 
   toggleSubmenu(menuId: number) {

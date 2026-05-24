@@ -1,47 +1,43 @@
 <aside class="side-panel" [class.open]="isOpen" [class.closed]="!isOpen">
     <div class="side-panel-inner">
 
-        <!-- Brand Header -->
-        <div class="sb-brand border-bottom d-flex align-items-center gap-2 px-3 py-3">
-            <div class="sb-brand-icon">
-                <i class="bi bi-lightning-charge-fill"></i>
-            </div>
-            <span class="sb-brand-name">Dashboard</span>
-            <button class="btn btn-outline-light ms-auto" type="button" (click)="onToggleSidePanel()"
-                title="Toggle Menu">
+        <!-- Toggle Bar -->
+        <div class="sb-topbar">
+            <button class="sb-toggle-btn" type="button" (click)="onToggleSidePanel()" title="Toggle Menu">
                 <i class="bi bi-list"></i>
             </button>
         </div>
 
         <!-- Navigation -->
         <nav class="sb-nav px-2 py-2">
-
             <p class="sb-section-label px-2 mb-1 mt-2">Main</p>
 
             <ng-container *ngFor="let item of menuItems">
 
-                <!-- Item with submenu -->
+                <!-- Item WITH submenu -->
                 <div *ngIf="hasSubmenu(item)" class="sb-group mb-1">
                     <button class="sb-item d-flex align-items-center w-100 gap-2"
-                        [class.expanded]="isMenuExpanded(item.id)" (click)="toggleSubmenu(item.id)">
+                        [class.expanded]="isMenuExpanded(item.id)" [title]="!isOpen ? item.label : ''"
+                        (click)="toggleSubmenu(item.id)">
                         <i [ngClass]="item.icon" class="sb-icon"></i>
                         <span class="flex-grow-1 text-start">{{ item.label }}</span>
                         <i class="bi sb-chevron"
                             [ngClass]="isMenuExpanded(item.id) ? 'bi-chevron-up' : 'bi-chevron-down'">
                         </i>
                     </button>
+
                     <div class="sb-submenu" [class.open]="isMenuExpanded(item.id)">
                         <a *ngFor="let subitem of item.submenu" [routerLink]="subitem.route" routerLinkActive="active"
-                            class="sb-subitem d-flex align-items-center gap-2">
+                            class="sb-subitem d-flex align-items-center gap-2" [title]="!isOpen ? subitem.label : ''">
                             <i [ngClass]="subitem.icon" class="sb-icon"></i>
-                            {{ subitem.label }}
+                            <span>{{ subitem.label }}</span>
                         </a>
                     </div>
                 </div>
 
-                <!-- Item without submenu -->
+                <!-- Item WITHOUT submenu -->
                 <a *ngIf="!hasSubmenu(item)" [routerLink]="item.route" routerLinkActive="active"
-                    class="sb-item d-flex align-items-center gap-2 mb-1">
+                    class="sb-item d-flex align-items-center gap-2 mb-1" [title]="!isOpen ? item.label : ''">
                     <i [ngClass]="item.icon" class="sb-icon"></i>
                     <span>{{ item.label }}</span>
                 </a>
