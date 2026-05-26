@@ -16,7 +16,7 @@ public class MenuController {
 
     private final TMenuMasterRepository menuRepository;
 
-    @GetMapping("/{roleId}")
+    @GetMapping("/GetMenu/{roleId}")
     public List<TMenuMaster> getMenusByRole(
             @PathVariable Long roleId
     ) {
