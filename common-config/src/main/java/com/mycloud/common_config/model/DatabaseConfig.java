@@ -1,21 +1,41 @@
 package com.mycloud.common_config.model;
 
+import com.mycloud.common_config.enums.DatabaseType;
+import lombok.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class DatabaseConfig {
-    private String url;
+
+    private DatabaseType databaseType;
+
+    private boolean production;
+
+    private String serverIp;
+
+    private int port;
+
+    private String databaseName;
+
     private String username;
+
     private String password;
+
     private String driverClassName;
 
-    // Getters and Setters
-    public String getUrl() { return url; }
-    public void setUrl(String url) { this.url = url; }
+    private String url;
 
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    // =========================
+    // RESOLVED HOST
+    // =========================
+    public String getResolvedHost() {
+        if (!production && ("localhost".equalsIgnoreCase(serverIp) || "127.0.0.1".equals(serverIp))) {
+            return "localhost";
+        }
 
-    public String getDriverClassName() { return driverClassName; }
-    public void setDriverClassName(String driverClassName) { this.driverClassName = driverClassName; }
+        return serverIp;
+    }
 }

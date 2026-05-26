@@ -1,5 +1,9 @@
 {
-  "url": "jdbc:mysql://localhost:3306/mycloud?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC",
+  "databaseType": "MYSQL",
+  "production": false,
+  "serverIp": "localhost",
+  "port": 3306,
+  "databaseName": "mycloud",
   "username": "root",
   "password": "root",
   "driverClassName": "com.mysql.cj.jdbc.Driver"
