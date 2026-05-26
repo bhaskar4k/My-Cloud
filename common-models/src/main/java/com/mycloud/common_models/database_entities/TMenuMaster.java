@@ -21,7 +21,7 @@ public class TMenuMaster extends BaseEntity {
     @Column(name = "icon", nullable = false, length = 100)
     private String icon;
 
-    @Column(name = "route", nullable = false, unique = true, length = 500)
+    @Column(name = "route", nullable = true, unique = true, length = 500)
     private String route;
 
     @Column(name = "display_order", nullable = false)
