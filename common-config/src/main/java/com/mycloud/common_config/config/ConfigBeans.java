@@ -1,5 +1,6 @@
 package com.mycloud.common_config.config;
 
+import com.mycloud.common_config.builder.DatabaseUrlBuilder;
 import com.mycloud.common_config.loader.JsonConfigLoader;
 import com.mycloud.common_config.model.DatabaseConfig;
 import com.mycloud.common_config.model.JwtConfig;
@@ -12,10 +13,14 @@ public class ConfigBeans {
 
     @Bean
     public DatabaseConfig databaseConfig() {
-        return JsonConfigLoader.load(
+        DatabaseConfig config = JsonConfigLoader.load(
                 "database-config.json",
                 DatabaseConfig.class
         );
+
+        config.setUrl(DatabaseUrlBuilder.build(config));
+
+        return config;
     }
 
     @Bean
