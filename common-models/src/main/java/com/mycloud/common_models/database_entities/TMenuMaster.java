@@ -13,7 +13,7 @@ import lombok.*;
 @Builder
 public class TMenuMaster extends BaseEntity {
     @Column(name = "parent_id", nullable = true)
-    private int parentId;
+    private Integer parentId;
 
     @Column(name = "label", nullable = false, unique = true, length = 200)
     private String label;
