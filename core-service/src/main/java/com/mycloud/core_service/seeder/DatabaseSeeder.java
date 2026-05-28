@@ -90,7 +90,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 TMenuMaster.builder()
                         .parentId(null)
                         .label("Dashboard")
-                        .icon("dashboard")
+                        .icon("bi bi-house")
                         .route("/dashboard")
                         .displayOrder(1)
                         .active(true)
@@ -153,9 +153,18 @@ public class DatabaseSeeder implements CommandLineRunner {
                 TMenuMaster.builder()
                         .parentId(null)
                         .label("Login")
-                        .icon("login")
+                        .icon("bi bi-box-arrow-in-right")
                         .route("/login")
                         .displayOrder(8)
+                        .active(true)
+                        .build(),
+
+                TMenuMaster.builder()
+                        .parentId(null)
+                        .label("Register")
+                        .icon("bi bi-person-add")
+                        .route("/register")
+                        .displayOrder(9)
                         .active(true)
                         .build(),
 
@@ -164,7 +173,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .label("Logout")
                         .icon("logout")
                         .route("/logout")
-                        .displayOrder(9)
+                        .displayOrder(10)
                         .active(true)
                         .build(),
 
@@ -222,6 +231,11 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .roleMasterId(1L)
                         .build(),
 
+                TRoleMenuMapping.builder()
+                        .menuMasterId(9L)
+                        .roleMasterId(1L)
+                        .build(),
+
                 // Bronze
                 TRoleMenuMapping.builder()
                         .menuMasterId(1L)
@@ -259,17 +273,17 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(9L)
-                        .roleMasterId(2L)
-                        .build(),
-
-                TRoleMenuMapping.builder()
                         .menuMasterId(10L)
                         .roleMasterId(2L)
                         .build(),
 
                 TRoleMenuMapping.builder()
                         .menuMasterId(11L)
+                        .roleMasterId(2L)
+                        .build(),
+
+                TRoleMenuMapping.builder()
+                        .menuMasterId(12L)
                         .roleMasterId(2L)
                         .build(),
 
