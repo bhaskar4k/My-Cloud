@@ -8,15 +8,15 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class ApiResponseDto<T> {
-    private int StatusCode;
+    private int statusCode;
 
-    private boolean Success;
+    private boolean success;
 
-    private String Message;
+    private String message;
 
-    private T Data;
+    private T data;
 
-    private Object ExtraData;
+    private Object extraData;
 
     // SUCCESS
     public static <T> ApiResponseDto<T> Success(
@@ -24,11 +24,11 @@ public class ApiResponseDto<T> {
             T data
     ) {
         return ApiResponseDto.<T>builder()
-                .StatusCode(200)
-                .Success(true)
-                .Message(message)
-                .Data(data)
-                .ExtraData(null)
+                .statusCode(200)
+                .success(true)
+                .message(message)
+                .data(data)
+                .extraData(null)
                 .build();
     }
 
@@ -39,11 +39,11 @@ public class ApiResponseDto<T> {
             Object extraData
     ) {
         return ApiResponseDto.<T>builder()
-                .StatusCode(200)
-                .Success(true)
-                .Message(message)
-                .Data(data)
-                .ExtraData(extraData)
+                .statusCode(200)
+                .success(true)
+                .message(message)
+                .data(data)
+                .extraData(extraData)
                 .build();
     }
 
@@ -53,11 +53,11 @@ public class ApiResponseDto<T> {
             String message
     ) {
         return ApiResponseDto.<T>builder()
-                .StatusCode(statusCode)
-                .Success(false)
-                .Message(message)
-                .Data(null)
-                .ExtraData(null)
+                .statusCode(statusCode)
+                .success(false)
+                .message(message)
+                .data(null)
+                .extraData(null)
                 .build();
     }
 
@@ -68,11 +68,11 @@ public class ApiResponseDto<T> {
             T data
     ) {
         return ApiResponseDto.<T>builder()
-                .StatusCode(statusCode)
-                .Success(false)
-                .Message(message)
-                .Data(data)
-                .ExtraData(null)
+                .statusCode(statusCode)
+                .success(false)
+                .message(message)
+                .data(data)
+                .extraData(null)
                 .build();
     }
 }

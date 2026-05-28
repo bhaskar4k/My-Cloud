@@ -3,6 +3,7 @@ package com.mycloud.common_config.config;
 import com.mycloud.common_config.builder.DatabaseUrlBuilder;
 import com.mycloud.common_config.loader.JsonConfigLoader;
 import com.mycloud.common_config.model.DatabaseConfig;
+import com.mycloud.common_config.model.HttpConfig;
 import com.mycloud.common_config.model.JwtConfig;
 import com.mycloud.common_config.model.StorageConfig;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,14 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ConfigBeans {
+
+    @Bean
+    public HttpConfig httpConfig() {
+        return JsonConfigLoader.load(
+                "http-config.json",
+                HttpConfig.class
+        );
+    }
 
     @Bean
     public DatabaseConfig databaseConfig() {

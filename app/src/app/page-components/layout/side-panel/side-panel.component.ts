@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { MenuService } from '../../../services/menu.service';
 import { MenuItem } from '../../../models/menu.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ApiResponseDto } from '../../../models/dto.model';
 
 @Component({
   selector: 'app-side-panel',
@@ -18,13 +19,30 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 export class SidePanelComponent implements OnInit {
   @Input() isOpen = true;
 
-  menuItems: MenuItem[] = [];
+  HasFetchedMenuData: boolean = false;
+  AllMenuItems: MenuItem[] = [];
   expandedMenus: Set<number> = new Set();
 
   constructor(private menuService: MenuService) { }
 
   ngOnInit() {
-    this.menuItems = this.menuService.getMenu();
+    this.HasFetchedMenuData = false;
+
+    this.menuService.GetMenu().subscribe({
+      next: (response: ApiResponseDto) => {
+        console.log("Menu data response:", response);
+        if (response.success !== true || response.statusCode !== 200) {
+          console.log("Error parsing dashboard master data response:", response.message);
+          return;
+        }
+
+        this.AllMenuItems = response.data;
+        this.HasFetchedMenuData = true;
+      },
+      error: (err: any) => {
+        console.log("Error fetching dashboard master data:", err);
+      }
+    });
   }
 
   onToggleSidePanel() {

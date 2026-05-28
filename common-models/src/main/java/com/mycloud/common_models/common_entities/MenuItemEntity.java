@@ -12,9 +12,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MenuItemEntity {
-   public Integer Id;
-   public String Label;
-   public String Icon;
-   public String Route;
-   public List<MenuItemEntity> Submenu;
+   public Integer id;
+   public String label;
+   public String icon;
+   public String route;
+   public List<MenuItemEntity> submenu;
 }

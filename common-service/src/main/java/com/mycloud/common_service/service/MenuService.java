@@ -27,12 +27,12 @@ public class MenuService {
                 if (menu.getParentId() != null) continue;
 
                 MenuItemEntity AMenu = new MenuItemEntity();
-                AMenu.Id = menu.getId().intValue();
-                AMenu.Icon = menu.getIcon();
-                AMenu.Label = menu.getLabel();
-                AMenu.Route = menu.getRoute();
+                AMenu.id = menu.getId().intValue();
+                AMenu.icon = menu.getIcon();
+                AMenu.label = menu.getLabel();
+                AMenu.route = menu.getRoute();
 
-                if (menu.getParentId() == null) AMenu.Submenu = new ArrayList<>();
+                if (menu.getParentId() == null) AMenu.submenu = new ArrayList<>();
                 FinalOutput.add(AMenu);
             }
 
@@ -43,13 +43,12 @@ public class MenuService {
                 for (MenuItemEntity parent : FinalOutput) {
                     if (Objects.equals(parent.getId(), submenu.getParentId())){
                         MenuItemEntity ASubMenu = new MenuItemEntity();
-                        ASubMenu.Id = submenu.getId().intValue();
-                        ASubMenu.Icon = submenu.getIcon();
-                        ASubMenu.Label = submenu.getLabel();
-                        ASubMenu.Route = submenu.getRoute();
-                        ASubMenu.Submenu = new ArrayList<>();
-
-                        parent.Submenu.add(ASubMenu);
+                        ASubMenu.id = submenu.getId().intValue();
+                        ASubMenu.icon = submenu.getIcon();
+                        ASubMenu.label = submenu.getLabel();
+                        ASubMenu.route = submenu.getRoute();
+                        ASubMenu.submenu = new ArrayList<>();
+                        parent.submenu.add(ASubMenu);
                     }
                 }
             }
