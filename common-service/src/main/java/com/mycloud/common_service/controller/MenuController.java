@@ -1,10 +1,10 @@
 package com.mycloud.common_service.controller;
 
-import com.mycloud.common_models.database_entities.TMenuMaster;
+import com.mycloud.common_models.common_entities.MenuItemEntity;
 import com.mycloud.common_models.dto.ApiResponseDto;
+import com.mycloud.common_service.service.MenuService;
 import com.mycloud.data_access_layer.repositories.TMenuMasterRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,18 +15,12 @@ import java.util.List;
 public class MenuController {
 
     private final TMenuMasterRepository menuRepository;
+    private final MenuService menuService;
 
-    @GetMapping("/get-menu/{roleId}")
-    public ApiResponseDto<List<TMenuMaster>> getMenusByRole(@PathVariable Long roleId) {
+    @GetMapping("/get-menu/{RoleId}")
+    public ApiResponseDto<List<MenuItemEntity>> getMenusByRole(@PathVariable("RoleId") Long RoleId) {
         try {
-            List<TMenuMaster> menus =
-                    menuRepository.findMenusByRoleId(roleId);
-
-            return ApiResponseDto.Success(
-                    "Menus fetched successfully",
-                    menus
-            );
-
+            return menuService.DoGetMenusByRole(RoleId);
         } catch (Exception ex) {
             ex.printStackTrace();
 
