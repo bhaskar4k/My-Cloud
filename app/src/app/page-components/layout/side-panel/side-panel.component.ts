@@ -5,6 +5,9 @@ import { MenuService } from '../../../services/menu.service';
 import { MenuItem } from '../../../models/menu.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiResponseDto } from '../../../models/dto.model';
+import { MatDialog } from '@angular/material/dialog';
+import { ResponseTypeColor } from '../../../constants/commonConsts';
+import { CustomAlertComponent } from '../../../common-components/custom-alert/custom-alert.component';
 
 @Component({
   selector: 'app-side-panel',
@@ -23,16 +26,19 @@ export class SidePanelComponent implements OnInit {
   AllMenuItems: MenuItem[] = [];
   expandedMenus: Set<number> = new Set();
 
-  constructor(private menuService: MenuService) { }
+
+  constructor(
+    private menuService: MenuService,
+    private dialog: MatDialog
+  ) { }
 
   ngOnInit() {
     this.HasFetchedMenuData = false;
 
     this.menuService.GetMenu().subscribe({
       next: (response: ApiResponseDto) => {
-        console.log("Menu data response:", response);
         if (response.success !== true || response.statusCode !== 200) {
-          console.log("Error parsing dashboard master data response:", response.message);
+          this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
           return;
         }
 
@@ -40,7 +46,7 @@ export class SidePanelComponent implements OnInit {
         this.HasFetchedMenuData = true;
       },
       error: (err: any) => {
-        console.log("Error fetching dashboard master data:", err);
+        this.dialog.open(CustomAlertComponent, { data: { text: "Failed to fetch menu list.", type: ResponseTypeColor.ERROR } });
       }
     });
   }
