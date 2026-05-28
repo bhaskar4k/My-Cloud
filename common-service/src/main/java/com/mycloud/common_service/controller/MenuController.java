@@ -1,6 +1,7 @@
 package com.mycloud.common_service.controller;
 
 import com.mycloud.common_models.database_entities.TMenuMaster;
+import com.mycloud.common_models.dto.ApiResponseDto;
 import com.mycloud.data_access_layer.repositories.TMenuMasterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,21 +17,38 @@ public class MenuController {
     private final TMenuMasterRepository menuRepository;
 
     @GetMapping("/get-menu/{roleId}")
-    public ResponseEntity<?> getMenusByRole(
-            @PathVariable Long roleId
-    ) {
-
+    public ApiResponseDto<List<TMenuMaster>> getMenusByRole(@PathVariable Long roleId) {
         try {
-
             List<TMenuMaster> menus =
                     menuRepository.findMenusByRoleId(roleId);
 
-            return ResponseEntity.ok(menus);
+            return ApiResponseDto.Success(
+                    "Menus fetched successfully",
+                    menus
+            );
 
         } catch (Exception ex) {
+            ex.printStackTrace();
 
-            return ResponseEntity.internalServerError()
-                    .body(ex.getMessage());
+            return ApiResponseDto.Error(
+                    500,
+                    ex.getMessage()
+            );
+        }
+    }
+
+    @GetMapping("/check")
+    public ApiResponseDto<String> getMenusByRole() {
+        try {
+            return ApiResponseDto.Success(
+                    "Menus fetched successfully",
+                    "GG"
+            );
+        } catch (Exception ex) {
+            return ApiResponseDto.Error(
+                    500,
+                    ex.getMessage()
+            );
         }
     }
 }
