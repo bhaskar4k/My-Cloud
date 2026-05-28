@@ -88,7 +88,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 
         List<TMenuMaster> menus = List.of(
                 TMenuMaster.builder()
-                        .parentId(0)
+                        .parentId(null)
                         .label("Dashboard")
                         .icon("dashboard")
                         .route("/dashboard")
@@ -97,7 +97,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .build(),
 
                 TMenuMaster.builder()
-                        .parentId(0)
+                        .parentId(null)
                         .label("Upload")
                         .icon("upload")
                         .route("/upload")
@@ -106,7 +106,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .build(),
 
                 TMenuMaster.builder()
-                        .parentId(0)
+                        .parentId(null)
                         .label("Content")
                         .icon("folder")
                         .route("/content")
@@ -115,7 +115,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .build(),
 
                 TMenuMaster.builder()
-                        .parentId(0)
+                        .parentId(null)
                         .label("Library")
                         .icon("video_library")
                         .route("/library")
@@ -124,7 +124,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .build(),
 
                 TMenuMaster.builder()
-                        .parentId(0)
+                        .parentId(null)
                         .label("Favourite")
                         .icon("favorite")
                         .route("/favourite")
@@ -133,7 +133,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .build(),
 
                 TMenuMaster.builder()
-                        .parentId(0)
+                        .parentId(null)
                         .label("Settings")
                         .icon("settings")
                         .route(null)
@@ -142,7 +142,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .build(),
 
                 TMenuMaster.builder()
-                        .parentId(0)
+                        .parentId(null)
                         .label("Profile")
                         .icon("person")
                         .route("/profile")
@@ -151,7 +151,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .build(),
 
                 TMenuMaster.builder()
-                        .parentId(0)
+                        .parentId(null)
                         .label("Login")
                         .icon("login")
                         .route("/login")
@@ -160,7 +160,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .build(),
 
                 TMenuMaster.builder()
-                        .parentId(0)
+                        .parentId(null)
                         .label("Logout")
                         .icon("logout")
                         .route("/logout")

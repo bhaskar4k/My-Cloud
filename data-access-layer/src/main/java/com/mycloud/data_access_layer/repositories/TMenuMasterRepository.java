@@ -18,7 +18,7 @@ public interface TMenuMasterRepository extends JpaRepository<TMenuMaster, Long> 
             WHERE rmm.roleMasterId = :roleId
         )
         AND m.active = true
-        ORDER BY m.displayOrder ASC
+        ORDER BY m.id, m.displayOrder ASC
     """)
     List<TMenuMaster> findMenusByRoleId(@Param("roleId") Long roleId);
 }
