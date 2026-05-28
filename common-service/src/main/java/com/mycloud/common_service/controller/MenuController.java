@@ -1,34 +1,36 @@
-package com.mycloud.core_service.controller;
+package com.mycloud.common_service.controller;
 
 import com.mycloud.common_models.database_entities.TMenuMaster;
 import com.mycloud.data_access_layer.repositories.TMenuMasterRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("Menu")
+@RequestMapping("/menu")
 @RequiredArgsConstructor
 public class MenuController {
+
     private final TMenuMasterRepository menuRepository;
 
-    @GetMapping("/GetMenu/{roleId}")
-    public List<TMenuMaster> getMenusByRole(
+    @GetMapping("/get-menu/{roleId}")
+    public ResponseEntity<?> getMenusByRole(
             @PathVariable Long roleId
     ) {
+
         try {
 
             List<TMenuMaster> menus =
                     menuRepository.findMenusByRoleId(roleId);
 
-            return menus;
+            return ResponseEntity.ok(menus);
 
         } catch (Exception ex) {
-            return null;
+
+            return ResponseEntity.internalServerError()
+                    .body(ex.getMessage());
         }
     }
 }
