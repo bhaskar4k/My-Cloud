@@ -3,6 +3,7 @@ package com.mycloud.core_service.controller;
 import com.mycloud.common_models.database_entities.TMenuMaster;
 import com.mycloud.data_access_layer.repositories.TMenuMasterRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +14,6 @@ import java.util.List;
 @RequestMapping("Menu")
 @RequiredArgsConstructor
 public class MenuController {
-
     private final TMenuMasterRepository menuRepository;
 
     @GetMapping("/GetMenu/{roleId}")
