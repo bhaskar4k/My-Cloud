@@ -1,1 +1,66 @@
-<p>register works!</p>
+<div class="card shadow-sm m-3">
+    <div class="card-header py-2">
+        <h5 class="mb-0">Register</h5>
+        <small class="text-muted">Register a new account</small>
+    </div>
+
+    <div class="card-body">
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" autocomplete="off">
+
+            <div class="row g-3 bg-dark rounded p-3 m-0">
+
+                <!-- Name -->
+                <div class="col-12 col-md-6 m-0">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-control" formControlName="name" placeholder="Enter your name"
+                        autocomplete="off">
+                </div>
+
+                <!-- Email -->
+                <div class="col-12 col-md-6 m-0">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" formControlName="email" placeholder="Enter your email"
+                        autocomplete="off">
+                </div>
+
+                <!-- Phone -->
+                <div class="col-12 col-md-6 m-0">
+                    <label class="form-label">Phone</label>
+                    <input type="tel" class="form-control" formControlName="phone" placeholder="Enter phone number"
+                        autocomplete="off">
+                </div>
+
+                <!-- Password -->
+                <div class="col-12 col-md-6 m-0">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" formControlName="password" placeholder="Enter password"
+                        autocomplete="off">
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="col-12 col-md-6 m-0">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" formControlName="confirmPassword"
+                        placeholder="Confirm password" autocomplete="off">
+                </div>
+
+                <!-- Buttons -->
+                <div class="col-12 pt-2">
+                    <div class="d-flex gap-2 justify-content-end">
+                        <button type="reset" class="btn btn-secondary" (click)="onReset()">
+                            Reset
+                        </button>
+
+                        <button type="submit" class="btn btn-primary">
+                            Submit
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </form>
+    </div>
+
+
+</div>

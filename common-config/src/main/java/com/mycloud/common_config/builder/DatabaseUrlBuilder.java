@@ -12,7 +12,7 @@ public class DatabaseUrlBuilder {
             case MYSQL ->
                     "jdbc:mysql://" + host + ":" + config.getPort()
                             + "/" + config.getDatabaseName()
-                            + "?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC";
+                            + "?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
 
             case SQL_SERVER ->
                     "jdbc:sqlserver://" + host + ":" + config.getPort()
