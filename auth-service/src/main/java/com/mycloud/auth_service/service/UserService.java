@@ -22,13 +22,14 @@ public class UserService {
                 );
             }
 
+            User.setActive(true);
+            User.setDeleted(false);
             TUserMaster SavedUser = userRepository.save(User);
 
             return ApiResponseDto.Success(
                     "User has been registered successfully",
                     true
             );
-
         } catch (Exception ex) {
             ex.printStackTrace();
 

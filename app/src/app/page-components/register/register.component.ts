@@ -5,6 +5,11 @@ import {
   Validators,
   ReactiveFormsModule
 } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { CustomAlertComponent } from '../../common-components/custom-alert/custom-alert.component';
+import { ResponseTypeColor } from '../../constants/commonConsts';
+import { AuthService } from '../../services/auth.service';
+import { ApiResponseDto } from '../../models/dto.model';
 
 @Component({
   selector: 'app-register',
@@ -41,14 +46,41 @@ export class RegisterComponent {
     ])
   });
 
+  constructor(
+    private dialog: MatDialog,
+    private authService: AuthService
+  ) { }
+
   OnSubmit(): void {
-    console.log("Hi")
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
     }
 
-    console.log(this.registerForm.value);
+    if (this.registerForm.value.password !== this.registerForm.value.confirmPassword) {
+      this.dialog.open(CustomAlertComponent, { data: { text: "Password and Confirm Password do not match.", type: ResponseTypeColor.ERROR } });
+    }
+
+    const Payload = {
+      name: this.registerForm.value.name,
+      email: this.registerForm.value.email,
+      phone: this.registerForm.value.phone,
+      password: this.registerForm.value.password
+    };
+
+    this.authService.Register(Payload).subscribe({
+      next: (response: ApiResponseDto) => {
+        if (response.success === true && response.statusCode === 200) {
+          this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.SUCCESS } });
+          this.OnReset();
+        } else {
+          this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
+        }
+      },
+      error: (err: any) => {
+        this.dialog.open(CustomAlertComponent, { data: { text: "Failed to register user.", type: ResponseTypeColor.ERROR } });
+      }
+    });
   }
 
   OnReset(): void {

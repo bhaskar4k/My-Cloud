@@ -11,6 +11,10 @@ export function GetBaseURL() {
 }
 
 export const Endpoints = {
+    Auth: {
+        Register: "auth/user/create",
+        Login: "auth/user/login",
+    },
     Common: {
         GetMenu: "common/menu/get-menu",
     },
