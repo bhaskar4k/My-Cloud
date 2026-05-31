@@ -18,9 +18,24 @@ import java.util.Collections;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
+    private final String[] allowedEndpoints;
 
     public JwtAuthenticationFilter(JwtConfig jwtConfig) {
         this.jwtUtil = new JwtUtil(jwtConfig.getSecret(), jwtConfig.getExpiration());
+        this.allowedEndpoints = jwtConfig.getAllowedEndpoints();
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String requestPath = request.getServletPath();
+
+        for (String endpoint : allowedEndpoints) {
+            if (requestPath.startsWith(endpoint)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override

@@ -11,6 +11,6 @@ export class MenuService {
     constructor(private http: HttpClient) { }
 
     GetMenu(): Observable<ApiResponseDto> {
-        return this.http.get<ApiResponseDto>(GetBaseURL() + Endpoints.Common.GetMenu + "/1");
+        return this.http.get<ApiResponseDto>(GetBaseURL() + Endpoints.Common.GetMenu);
     }
 }

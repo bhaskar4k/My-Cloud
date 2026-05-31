@@ -17,10 +17,10 @@ public class MenuController {
     private final TMenuMasterRepository menuRepository;
     private final MenuService menuService;
 
-    @GetMapping("/get-menu/{RoleId}")
-    public ApiResponseDto<List<MenuItemEntity>> GetMenusByRole(@PathVariable("RoleId") Long RoleId) {
+    @GetMapping("/get-menu")
+    public ApiResponseDto<List<MenuItemEntity>> GetMenusByRole() {
         try {
-            return menuService.DoGetMenusByRole(RoleId);
+            return menuService.DoGetMenusByRole(1L);
         } catch (Exception ex) {
             ex.printStackTrace();
 
