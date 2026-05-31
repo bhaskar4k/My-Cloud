@@ -1,5 +1,8 @@
 package com.mycloud.core_service.gateway;
 
+import com.mycloud.common_config.model.GatewayConfig;
+import com.mycloud.common_models.enums.ServiceName;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -9,13 +12,28 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/file")
 @RequiredArgsConstructor
 public class FileGatewayController {
 
-    private final GatewayProperties gatewayProperties;
+    private final GatewayConfig gatewayConfig;
+    private final Map<String, String> services = new HashMap<>();
+
+    @PostConstruct
+    public void init() {
+        services.put(ServiceName.AUTH.getValue(), gatewayConfig.getAuth());
+        services.put(ServiceName.COMMON.getValue(), gatewayConfig.getCommon());
+        services.put(ServiceName.FILE.getValue(), gatewayConfig.getFile());
+        services.put(ServiceName.PROCESSING.getValue(), gatewayConfig.getProcessing());
+
+        System.out.println(
+                "Loaded Services: " + services
+        );
+    }
 
     @RequestMapping(
             path = "/**",
@@ -34,10 +52,7 @@ public class FileGatewayController {
         HttpURLConnection connection = null;
 
         try {
-            String baseUrl =
-                    gatewayProperties
-                            .getServices()
-                            .get("file");
+            String baseUrl = gatewayConfig.getFile();
 
             if (baseUrl == null) {
                 response.setStatus(500);

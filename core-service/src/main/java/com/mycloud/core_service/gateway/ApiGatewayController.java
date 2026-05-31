@@ -1,5 +1,7 @@
 package com.mycloud.core_service.gateway;
 
+import com.mycloud.common_config.model.GatewayConfig;
+import com.mycloud.common_models.enums.ServiceName;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -17,14 +20,19 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ApiGatewayController {
 
-    private final GatewayProperties gatewayProperties;
+    private final GatewayConfig gatewayConfig;
     private final RestClient restClient;
+    private final Map<String, String> services = new HashMap<>();
 
     @PostConstruct
     public void init() {
+        services.put(ServiceName.AUTH.getValue(), gatewayConfig.getAuth());
+        services.put(ServiceName.COMMON.getValue(), gatewayConfig.getCommon());
+        services.put(ServiceName.FILE.getValue(), gatewayConfig.getFile());
+        services.put(ServiceName.PROCESSING.getValue(), gatewayConfig.getProcessing());
+
         System.out.println(
-                "Loaded Services: " +
-                        gatewayProperties.getServices()
+                "Loaded Services: " + services
         );
     }
 
@@ -47,9 +55,6 @@ public class ApiGatewayController {
             if ("file".equalsIgnoreCase(serviceName)) {
                 return ResponseEntity.notFound().build();
             }
-
-            Map<String, String> services =
-                    gatewayProperties.getServices();
 
             if (services.isEmpty()) {
                 return ResponseEntity.internalServerError()
