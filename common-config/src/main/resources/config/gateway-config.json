@@ -1,0 +1,6 @@
+{
+  "common": "http://localhost:8081",
+  "auth": "http://localhost:8082",
+  "file": "http://localhost:8083",
+  "processing": "http://localhost:8084"
+}

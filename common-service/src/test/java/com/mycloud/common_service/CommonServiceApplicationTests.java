@@ -1,10 +1,10 @@
-package com.mycloud.core_service;
+package com.mycloud.common_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class CoreServiceApplicationTests {
+class CommonServiceApplicationTests {
 
 	@Test
 	void contextLoads() {

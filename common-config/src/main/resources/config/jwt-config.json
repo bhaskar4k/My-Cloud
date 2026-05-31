@@ -1,4 +1,11 @@
 {
-  "secret": "my-secret-key",
-  "expiration": 3600
+  "secret": "MyCloudSecretKeyMyCloudSecretKeyMyCloudSecretKey123456",
+  "expiration": 86400000,
+  "allowedEndpoints": [
+    "/api/common/menu/get-menu",
+    "/api/auth/user/create",
+    "/api/auth/user/login",
+    "/api/auth/user/forgot-password",
+    "/api/auth/user/reset-password"
+  ]
 }

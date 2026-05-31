@@ -11,9 +11,9 @@
         </div>
 
         <!-- NAVIGATION -->
-        <nav class="sb-nav px-2 py-2">
+        <nav class="sb-nav px-2 py-2" *ngIf="HasFetchedMenuData">
 
-            <ng-container *ngFor="let item of menuItems">
+            <ng-container *ngFor="let item of AllMenuItems">
                 <!-- MENU WITH SUBMENU -->
                 <div *ngIf="hasSubmenu(item)" class="sb-group mb-1">
 

@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
-import { MenuItem } from '../models/menu.model';
-import menuData from '../constants/menu.json';
+import { HttpClient } from '@angular/common/http';
+import { Endpoints, GetBaseURL } from '../endpoints/endpoint';
+import { Observable } from 'rxjs';
+import { ApiResponseDto } from '../models/dto.model';
 
 @Injectable({
     providedIn: 'root'
 })
 export class MenuService {
-    constructor() { }
+    constructor(private http: HttpClient) { }
 
-    getMenu(): MenuItem[] {
-        return menuData;
+    GetMenu(): Observable<ApiResponseDto> {
+        return this.http.get<ApiResponseDto>(GetBaseURL() + Endpoints.Common.GetMenu);
     }
 }

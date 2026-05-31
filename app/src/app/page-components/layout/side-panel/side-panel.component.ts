@@ -4,6 +4,10 @@ import { RouterModule } from '@angular/router';
 import { MenuService } from '../../../services/menu.service';
 import { MenuItem } from '../../../models/menu.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ApiResponseDto } from '../../../models/dto.model';
+import { MatDialog } from '@angular/material/dialog';
+import { ResponseTypeColor } from '../../../constants/commonConsts';
+import { CustomAlertComponent } from '../../../common-components/custom-alert/custom-alert.component';
 
 @Component({
   selector: 'app-side-panel',
@@ -18,13 +22,33 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 export class SidePanelComponent implements OnInit {
   @Input() isOpen = true;
 
-  menuItems: MenuItem[] = [];
+  HasFetchedMenuData: boolean = false;
+  AllMenuItems: MenuItem[] = [];
   expandedMenus: Set<number> = new Set();
 
-  constructor(private menuService: MenuService) { }
+
+  constructor(
+    private menuService: MenuService,
+    private dialog: MatDialog
+  ) { }
 
   ngOnInit() {
-    this.menuItems = this.menuService.getMenu();
+    this.HasFetchedMenuData = false;
+
+    this.menuService.GetMenu().subscribe({
+      next: (response: ApiResponseDto) => {
+        if (response.success !== true || response.statusCode !== 200) {
+          this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
+          return;
+        }
+
+        this.AllMenuItems = response.data;
+        this.HasFetchedMenuData = true;
+      },
+      error: (err: any) => {
+        this.dialog.open(CustomAlertComponent, { data: { text: "Failed to fetch menu list.", type: ResponseTypeColor.ERROR } });
+      }
+    });
   }
 
   onToggleSidePanel() {
