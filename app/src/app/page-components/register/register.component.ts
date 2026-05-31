@@ -41,7 +41,7 @@ export class RegisterComponent {
     ])
   });
 
-  onSubmit(): void {
+  OnSubmit(): void {
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
@@ -50,7 +50,7 @@ export class RegisterComponent {
     console.log(this.registerForm.value);
   }
 
-  onReset(): void {
+  OnReset(): void {
     this.registerForm.reset();
   }
 }

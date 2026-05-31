@@ -1,4 +1,4 @@
 {
-  "secret": "my-secret-key",
-  "expiration": 3600
+  "secret": "MyCloudSecretKeyMyCloudSecretKeyMyCloudSecretKey123456",
+  "expiration": 86400000
 }

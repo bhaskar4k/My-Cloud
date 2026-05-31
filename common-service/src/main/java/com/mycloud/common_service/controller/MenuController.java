@@ -18,7 +18,7 @@ public class MenuController {
     private final MenuService menuService;
 
     @GetMapping("/get-menu/{RoleId}")
-    public ApiResponseDto<List<MenuItemEntity>> getMenusByRole(@PathVariable("RoleId") Long RoleId) {
+    public ApiResponseDto<List<MenuItemEntity>> GetMenusByRole(@PathVariable("RoleId") Long RoleId) {
         try {
             return menuService.DoGetMenusByRole(RoleId);
         } catch (Exception ex) {
