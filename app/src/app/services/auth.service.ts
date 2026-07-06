@@ -20,12 +20,7 @@ export class AuthService {
     }
 
     SaveJwtTokenIntoLocalStorage(JwtToken: string): void {
-        let Token = this.GetJwtTokenFromLocalStorage();
-
-        if (Token !== null) {
-            this.DeleteJwtTokenFromLocalStorage();
-        }
-
+        this.DeleteJwtTokenFromLocalStorage();
         localStorage.setItem(JwtTokenKey, JwtToken);
     }
 
@@ -34,6 +29,10 @@ export class AuthService {
     }
 
     DeleteJwtTokenFromLocalStorage(): void {
-        localStorage.removeItem(JwtTokenKey);
+        let Token = this.GetJwtTokenFromLocalStorage();
+
+        if (Token !== null && Token !== undefined) {
+            localStorage.removeItem(JwtTokenKey);
+        }
     }
 }
