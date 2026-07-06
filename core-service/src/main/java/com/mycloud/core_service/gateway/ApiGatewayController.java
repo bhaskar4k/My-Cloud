@@ -6,6 +6,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
@@ -142,7 +143,8 @@ public class ApiGatewayController {
         } catch (Exception ex) {
             ex.printStackTrace();
 
-            return ResponseEntity.internalServerError()
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                     .body(ex.getMessage());
         }
     }
