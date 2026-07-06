@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -39,41 +40,57 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain)
-            throws ServletException, IOException {
-
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("application/json");
+            response.getWriter().write("""
+            {
+              "message": "Session timed out. Please login again."
+            }
+            """);
             return;
         }
 
         String token = authHeader.substring(7);
 
-        if (jwtUtil.ValidateToken(token)) {
-            Long userId = jwtUtil.ExtractUserId(token);
-            String email = jwtUtil.ExtractEmail(token);
+        try {
+            if (!jwtUtil.ValidateToken(token)) {
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                response.setContentType("application/json");
+                response.getWriter().write("""
+                {
+                  "message": "Session timed out. Please login again."
+                }
+                """);
+                return;
+            }
 
-            JwtUser user = new JwtUser(userId, email);
+            JwtUser user = new JwtUser(
+                    jwtUtil.ExtractUserId(token),
+                    jwtUtil.ExtractEmail(token)
+            );
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
                             user,
                             null,
-                            Collections.emptyList()
-                    );
+                            Collections.emptyList());
 
-            authentication.setDetails(user);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            SecurityContextHolder
-                    .getContext()
-                    .setAuthentication(authentication);
+            filterChain.doFilter(request, response);
+
+        } catch (Exception ex) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("application/json");
+            response.getWriter().write("""
+            {
+              "message": "Session timed out. Please login again."
+            }
+            """);
         }
-
-        filterChain.doFilter(request, response);
     }
 }

@@ -20,7 +20,7 @@ public class MenuController {
     @GetMapping("/get-menu")
     public ApiResponseDto<List<MenuItemEntity>> GetMenusByRole() {
         try {
-            return menuService.DoGetMenusByRole(1L);
+            return menuService.DoGetMenusByRole();
         } catch (Exception ex) {
             ex.printStackTrace();
 

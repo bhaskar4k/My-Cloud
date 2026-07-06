@@ -1,9 +1,11 @@
 package com.mycloud.common_models.utils;
 
+import com.mycloud.common_models.common_entities.JwtUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Component;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -82,5 +84,23 @@ public class JwtUtil {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+    }
+
+    public static JwtUser getCurrentUser() {
+        Authentication authentication = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null;
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof JwtUser jwtUser) {
+            return jwtUser;
+        }
+
+        return null;
     }
 }
