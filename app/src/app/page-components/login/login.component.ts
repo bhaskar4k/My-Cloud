@@ -53,6 +53,7 @@ export class LoginComponent {
     this.authService.Login(Payload).subscribe({
       next: (response: ApiResponseDto) => {
         if (response.success === true && response.statusCode === 200) {
+          this.authService.SaveJwtTokenIntoLocalStorage(response.data);
           this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.SUCCESS } });
           this.router.navigate(['/dashboard']);
         } else {
