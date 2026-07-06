@@ -24,4 +24,16 @@ public class UserController {
             );
         }
     }
+
+    @PostMapping("/login")
+    public ApiResponseDto<String> LoginUser(@RequestBody TUserMaster User) {
+        try {
+            return userService.DoLoginUser(User);
+        } catch (Exception ex) {
+            return ApiResponseDto.Error(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "An internal error was occurred."
+            );
+        }
+    }
 }

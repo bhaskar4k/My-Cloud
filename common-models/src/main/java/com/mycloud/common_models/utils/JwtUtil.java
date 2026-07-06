@@ -27,8 +27,8 @@ public class JwtUtil {
         String encryptedEmail = encryptionUtil.Encrypt(email);
 
         return Jwts.builder()
-                .claim("uid", encryptedUserId)
-                .claim("eml", encryptedEmail)
+                .claim("enc_id", encryptedUserId)
+                .claim("enc_email", encryptedEmail)
                 .issuedAt(new Date())
                 .expiration(
                         new Date(
@@ -43,7 +43,7 @@ public class JwtUtil {
     public String ExtractEmail(String token) {
         String encryptedEmail =
                 GetClaims(token)
-                        .get("eml", String.class);
+                        .get("enc_email", String.class);
 
         return encryptionUtil.Decrypt(
                 encryptedEmail
@@ -53,7 +53,7 @@ public class JwtUtil {
     public Long ExtractUserId(String token) {
         String encryptedUserId =
                 GetClaims(token)
-                        .get("uid", String.class);
+                        .get("enc_id", String.class);
 
         return Long.parseLong(
                 encryptionUtil.Decrypt(

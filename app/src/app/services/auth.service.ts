@@ -13,4 +13,8 @@ export class AuthService {
     Register(Payload: any): Observable<ApiResponseDto> {
         return this.http.post<ApiResponseDto>(GetBaseURL() + Endpoints.Auth.Register, Payload);
     }
+
+    Login(Payload: any): Observable<ApiResponseDto> {
+        return this.http.post<ApiResponseDto>(GetBaseURL() + Endpoints.Auth.Login, Payload);
+    }
 }

@@ -1,5 +1,5 @@
 {
-  "secret": "MyCloudSecretKeyMyCloudSecretKeyMyCloudSecretKey123456",
+  "secret": "MyCloudSecretKeyMyCloudSecretKey",
   "expiration": 86400000,
   "allowedEndpoints": [
     "/api/common/menu/get-menu",

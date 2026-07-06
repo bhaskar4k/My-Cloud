@@ -5,6 +5,12 @@ import {
   Validators,
   ReactiveFormsModule
 } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
+import { CustomAlertComponent } from '../../common-components/custom-alert/custom-alert.component';
+import { ResponseTypeColor } from '../../constants/commonConsts';
+import { ApiResponseDto } from '../../models/dto.model';
 
 @Component({
   selector: 'app-login',
@@ -23,20 +29,43 @@ export class LoginComponent {
 
     password: new FormControl('', [
       Validators.required,
-      Validators.minLength(8)
     ]),
   });
 
-  onSubmit(): void {
+  constructor(
+    private dialog: MatDialog,
+    private authService: AuthService,
+    private router: Router
+  ) { }
+
+  OnSubmit(): void {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
+      this.dialog.open(CustomAlertComponent, { data: { text: "All input fields are required.<br>Please fill all input fields.", type: ResponseTypeColor.ERROR } });
       return;
     }
 
-    console.log(this.loginForm.value);
+    const Payload = {
+      email: this.loginForm.value.email,
+      password: this.loginForm.value.password
+    };
+
+    this.authService.Login(Payload).subscribe({
+      next: (response: ApiResponseDto) => {
+        if (response.success === true && response.statusCode === 200) {
+          this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.SUCCESS } });
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
+        }
+      },
+      error: (err: any) => {
+        this.dialog.open(CustomAlertComponent, { data: { text: "Failed to login user.", type: ResponseTypeColor.ERROR } });
+      }
+    });
   }
 
-  onReset(): void {
+  OnReset(): void {
     this.loginForm.reset();
   }
 }
