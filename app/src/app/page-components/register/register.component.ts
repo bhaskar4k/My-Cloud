@@ -56,6 +56,7 @@ export class RegisterComponent {
   OnSubmit(): void {
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
+      this.dialog.open(CustomAlertComponent, { data: { text: "All input fields are required.<br>Please fill all input fields.", type: ResponseTypeColor.ERROR } });
       return;
     }
 
