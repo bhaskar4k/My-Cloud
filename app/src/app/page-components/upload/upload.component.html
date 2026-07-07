@@ -1,22 +1,67 @@
 <div class="upload-container">
-    <h2>Chunked File Upload</h2>
+    <h2 class="m-0 mb-4">Upload File</h2>
 
-    <div class="file-zone">
-        <input type="file" id="fileInput" (change)="OnFileSelected($event)" [disabled]="MatProgressBar" />
-        <label for="fileInput" class="file-label">
-            {{ SelectedFile ? SelectedFile.name : 'Choose any file...' }}
-        </label>
+    <p class="upload-description mb-4">
+        Securely upload your documents, images, videos, or any other supported files.
+        Files are encrypted during transfer and processed automatically after upload.
+    </p>
+
+    <div class="upload-tips mb-4">
+        <h4>Before you upload</h4>
+        <ul>
+            <li>✔ Ensure the file is complete and not corrupted.</li>
+            <li>✔ Large files may take longer depending on your internet speed.</li>
+            <li>✔ Do not close the browser or don't do refresh the tab or click f5 while uploading.</li>
+            <li>✔ You can navigate away from this page and go to other pages without reloading while the upload is in
+                progress.</li>
+            <li>✔ Uploaded files will be available immediately after processing.</li>
+        </ul>
     </div>
 
-    <div *ngIf="SelectedFile" class="actions">
-        <p>File Size: {{ (SelectedFile.size / 1024 / 1024) | number:'1.2-2' }} MB</p>
-        <button (click)="UploadFile()" [disabled]="MatProgressBar">
-            {{ MatProgressBar ? 'Uploading...' : 'Start Upload' }}
-        </button>
-    </div>
+    <ng-container *ngIf="!((uploadService.IsUploading$ | async) || MatProgressBar)">
+        <div class="file-zone">
+            <input type="file" id="fileInput" (change)="OnFileSelected($event)" />
+            <label for="fileInput" class="file-label">
+                {{ SelectedFile ? SelectedFile.name : 'Choose or drag & drop your file here' }}
+            </label>
+        </div>
 
-    <div *ngIf="MatProgressBar || UploadProgress > 0" class="progress-wrapper">
-        <div class="progress-bar" [style.width.%]="UploadProgress"></div>
-        <span class="progress-text">{{ UploadProgress }}%</span>
+        <div *ngIf="SelectedFile" class="actions mt-4">
+            <div class="d-flex flex-column">
+                <p>
+                    <strong>Selected File:</strong> {{ SelectedFile.name }}
+                </p>
+
+                <p>
+                    <strong>File Size:</strong>
+                    {{ (SelectedFile.size / 1024 / 1024) | number:'1.2-2' }} MB
+                </p>
+            </div>
+
+            <button (click)="UploadFile()">
+                Start Upload
+            </button>
+        </div>
+    </ng-container>
+
+    <div *ngIf="(uploadService.IsUploading$ | async) || MatProgressBar" class="progress-wrapper">
+
+        <div class="uploading-filename">
+            Uploading:
+            <strong>{{ uploadService.ActiveFileName$ | async }}</strong>
+        </div>
+
+        <div class="progress-track">
+            <div class="progress-bar" [style.width.%]="uploadService.UploadProgress$ | async">
+            </div>
+        </div>
+
+        <span class="progress-text">
+            {{ uploadService.UploadProgress$ | async }}%
+        </span>
+
+        <p class="upload-note">
+            Please keep this page open until the upload is complete.
+        </p>
     </div>
 </div>
