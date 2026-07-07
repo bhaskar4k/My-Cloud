@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Endpoints, GetBaseURL } from '../endpoints/endpoint';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { ApiResponseDto } from '../models/dto.model';
 import { JwtTokenKey } from '../constants/commonConsts';
 
@@ -9,6 +9,9 @@ import { JwtTokenKey } from '../constants/commonConsts';
     providedIn: 'root'
 })
 export class AuthService {
+    private isLoggedInSubject = new BehaviorSubject<boolean>(this.HasToken());
+    public isLoggedIn$: Observable<boolean> = this.isLoggedInSubject.asObservable();
+
     constructor(private http: HttpClient) { }
 
     Register(Payload: any): Observable<ApiResponseDto> {
@@ -19,9 +22,14 @@ export class AuthService {
         return this.http.post<ApiResponseDto>(GetBaseURL() + Endpoints.Auth.Login, Payload);
     }
 
+    private HasToken(): boolean {
+        return !!localStorage.getItem('jwt_token'); // Adjust key name to match your app
+    }
+
     SaveJwtTokenIntoLocalStorage(JwtToken: string): void {
         this.DeleteJwtTokenFromLocalStorage();
         localStorage.setItem(JwtTokenKey, JwtToken);
+        this.isLoggedInSubject.next(true);
     }
 
     GetJwtTokenFromLocalStorage(): string | null {
@@ -34,5 +42,10 @@ export class AuthService {
         if (Token !== null && Token !== undefined) {
             localStorage.removeItem(JwtTokenKey);
         }
+    }
+
+    public Logout(): void {
+        this.DeleteJwtTokenFromLocalStorage();
+        this.isLoggedInSubject.next(false);
     }
 }

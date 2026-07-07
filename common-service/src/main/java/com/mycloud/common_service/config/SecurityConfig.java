@@ -6,6 +6,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
@@ -19,8 +20,12 @@ public class SecurityConfig {
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()); // trust that core_service already authenticated the request
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                // Register the downstream propagation filter
+                .addFilterBefore(
+                        new DownstreamHeaderAuthenticationFilter(),
+                        UsernamePasswordAuthenticationFilter.class
+                ); // trust that core_service already authenticated the request
 
         return http.build();
     }

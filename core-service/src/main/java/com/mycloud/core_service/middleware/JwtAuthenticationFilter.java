@@ -61,6 +61,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             JwtUser user = new JwtUser(
+                    true,
                     jwtUtil.ExtractUserId(token),
                     jwtUtil.ExtractEmail(token)
             );

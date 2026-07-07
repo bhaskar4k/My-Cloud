@@ -1,7 +1,10 @@
 package com.mycloud.core_service.gateway;
 
 import com.mycloud.common_config.model.GatewayConfig;
+import com.mycloud.common_config.model.JwtConfig;
 import com.mycloud.common_models.enums.ServiceName;
+import com.mycloud.common_models.utils.JwtUtil;
+import com.mycloud.data_access_layer.repositories.TMenuMasterRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +23,18 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-@RequiredArgsConstructor
 public class ApiGatewayController {
-
+    private final JwtUtil jwtUtil;
     private final GatewayConfig gatewayConfig;
     private final RestClient restClient;
-    private final Map<String, String> services = new HashMap<>();
+    private final Map<String, String> services;
+
+    public ApiGatewayController(JwtConfig jwtConfig, GatewayConfig gatewayConfig, RestClient restClient) {
+        this.jwtUtil = new JwtUtil(jwtConfig.getSecret(), jwtConfig.getExpiration());
+        this.gatewayConfig = gatewayConfig;
+        this.restClient = restClient;
+        this.services = new HashMap<>();
+    }
 
     @PostConstruct
     public void init() {
@@ -113,6 +122,41 @@ public class ApiGatewayController {
                             );
                         }
                     });
+
+            // Check both variations of the header due to potential client-side normalization
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader == null) {
+                authHeader = request.getHeader("authorization");
+            }
+
+            boolean hasValidToken = false;
+
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                try {
+                    if (jwtUtil.ValidateToken(token)) {
+                        Long userId = jwtUtil.ExtractUserId(token);
+                        String email = jwtUtil.ExtractEmail(token);
+
+                        // 1. Inject legitimate, verified identity headers
+                        requestSpec.header("X-User-Id", String.valueOf(userId));
+                        requestSpec.header("X-User-Email", email);
+                        requestSpec.header("X-User-Authenticated", "true");
+
+                        hasValidToken = true;
+                    }
+                } catch (Exception e) {
+                    System.err.println("Failed to propagate user context headers: " + e.getMessage());
+                }
+            }
+
+            // 2. If no valid token found, explicitly explicitly mark it as unauthenticated
+            if (!hasValidToken) {
+                requestSpec.header("X-User-Authenticated", "false");
+                // Ensure downstream doesn't read junk/spoofed values if any were sent by client
+                requestSpec.header("X-User-Id", "");
+                requestSpec.header("X-User-Email", "");
+            }
 
             ResponseEntity<String> response;
 

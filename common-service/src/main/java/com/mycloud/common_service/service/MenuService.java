@@ -28,7 +28,7 @@ public class MenuService {
             JwtUser User = jwtUtil.GetCurrentUser();
 
             Long RoleId = null;
-            if (User == null){
+            if (User == null || !User.IsAuthenticated()){
                 RoleId = 1L;
             } else {
                 RoleId = 2L;
