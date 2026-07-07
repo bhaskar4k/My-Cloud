@@ -14,11 +14,10 @@ export class UploadService {
     return this.http.post<ApiResponseDto>(GetBaseURL() + Endpoints.Upload.Initiate, Payload);
   }
 
-  UploadChunk(buffer: ArrayBuffer, chunkIndex: number, totalChunks: number, UploadId: string, fileName: string): Observable<HttpEvent<any>> {
+  UploadChunk(buffer: ArrayBuffer, chunkIndex: number, totalChunks: number, UploadId: string): Observable<HttpEvent<any>> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/octet-stream',
       'X-Upload-Id': UploadId,
-      'X-File-Name': encodeURIComponent(fileName),
       'X-Chunk-Index': chunkIndex.toString(),
       'X-Total-Chunks': totalChunks.toString()
     });

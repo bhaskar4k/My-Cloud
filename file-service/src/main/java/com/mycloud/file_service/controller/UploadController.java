@@ -30,17 +30,13 @@ public class UploadController {
     public ApiResponseDto<String> uploadChunk(
             HttpServletRequest request,
             @RequestHeader("X-Upload-Id") String uploadId,
-            @RequestHeader("X-File-Name") String fileName,
             @RequestHeader("X-Chunk-Index") int chunkIndex,
             @RequestHeader("X-Total-Chunks") int totalChunks) {
         try {
-            // URL decode filename since Angular encoded it
-            String decodedFileName = java.net.URLDecoder.decode(fileName, "UTF-8");
-
             // Read binary body directly as InputStream
             InputStream inputStream = request.getInputStream();
 
-            uploadService.DoSaveChunk(inputStream, uploadId, decodedFileName, chunkIndex, totalChunks);
+            uploadService.DoSaveChunk(inputStream, uploadId, chunkIndex, totalChunks);
 
             return ApiResponseDto.Success("Chunk " + chunkIndex + " uploaded successfully", null);
         } catch (Exception ex) {

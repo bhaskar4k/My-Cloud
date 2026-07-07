@@ -74,7 +74,7 @@ export class UploadComponent {
         const chunkBlob = file.slice(start, end);
         const arrayBuffer = await chunkBlob.arrayBuffer();
 
-        const upload = this.uploadService.UploadChunk(arrayBuffer, chunkIndex, totalChunks, UploadId ? UploadId : '', file.name);
+        const upload = this.uploadService.UploadChunk(arrayBuffer, chunkIndex, totalChunks, UploadId ? UploadId : '');
 
         await this.HandleChunkUploadProgress(upload, chunkIndex, totalChunks);
       }

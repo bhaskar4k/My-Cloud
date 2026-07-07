@@ -49,7 +49,7 @@ public class UploadService {
 
     }
 
-    public void DoSaveChunk(InputStream inputStream, String uploadId, String fileName, int chunkIndex, int totalChunks) throws IOException {
+    public void DoSaveChunk(InputStream inputStream, String uploadId, int chunkIndex, int totalChunks) throws IOException {
         Path chunkFile = Paths.get(BASE_TEMP_DIR, uploadId, "chunk_" + chunkIndex);
 
         // Save the current chunk data to disk
@@ -57,32 +57,36 @@ public class UploadService {
 
         // If this is the last chunk, kick off the assembly process
         if (chunkIndex == totalChunks - 1) {
-            mergeChunks(uploadId, fileName, totalChunks);
+            mergeChunks(uploadId, totalChunks);
         }
     }
 
-    private void mergeChunks(String uploadId, String fileName, int totalChunks) throws IOException {
-        Path tempDirPath = Paths.get(BASE_TEMP_DIR, uploadId);
+    private void mergeChunks(String UploadId, int TotalChunks) throws IOException {
+        Path tempDirPath = Paths.get(BASE_TEMP_DIR, UploadId);
         Path finalDirPath = Paths.get(FINAL_UPLOAD_DIR);
 
         // Ensure destination directory exists
         Files.createDirectories(finalDirPath);
-        Path finalFilePath = finalDirPath.resolve(fileName);
+
+        // Save the combined binary data purely as the uploadId with a .file extension
+        Path finalFilePath = finalDirPath.resolve(UploadId + ".file");
 
         // Append every chunk in perfect order into the final file
-        try (OutputStream destStream = new BufferedOutputStream(Files.newOutputStream(finalFilePath, StandardOpenOption.CREATE, StandardOpenOption.WRITE))) {
-            for (int i = 0; i < totalChunks; i++) {
+        try (OutputStream destStream = new BufferedOutputStream(
+                Files.newOutputStream(finalFilePath, StandardOpenOption.CREATE, StandardOpenOption.WRITE))) {
+
+            for (int i = 0; i < TotalChunks; i++) {
                 Path chunkFile = tempDirPath.resolve("chunk_" + i);
 
                 if (!Files.exists(chunkFile)) {
-                    throw new FileNotFoundException("Missing chunk index: " + i + " for upload session: " + uploadId);
+                    throw new FileNotFoundException("Missing chunk index: " + i + " for upload session: " + TotalChunks);
                 }
 
                 Files.copy(chunkFile, destStream);
             }
         }
 
-        // Clean up: delete chunks and temporary folder after successful merge
+        // Clean up: delete temporary chunks and folder after a successful merge
         try (var walk = Files.walk(tempDirPath)) {
             walk.sorted((a, b) -> b.compareTo(a)) // Delete files before folders
                     .forEach(path -> {
