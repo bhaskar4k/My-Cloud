@@ -30,19 +30,4 @@ public class MenuController {
             );
         }
     }
-
-    @GetMapping("/check")
-    public ApiResponseDto<String> getMenusByRole() {
-        try {
-            return ApiResponseDto.Success(
-                    "Menus fetched successfully",
-                    "GG"
-            );
-        } catch (Exception ex) {
-            return ApiResponseDto.Error(
-                    500,
-                    ex.getMessage()
-            );
-        }
-    }
 }
