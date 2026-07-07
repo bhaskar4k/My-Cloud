@@ -20,7 +20,7 @@ public class TUserMaster extends BaseEntity {
     private String email;
 
     @Column(name = "phone", nullable = false)
-    private Integer phone;
+    private Long phone;
 
     @Column(name = "password", nullable = false, length = 1000)
     private String password;

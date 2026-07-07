@@ -6,3 +6,5 @@ export const ResponseTypeColor = {
 }
 
 export type ResponseTypeColor = typeof ResponseTypeColor[keyof typeof ResponseTypeColor];
+
+export const JwtTokenKey = "MY_CLOUD_JWT";

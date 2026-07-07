@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MenuService } from '../../../services/menu.service';
@@ -8,6 +8,8 @@ import { ApiResponseDto } from '../../../models/dto.model';
 import { MatDialog } from '@angular/material/dialog';
 import { ResponseTypeColor } from '../../../constants/commonConsts';
 import { CustomAlertComponent } from '../../../common-components/custom-alert/custom-alert.component';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-side-panel',
@@ -19,20 +21,28 @@ import { CustomAlertComponent } from '../../../common-components/custom-alert/cu
   templateUrl: './side-panel.component.html',
   styleUrl: './side-panel.component.css'
 })
-export class SidePanelComponent implements OnInit {
+export class SidePanelComponent implements OnInit, OnDestroy {
   @Input() isOpen = true;
 
   HasFetchedMenuData: boolean = false;
   AllMenuItems: MenuItem[] = [];
   expandedMenus: Set<number> = new Set();
 
+  private authSubscription!: Subscription;
 
   constructor(
     private menuService: MenuService,
+    private authService: AuthService,
     private dialog: MatDialog
   ) { }
 
   ngOnInit() {
+    this.authSubscription = this.authService.isLoggedIn$.subscribe((loggedIn) => {
+      this.FetchMenus();
+    });
+  }
+
+  FetchMenus() {
     this.HasFetchedMenuData = false;
 
     this.menuService.GetMenu().subscribe({
@@ -69,5 +79,11 @@ export class SidePanelComponent implements OnInit {
 
   hasSubmenu(item: MenuItem): boolean {
     return item.submenu && item.submenu.length > 0;
+  }
+
+  ngOnDestroy(): void {
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
+    }
   }
 }

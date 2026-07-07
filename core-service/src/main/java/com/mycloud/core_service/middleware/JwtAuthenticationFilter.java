@@ -7,8 +7,12 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -28,52 +32,57 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String requestPath = request.getServletPath();
+        String authHeader = request.getHeader("Authorization");
+        boolean tokenPresent = authHeader != null && authHeader.startsWith("Bearer ");
 
         for (String endpoint : allowedEndpoints) {
             if (requestPath.startsWith(endpoint)) {
-                return true;
+                return !tokenPresent; // Run filter if token is present on public endpoints
             }
         }
-
         return false;
     }
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain)
-            throws ServletException, IOException {
-
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
+            sendUnauthorized(response);
             return;
         }
 
         String token = authHeader.substring(7);
 
-        if (jwtUtil.ValidateToken(token)) {
-            Long userId = jwtUtil.ExtractUserId(token);
-            String email = jwtUtil.ExtractEmail(token);
+        try {
+            if (!jwtUtil.ValidateToken(token)) {
+                sendUnauthorized(response);
+                return;
+            }
 
-            JwtUser user = new JwtUser(userId, email);
+            JwtUser user = new JwtUser(
+                    true,
+                    jwtUtil.ExtractUserId(token),
+                    jwtUtil.ExtractEmail(token)
+            );
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
                             user,
                             null,
-                            Collections.emptyList()
-                    );
+                            Collections.emptyList());
 
-            authentication.setDetails(user);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            SecurityContextHolder
-                    .getContext()
-                    .setAuthentication(authentication);
+            filterChain.doFilter(request, response);
+        } catch (Exception ex) {
+            sendUnauthorized(response);
         }
+    }
 
-        filterChain.doFilter(request, response);
+    private void sendUnauthorized(HttpServletResponse response) throws IOException {
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json");
+        response.getWriter().write("{\"message\": \"Session timed out. Please login again.\"}");
     }
 }

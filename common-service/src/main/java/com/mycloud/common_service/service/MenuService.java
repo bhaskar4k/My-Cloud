@@ -1,23 +1,39 @@
 package com.mycloud.common_service.service;
 
+import com.mycloud.common_config.model.JwtConfig;
+import com.mycloud.common_models.common_entities.JwtUser;
 import com.mycloud.common_models.common_entities.MenuItemEntity;
 import com.mycloud.common_models.database_entities.TMenuMaster;
 import com.mycloud.common_models.dto.ApiResponseDto;
+import com.mycloud.common_models.utils.JwtUtil;
 import com.mycloud.data_access_layer.repositories.TMenuMasterRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@RequiredArgsConstructor
 @Service
 public class MenuService {
+    private final JwtUtil jwtUtil;
     private final TMenuMasterRepository menuRepository;
 
-    public ApiResponseDto<List<MenuItemEntity>> DoGetMenusByRole(Long RoleId) {
+    public MenuService(JwtConfig jwtConfig, TMenuMasterRepository menuRepository) {
+        this.jwtUtil = new JwtUtil(jwtConfig.getSecret(), jwtConfig.getExpiration());
+        this.menuRepository = menuRepository;
+    }
+
+    public ApiResponseDto<List<MenuItemEntity>> DoGetMenusByRole() {
         try {
+            JwtUser User = jwtUtil.GetCurrentUser();
+
+            Long RoleId = null;
+            if (User == null || !User.IsAuthenticated()){
+                RoleId = 1L;
+            } else {
+                RoleId = 2L;
+            }
+
             List<TMenuMaster> Menus = menuRepository.findMenusByRoleId(RoleId);
 
             List<MenuItemEntity> FinalOutput = new ArrayList<>();

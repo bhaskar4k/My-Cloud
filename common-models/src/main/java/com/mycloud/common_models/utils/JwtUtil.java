@@ -1,9 +1,11 @@
 package com.mycloud.common_models.utils;
 
+import com.mycloud.common_models.common_entities.JwtUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Component;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -27,8 +29,8 @@ public class JwtUtil {
         String encryptedEmail = encryptionUtil.Encrypt(email);
 
         return Jwts.builder()
-                .claim("uid", encryptedUserId)
-                .claim("eml", encryptedEmail)
+                .claim("enc_id", encryptedUserId)
+                .claim("enc_email", encryptedEmail)
                 .issuedAt(new Date())
                 .expiration(
                         new Date(
@@ -43,7 +45,7 @@ public class JwtUtil {
     public String ExtractEmail(String token) {
         String encryptedEmail =
                 GetClaims(token)
-                        .get("eml", String.class);
+                        .get("enc_email", String.class);
 
         return encryptionUtil.Decrypt(
                 encryptedEmail
@@ -53,7 +55,7 @@ public class JwtUtil {
     public Long ExtractUserId(String token) {
         String encryptedUserId =
                 GetClaims(token)
-                        .get("uid", String.class);
+                        .get("enc_id", String.class);
 
         return Long.parseLong(
                 encryptionUtil.Decrypt(
@@ -82,5 +84,23 @@ public class JwtUtil {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+    }
+
+    public JwtUser GetCurrentUser() {
+        Authentication authentication = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null;
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof JwtUser jwtUser) {
+            return jwtUser;
+        }
+
+        return null;
     }
 }

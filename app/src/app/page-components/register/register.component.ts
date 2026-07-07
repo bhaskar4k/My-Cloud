@@ -10,6 +10,7 @@ import { CustomAlertComponent } from '../../common-components/custom-alert/custo
 import { ResponseTypeColor } from '../../constants/commonConsts';
 import { AuthService } from '../../services/auth.service';
 import { ApiResponseDto } from '../../models/dto.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -48,12 +49,14 @@ export class RegisterComponent {
 
   constructor(
     private dialog: MatDialog,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) { }
 
   OnSubmit(): void {
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
+      this.dialog.open(CustomAlertComponent, { data: { text: "All input fields are required.<br>Please fill all input fields.", type: ResponseTypeColor.ERROR } });
       return;
     }
 
@@ -72,7 +75,7 @@ export class RegisterComponent {
       next: (response: ApiResponseDto) => {
         if (response.success === true && response.statusCode === 200) {
           this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.SUCCESS } });
-          this.OnReset();
+          this.router.navigate(['/login']);
         } else {
           this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
         }
