@@ -77,6 +77,17 @@
                         <div class="d-flex justify-content-end">
                             Progress : {{ uploadService.UploadProgress$ | async }}%
                         </div>
+
+                        <div class="d-flex justify-content-between align-items-center small text-secondary mt-4 px-1">
+                            <div>
+                                <i class="bi bi-speedometer2 me-1"></i> Speed:
+                                <span class="fw-bold text-primary">{{ uploadService.UploadSpeed$ | async }}</span>
+                            </div>
+                            <div>
+                                <i class="bi bi-hourglass-split me-1"></i> Estimated Time Remaining:
+                                <span class="fw-bold text-primary">{{ uploadService.UploadEta$ | async }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

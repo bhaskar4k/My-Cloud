@@ -32,8 +32,8 @@ export class UploadComponent {
     if (!this.SelectedFile) return;
 
     this.MatProgressBar = true;
-    const fileToUpload = this.SelectedFile;
 
+    const fileToUpload = this.SelectedFile;
     this.SelectedFile = null;
 
     try {
