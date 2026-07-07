@@ -16,11 +16,12 @@ import { ResponseTypeColor } from '../../constants/commonConsts';
   styleUrl: './upload.component.css'
 })
 export class UploadComponent {
+  MaxUploadAttemptsPerChunk: number = 3;
   SelectedFile: File | null = null;
   UploadProgress = 0;
   MatProgressBar = false;
 
-  private readonly CHUNK_SIZE = 1024 * 1024; // 1 MB chunks
+  private readonly CHUNK_SIZE = 1024 * 1024 * 10; // 10 MB chunks
 
   constructor(
     private uploadService: UploadService,
@@ -62,11 +63,12 @@ export class UploadComponent {
 
       if (!UploadId) {
         this.dialog.open(CustomAlertComponent, { data: { text: "Failed to initiate upload.", type: ResponseTypeColor.ERROR } });
+        this.MatProgressBar = false;
         return;
       }
 
 
-      // STEP 2 :: Loop through and upload chunks sequentially
+      // STEP 2 :: Loop through chunks count and upload chunks sequentially
       for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
         const start = chunkIndex * this.CHUNK_SIZE;
         const end = Math.min(start + this.CHUNK_SIZE, file.size);
@@ -74,15 +76,33 @@ export class UploadComponent {
         const chunkBlob = file.slice(start, end);
         const arrayBuffer = await chunkBlob.arrayBuffer();
 
-        const upload = this.uploadService.UploadChunk(arrayBuffer, chunkIndex, totalChunks, UploadId ? UploadId : '');
+        let attempts = 0;
+        let success = false;
 
-        await this.HandleChunkUploadProgress(upload, chunkIndex, totalChunks);
+        while (attempts < this.MaxUploadAttemptsPerChunk && !success) {
+          try {
+            attempts++;
+            const upload = this.uploadService.UploadChunk(arrayBuffer, chunkIndex, totalChunks, UploadId ? UploadId : '');
+            await this.HandleChunkUploadProgress(upload, chunkIndex, totalChunks);
+            success = true;
+          }
+          catch (error) {
+            this.dialog.open(CustomAlertComponent, { data: { text: `Chunk ${chunkIndex} failed on upload attempt ${attempts}.<br>Retrying...`, type: ResponseTypeColor.ERROR } });
+
+            if (attempts >= this.MaxUploadAttemptsPerChunk) {
+              throw new Error(`Chunk ${chunkIndex} failed after ${this.MaxUploadAttemptsPerChunk} upload attempts.<br>Aborting upload.`);
+            }
+
+            // Wait for 2 seconds before retrying
+            await new Promise(res => setTimeout(res, 2000));
+          }
+        }
       }
 
-      console.log('All chunks uploaded successfully under session:', UploadId);
+      this.dialog.open(CustomAlertComponent, { data: { text: "File has been uploaded successfully.", type: ResponseTypeColor.SUCCESS } });
       this.SelectedFile = null;
-    } catch (error) {
-      console.error('Upload sequence aborted due to an error:', error);
+    } catch (error: any) {
+      this.dialog.open(CustomAlertComponent, { data: { text: "Failed to upload the selected file.<br>Please try again later.", type: ResponseTypeColor.ERROR } });
     } finally {
       this.MatProgressBar = false;
     }
