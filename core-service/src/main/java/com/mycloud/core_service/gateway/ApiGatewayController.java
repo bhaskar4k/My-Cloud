@@ -43,9 +43,7 @@ public class ApiGatewayController {
         services.put(ServiceName.FILE.getValue(), gatewayConfig.getFile());
         services.put(ServiceName.PROCESSING.getValue(), gatewayConfig.getProcessing());
 
-        System.out.println(
-                "Loaded Services: " + services
-        );
+        System.out.println("Loaded Services: " + services);
     }
 
     @RequestMapping(

@@ -69,11 +69,7 @@ public class MenuService {
                 }
             }
 
-            return ApiResponseDto.Success(
-                    "Menus fetched successfully",
-                    FinalOutput
-            );
-
+            return ApiResponseDto.Success("Menus fetched successfully", FinalOutput);
         } catch (Exception ex) {
             ex.printStackTrace();
 

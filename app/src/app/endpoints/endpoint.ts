@@ -18,4 +18,8 @@ export const Endpoints = {
     Common: {
         GetMenu: "common/menu/get-menu",
     },
+    Upload: {
+        Initiate: "file/upload/initiate",
+        Chunk: "file/upload/chunk"
+    }
 }
