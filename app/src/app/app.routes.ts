@@ -14,30 +14,39 @@ import { BasicSettingsComponent } from './page-components/settings/basic-setting
 import { DeleteAccountComponent } from './page-components/settings/delete-account/delete-account.component';
 import { ProfileComponent } from './page-components/profile/profile.component';
 import { LogoutComponent } from './page-components/logout/logout.component';
+import { AuthGuard } from './middleware/AuthGuard';
 
 export const routes: Routes = [
   {
     path: '',
     component: LayoutBaseComponent,
     children: [
+      // === PUBLIC ROUTES ===
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent },
-
       { path: 'register', component: RegisterComponent },
       { path: 'login', component: LoginComponent },
 
-      { path: 'dashboard', component: DashboardComponent },
-      { path: 'upload', component: UploadComponent },
-      { path: 'content', component: ContentComponent },
-      { path: 'library', component: LibraryComponent },
-      { path: 'favourite', component: FavouriteComponent },
-      { path: 'settings/profile-settings', component: ProfileSettingsComponent },
-      { path: 'settings/basic-settings', component: BasicSettingsComponent },
-      { path: 'settings/delete-account', component: DeleteAccountComponent },
-      { path: 'profile', component: ProfileComponent },
-      { path: 'logout', component: LogoutComponent },
+      // === PROTECTED ROUTES (Grouped under the Guard) ===
+      {
+        path: '',
+        canActivate: [AuthGuard],
+        children: [
+          { path: 'dashboard', component: DashboardComponent },
+          { path: 'upload', component: UploadComponent },
+          { path: 'content', component: ContentComponent },
+          { path: 'library', component: LibraryComponent },
+          { path: 'favourite', component: FavouriteComponent },
+          { path: 'settings/profile-settings', component: ProfileSettingsComponent },
+          { path: 'settings/basic-settings', component: BasicSettingsComponent },
+          { path: 'settings/delete-account', component: DeleteAccountComponent },
+          { path: 'profile', component: ProfileComponent },
+          { path: 'logout', component: LogoutComponent }
+        ]
+      },
 
-      { path: '**', component: ErrorComponent },
+      // === CATCH-ALL ERROR ROUTE ===
+      { path: '**', component: ErrorComponent }
     ]
   }
 ];
