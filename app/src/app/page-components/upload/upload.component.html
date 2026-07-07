@@ -1,1 +1,22 @@
-<p>upload works!</p>
+<div class="upload-container">
+    <h2>Chunked File Upload</h2>
+
+    <div class="file-zone">
+        <input type="file" id="fileInput" (change)="OnFileSelected($event)" [disabled]="IsUploading" />
+        <label for="fileInput" class="file-label">
+            {{ SelectedFile ? SelectedFile.name : 'Choose any file...' }}
+        </label>
+    </div>
+
+    <div *ngIf="SelectedFile" class="actions">
+        <p>File Size: {{ (SelectedFile.size / 1024 / 1024) | number:'1.2-2' }} MB</p>
+        <button (click)="UploadFile()" [disabled]="IsUploading">
+            {{ IsUploading ? 'Uploading...' : 'Start Upload' }}
+        </button>
+    </div>
+
+    <div *ngIf="IsUploading || UploadProgress > 0" class="progress-wrapper">
+        <div class="progress-bar" [style.width.%]="UploadProgress"></div>
+        <span class="progress-text">{{ UploadProgress }}%</span>
+    </div>
+</div>
