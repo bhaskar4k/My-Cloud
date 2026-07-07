@@ -1,10 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
+import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { UploadService } from '../../services/upload.service';
+import { ApiResponseDto } from '../../models/dto.model';
+import { CustomAlertComponent } from '../../common-components/custom-alert/custom-alert.component';
+import { MatDialog } from '@angular/material/dialog';
+import { ResponseTypeColor } from '../../constants/commonConsts';
 
 @Component({
   selector: 'app-upload',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './upload.component.html',
   styleUrl: './upload.component.css'
@@ -16,7 +22,9 @@ export class UploadComponent {
 
   private readonly CHUNK_SIZE = 1024 * 1024; // 1 MB chunks
 
-  constructor(private uploadService: UploadService) { }
+  constructor(
+    private uploadService: UploadService,
+    private dialog: MatDialog) { }
 
   OnFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -34,35 +42,62 @@ export class UploadComponent {
 
     const file = this.SelectedFile;
     const totalChunks = Math.ceil(file.size / this.CHUNK_SIZE);
-    const fileId = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9]/g, '')}`;
 
-    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-      const start = chunkIndex * this.CHUNK_SIZE;
-      const end = Math.min(start + this.CHUNK_SIZE, file.size);
+    try {
+      // Step 1: Initiate upload session with the server and retrieve uploadId
+      const Payload = {
+        fileName: file.name,
+        fileSize: file.size
+      }
 
-      const chunkBlob = file.slice(start, end);
-      const arrayBuffer = await chunkBlob.arrayBuffer();
+      let UploadId = null;
 
-      try {
-        const upload = this.uploadService.UploadChunk(arrayBuffer, chunkIndex, totalChunks, fileId, file.name);
-        await this.HandleChunkUploadProgress(upload, chunkIndex, totalChunks);
-      } catch (error) {
-        console.error(`Upload stopped at chunk ${chunkIndex}:`, error);
-        this.IsUploading = false;
+      this.uploadService.InitiateUpload(Payload).subscribe({
+        next: (response: ApiResponseDto) => {
+          if (response.success !== true || response.statusCode !== 200) {
+            this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
+            return;
+          }
+
+          UploadId = response.data;
+        },
+        error: (err: any) => {
+          this.dialog.open(CustomAlertComponent, { data: { text: "Failed to initiate upload.", type: ResponseTypeColor.ERROR } });
+          return;
+        }
+      });
+
+      if (!UploadId) {
+        this.dialog.open(CustomAlertComponent, { data: { text: "Failed to initiate upload.", type: ResponseTypeColor.ERROR } });
         return;
       }
-    }
 
-    this.IsUploading = false;
-    console.log('All byte stream chunks sent successfully!');
-    this.SelectedFile = null;
+      // Step 2: Loop through and upload chunks sequentially
+      for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+        const start = chunkIndex * this.CHUNK_SIZE;
+        const end = Math.min(start + this.CHUNK_SIZE, file.size);
+
+        const chunkBlob = file.slice(start, end);
+        const arrayBuffer = await chunkBlob.arrayBuffer();
+
+        const upload = this.uploadService.UploadChunk(arrayBuffer, chunkIndex, totalChunks, UploadId ? UploadId : '', file.name);
+
+        await this.HandleChunkUploadProgress(upload, chunkIndex, totalChunks);
+      }
+
+      console.log('All chunks uploaded successfully under session:', UploadId);
+      this.SelectedFile = null;
+    } catch (error) {
+      console.error('Upload sequence aborted due to an error:', error);
+    } finally {
+      this.IsUploading = false;
+    }
   }
 
   private HandleChunkUploadProgress(uploadObservable: any, chunkIndex: number, totalChunks: number): Promise<any> {
     return new Promise((resolve, reject) => {
       uploadObservable.subscribe({
         next: (event: HttpEvent<any>) => {
-
           if (event.type === HttpEventType.UploadProgress && event.total) {
             const chunkProgress = event.loaded / event.total;
             const totalUploadedChunks = chunkIndex + chunkProgress;

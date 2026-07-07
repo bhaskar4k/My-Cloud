@@ -17,7 +17,7 @@ public class UploadController {
     private final TMenuMasterRepository menuRepository;
     private final UploadService uploadService;
 
-    @GetMapping("/initiate-file-upload")
+    @GetMapping("/initiate")
     public ApiResponseDto<Boolean> InitiateFileUpload() {
         try {
             return uploadService.DoInitiateFileUpload();
