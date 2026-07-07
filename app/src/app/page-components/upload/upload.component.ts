@@ -18,7 +18,7 @@ import { ResponseTypeColor } from '../../constants/commonConsts';
 export class UploadComponent {
   SelectedFile: File | null = null;
   UploadProgress = 0;
-  IsUploading = false;
+  MatProgressBar = false;
 
   private readonly CHUNK_SIZE = 1024 * 1024; // 1 MB chunks
 
@@ -37,42 +37,36 @@ export class UploadComponent {
   async UploadFile(): Promise<void> {
     if (!this.SelectedFile) return;
 
-    this.IsUploading = true;
+    this.MatProgressBar = true;
     this.UploadProgress = 0;
 
     const file = this.SelectedFile;
     const totalChunks = Math.ceil(file.size / this.CHUNK_SIZE);
 
     try {
-      // Step 1: Initiate upload session with the server and retrieve uploadId
+      // STEP 1 :: Initiate upload session with the server and retrieve uploadId
       const Payload = {
         fileName: file.name,
         fileSize: file.size
       }
 
-      let UploadId = null;
+      const InitiatedResponse: ApiResponseDto = await firstValueFrom(this.uploadService.InitiateUpload(Payload));
 
-      this.uploadService.InitiateUpload(Payload).subscribe({
-        next: (response: ApiResponseDto) => {
-          if (response.success !== true || response.statusCode !== 200) {
-            this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
-            return;
-          }
+      if (InitiatedResponse.success !== true || InitiatedResponse.statusCode !== 200) {
+        this.dialog.open(CustomAlertComponent, { data: { text: InitiatedResponse.message, type: ResponseTypeColor.ERROR } });
+        this.MatProgressBar = false;
+        return;
+      }
 
-          UploadId = response.data;
-        },
-        error: (err: any) => {
-          this.dialog.open(CustomAlertComponent, { data: { text: "Failed to initiate upload.", type: ResponseTypeColor.ERROR } });
-          return;
-        }
-      });
+      const UploadId = InitiatedResponse.data;
 
       if (!UploadId) {
         this.dialog.open(CustomAlertComponent, { data: { text: "Failed to initiate upload.", type: ResponseTypeColor.ERROR } });
         return;
       }
 
-      // Step 2: Loop through and upload chunks sequentially
+
+      // STEP 2 :: Loop through and upload chunks sequentially
       for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
         const start = chunkIndex * this.CHUNK_SIZE;
         const end = Math.min(start + this.CHUNK_SIZE, file.size);
@@ -90,7 +84,7 @@ export class UploadComponent {
     } catch (error) {
       console.error('Upload sequence aborted due to an error:', error);
     } finally {
-      this.IsUploading = false;
+      this.MatProgressBar = false;
     }
   }
 
