@@ -9,7 +9,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -29,13 +32,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String requestPath = request.getServletPath();
+        String authHeader = request.getHeader("Authorization");
+        boolean tokenPresent = authHeader != null && authHeader.startsWith("Bearer ");
 
         for (String endpoint : allowedEndpoints) {
             if (requestPath.startsWith(endpoint)) {
-                return true;
+                return !tokenPresent; // Run filter if token is present on public endpoints
             }
         }
-
         return false;
     }
 
@@ -44,13 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setContentType("application/json");
-            response.getWriter().write("""
-            {
-              "message": "Session timed out. Please login again."
-            }
-            """);
+            sendUnauthorized(response);
             return;
         }
 
@@ -58,13 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             if (!jwtUtil.ValidateToken(token)) {
-                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                response.setContentType("application/json");
-                response.getWriter().write("""
-                {
-                  "message": "Session timed out. Please login again."
-                }
-                """);
+                sendUnauthorized(response);
                 return;
             }
 
@@ -82,15 +74,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             filterChain.doFilter(request, response);
-
         } catch (Exception ex) {
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setContentType("application/json");
-            response.getWriter().write("""
-            {
-              "message": "Session timed out. Please login again."
-            }
-            """);
+            sendUnauthorized(response);
         }
+    }
+
+    private void sendUnauthorized(HttpServletResponse response) throws IOException {
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json");
+        response.getWriter().write("{\"message\": \"Session timed out. Please login again.\"}");
     }
 }

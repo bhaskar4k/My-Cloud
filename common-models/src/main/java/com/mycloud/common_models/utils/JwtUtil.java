@@ -86,7 +86,7 @@ public class JwtUtil {
                 .getPayload();
     }
 
-    public static JwtUser getCurrentUser() {
+    public JwtUser GetCurrentUser() {
         Authentication authentication = SecurityContextHolder
                 .getContext()
                 .getAuthentication();
