@@ -10,6 +10,7 @@ import { Endpoints, GetBaseURL } from '../endpoints/endpoint';
 export class UploadService {
   public IsUploading$ = new BehaviorSubject<boolean>(false);
   public UploadProgress$ = new BehaviorSubject<number>(0);
+  public ActiveFileName$ = new BehaviorSubject<string>('');
 
   private readonly CHUNK_SIZE = 1024 * 1024 * 10; // Optimized 10 MB chunks
   private readonly MAX_ATTEMPTS = 3;
@@ -40,6 +41,7 @@ export class UploadService {
   async StartBackgroundUpload(file: File): Promise<void> {
     this.IsUploading$.next(true);
     this.UploadProgress$.next(0);
+    this.ActiveFileName$.next(file.name);
 
     const totalChunks = Math.ceil(file.size / this.CHUNK_SIZE);
 
@@ -90,10 +92,12 @@ export class UploadService {
 
       this.IsUploading$.next(false);
       this.UploadProgress$.next(100);
+      this.ActiveFileName$.next('');
     }
     catch (error) {
       this.IsUploading$.next(false);
       this.UploadProgress$.next(0);
+      this.ActiveFileName$.next('');
       throw error;
     }
   }

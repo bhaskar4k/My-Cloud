@@ -1,23 +1,30 @@
 <div class="upload-container">
     <h2>Chunked File Upload</h2>
 
-    <div class="file-zone">
-        <input type="file" id="fileInput" (change)="OnFileSelected($event)"
-            [disabled]="uploadService.IsUploading$ | async" />
-        <label for="fileInput" class="file-label">
-            {{ SelectedFile ? SelectedFile.name : 'Choose any file...' }}
-        </label>
-    </div>
+    <ng-container *ngIf="!((uploadService.IsUploading$ | async) || MatProgressBar)">
+        <div class="file-zone">
+            <input type="file" id="fileInput" (change)="OnFileSelected($event)" />
+            <label for="fileInput" class="file-label">
+                {{ SelectedFile ? SelectedFile.name : 'Choose any file...' }}
+            </label>
+        </div>
 
-    <div *ngIf="SelectedFile" class="actions">
-        <p>File Size: {{ (SelectedFile.size / 1024 / 1024) | number:'1.2-2' }} MB</p>
-        <button (click)="UploadFile()" [disabled]="uploadService.IsUploading$ | async">
-            Start Upload
-        </button>
-    </div>
+        <div *ngIf="SelectedFile" class="actions">
+            <p>File Size: {{ (SelectedFile.size / 1024 / 1024) | number:'1.2-2' }} MB</p>
+            <button (click)="UploadFile()">
+                Start Upload
+            </button>
+        </div>
+    </ng-container>
 
     <div *ngIf="(uploadService.IsUploading$ | async) || MatProgressBar" class="progress-wrapper">
-        <div class="progress-bar" [style.width.%]="uploadService.UploadProgress$ | async"></div>
+        <div class="uploading-filename">
+            Uploading: <strong>{{ uploadService.ActiveFileName$ | async }}</strong>
+        </div>
+
+        <div class="progress-track">
+            <div class="progress-bar" [style.width.%]="uploadService.UploadProgress$ | async"></div>
+        </div>
         <span class="progress-text">{{ uploadService.UploadProgress$ | async }}%</span>
     </div>
 </div>

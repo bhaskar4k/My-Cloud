@@ -17,7 +17,7 @@ export class UploadComponent {
   MatProgressBar = false;
 
   constructor(
-    public uploadService: UploadService, // Marked public to expose Streams to your HTML template
+    public uploadService: UploadService,
     private dialog: MatDialog
   ) { }
 
