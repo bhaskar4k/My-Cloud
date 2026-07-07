@@ -48,7 +48,8 @@ export class UploadComponent {
       // STEP 1 :: Initiate upload session with the server and retrieve uploadId
       const Payload = {
         fileName: file.name,
-        fileSize: file.size
+        fileSize: file.size,
+        contentType: file.type || 'application/octet-stream'
       }
 
       const InitiatedResponse: ApiResponseDto = await firstValueFrom(this.uploadService.InitiateUpload(Payload));
