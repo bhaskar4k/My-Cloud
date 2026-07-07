@@ -1,50 +1,35 @@
-.upload-page {
-    padding: 32px 40px;
-    max-width: 1100px;
-}
-
-.page-header {
-    margin-bottom: 28px;
-}
-
-.page-title {
-    color: #f3f4f6;
-    font-weight: 700;
-    font-size: 1.75rem;
-    margin-bottom: 4px;
-}
-
-.page-subtitle {
-    color: #9ca3af;
-    font-size: 0.95rem;
-    margin: 0;
-}
-
-/* Two-column layout: upload card + side panel */
-.upload-layout {
-    display: grid;
-    grid-template-columns: 1.6fr 1fr;
-    gap: 24px;
-}
-
-@media (max-width: 768px) {
-    .upload-layout {
-        grid-template-columns: 1fr;
-    }
-    .upload-page {
-        padding: 20px;
-    }
-}
-
-.card {
+.upload-container {
     background: linear-gradient(145deg, #1a1c2e 0%, #14151f 100%);
     border: 1px solid rgba(139, 92, 246, 0.15);
     border-radius: 16px;
+    padding: 40px;
+    max-width: 70%;
+    margin: 40px auto;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
 }
 
+.upload-container h2 {
+    color: #f3f4f6;
+    font-weight: 700;
+    font-size: 1.6rem;
+    text-align: center;
+    margin-bottom: 28px;
+    background: linear-gradient(135deg, #818cf8, #a78bfa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+    width: 100%;
+}
+
+/* Drop zone */
 .file-zone {
+    position: relative;
     border: 2.5px dashed rgba(139, 92, 246, 0.35);
     background: rgba(139, 92, 246, 0.05);
+    border-radius: 14px;
+    padding: 48px 24px;
+    text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -53,103 +38,159 @@
     border-color: #a78bfa;
     background: rgba(139, 92, 246, 0.1);
     box-shadow: 0 0 24px rgba(139, 92, 246, 0.2);
+    transform: translateY(-2px);
 }
 
-.file-zone.dragging {
-    border-color: #a78bfa;
-    box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.2);
-}
-
-.file-input-hidden {
+.file-zone input[type="file"] {
     position: absolute;
     inset: 0;
+    width: 100%;
+    height: 100%;
     opacity: 0;
     cursor: pointer;
 }
 
-.file-name { color: #e5e7eb; }
-.file-meta { color: #9ca3af; }
-
-.upload-icon-wrapper {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #6366f1, #a78bfa);
+.file-label {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 10px;
+    color: #e5e7eb;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    margin: 0;
+}
+
+.file-label::before {
+    content: "";
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #a78bfa) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='28' height='28'%3E%3Cpath d='M12 2a1 1 0 0 1 1 1v10.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 1 1 1.414-1.414L11 13.586V3a1 1 0 0 1 1-1z'/%3E%3Cpath d='M5 18a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1z'/%3E%3C/svg%3E") no-repeat center/28px;
     box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+    margin-bottom: 4px;
 }
 
-.upload-icon {
-    font-size: 2rem;
-    color: #fff;
+/* File info + button */
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
 }
 
-.upload-btn {
+.actions p {
+    color: #9ca3af;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.actions button {
     background: linear-gradient(135deg, #6366f1, #a78bfa);
     border: none;
     color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 12px 28px;
+    border-radius: 999px;
+    cursor: pointer;
     box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.upload-btn:hover:not(:disabled) {
+.actions button:hover {
     transform: translateY(-1px);
     box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
 }
 
-.progress {
-    background-color: rgba(255, 255, 255, 0.06) !important;
+.actions button:active {
+    transform: translateY(0);
 }
 
-.bg-gradient-custom {
-    background: linear-gradient(90deg, #6366f1, #a78bfa) !important;
+/* Progress state */
+.progress-wrapper {
+    padding: 8px 0 4px;
+}
+
+.uploading-filename {
+    color: #d1d5db;
+    font-size: 0.95rem;
+    margin-bottom: 14px;
+    text-align: center;
+}
+
+.uploading-filename strong {
+    color: #c4b5fd;
+    font-weight: 700;
+}
+
+.progress-track {
+    width: 100%;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #6366f1, #a78bfa);
+    border-radius: 999px;
+    background-size: 40px 40px;
+    background-image: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.15) 25%,
+            transparent 25%,
+            transparent 50%,
+            rgba(255, 255, 255, 0.15) 50%,
+            rgba(255, 255, 255, 0.15) 75%,
+            transparent 75%,
+            transparent);
+    animation: progress-stripes 1s linear infinite;
+    transition: width 0.3s ease;
+}
+
+@keyframes progress-stripes {
+    from {
+        background-position: 40px 0;
+    }
+
+    to {
+        background-position: 0 0;
+    }
 }
 
 .progress-text {
+    display: block;
+    text-align: right;
+    margin-top: 8px;
     font-size: 0.8rem;
     font-weight: 600;
-    background: rgba(139, 92, 246, 0.15);
     color: #c4b5fd;
 }
 
-/* Side panel */
-.side-title, .recent-card .side-title {
-    color: #e5e7eb;
-    font-weight: 600;
-}
+/* Responsive */
+@media (max-width: 576px) {
+    .upload-container {
+        padding: 28px 20px;
+        margin: 20px 16px;
+        border-radius: 14px;
+    }
 
-.guideline-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
+    .file-zone {
+        padding: 36px 16px;
+    }
 
-.guideline-list li {
-    color: #9ca3af;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+    .actions {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
 
-.guideline-list i {
-    color: #a78bfa;
-}
-
-.recent-item {
-    color: #d1d5db;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-.recent-item:last-child {
-    border-bottom: none;
-}
-
-.recent-icon {
-    color: #a78bfa;
-    font-size: 1.1rem;
+    .actions button {
+        width: 100%;
+    }
 }

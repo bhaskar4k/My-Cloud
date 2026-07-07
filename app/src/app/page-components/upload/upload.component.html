@@ -1,15 +1,15 @@
 <div class="upload-container">
-    <h2>Chunked File Upload</h2>
+    <h2 class="m-0 mb-5">Upload File</h2>
 
     <ng-container *ngIf="!((uploadService.IsUploading$ | async) || MatProgressBar)">
         <div class="file-zone">
             <input type="file" id="fileInput" (change)="OnFileSelected($event)" />
             <label for="fileInput" class="file-label">
-                {{ SelectedFile ? SelectedFile.name : 'Choose any file...' }}
+                {{ SelectedFile ? SelectedFile.name : 'Choose/Drag & drop any file...' }}
             </label>
         </div>
 
-        <div *ngIf="SelectedFile" class="actions">
+        <div *ngIf="SelectedFile" class="actions mt-5">
             <p>File Size: {{ (SelectedFile.size / 1024 / 1024) | number:'1.2-2' }} MB</p>
             <button (click)="UploadFile()">
                 Start Upload
