@@ -2,7 +2,8 @@
     <h2>Chunked File Upload</h2>
 
     <div class="file-zone">
-        <input type="file" id="fileInput" (change)="OnFileSelected($event)" [disabled]="MatProgressBar" />
+        <input type="file" id="fileInput" (change)="OnFileSelected($event)"
+            [disabled]="uploadService.IsUploading$ | async" />
         <label for="fileInput" class="file-label">
             {{ SelectedFile ? SelectedFile.name : 'Choose any file...' }}
         </label>
@@ -10,13 +11,13 @@
 
     <div *ngIf="SelectedFile" class="actions">
         <p>File Size: {{ (SelectedFile.size / 1024 / 1024) | number:'1.2-2' }} MB</p>
-        <button (click)="UploadFile()" [disabled]="MatProgressBar">
-            {{ MatProgressBar ? 'Uploading...' : 'Start Upload' }}
+        <button (click)="UploadFile()" [disabled]="uploadService.IsUploading$ | async">
+            Start Upload
         </button>
     </div>
 
-    <div *ngIf="MatProgressBar || UploadProgress > 0" class="progress-wrapper">
-        <div class="progress-bar" [style.width.%]="UploadProgress"></div>
-        <span class="progress-text">{{ UploadProgress }}%</span>
+    <div *ngIf="(uploadService.IsUploading$ | async) || MatProgressBar" class="progress-wrapper">
+        <div class="progress-bar" [style.width.%]="uploadService.UploadProgress$ | async"></div>
+        <span class="progress-text">{{ uploadService.UploadProgress$ | async }}%</span>
     </div>
 </div>
