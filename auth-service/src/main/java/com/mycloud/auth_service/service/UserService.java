@@ -24,27 +24,18 @@ public class UserService {
     public ApiResponseDto<Boolean> DoCreateUser(TUserMaster User) {
         try {
             if (userRepository.existsByEmail(User.getEmail())) {
-                return ApiResponseDto.Error(
-                        HttpStatus.BAD_REQUEST.value(),
-                        "An user with this email already exists."
-                );
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "An user with this email already exists.");
             }
 
             User.setActive(true);
             User.setDeleted(false);
             TUserMaster SavedUser = userRepository.save(User);
 
-            return ApiResponseDto.Success(
-                    "User has been registered successfully",
-                    true
-            );
+            return ApiResponseDto.Success("User has been registered successfully", true);
         } catch (Exception ex) {
             ex.printStackTrace();
 
-            return ApiResponseDto.Error(
-                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                    "An internal error was occurred."
-            );
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to register user.");
         }
     }
 
@@ -53,49 +44,31 @@ public class UserService {
             Optional<TUserMaster> existingUser = userRepository.findByEmail(user.getEmail());
 
             if (existingUser.isEmpty()) {
-                return ApiResponseDto.Error(
-                        HttpStatus.BAD_REQUEST.value(),
-                        "No user exists with this email."
-                );
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "No user exists with this email.");
             }
 
             TUserMaster dbUser = existingUser.get();
 
             if (Boolean.FALSE.equals(dbUser.getActive())) {
-                return ApiResponseDto.Error(
-                        HttpStatus.BAD_REQUEST.value(),
-                        "Your account is inactive."
-                );
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Your account is inactive.");
             }
 
             if (Boolean.TRUE.equals(dbUser.getDeleted())) {
-                return ApiResponseDto.Error(
-                        HttpStatus.BAD_REQUEST.value(),
-                        "Your account has been deleted."
-                );
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Your account has been deleted.");
             }
 
             if (!dbUser.getPassword().equals(user.getPassword())) {
-                return ApiResponseDto.Error(
-                        HttpStatus.BAD_REQUEST.value(),
-                        "You've typed an incorrect password."
-                );
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "You've typed an incorrect password.");
             }
 
             String JwtToken = jwtUtil.GenerateToken(dbUser.getId(), dbUser.getEmail());
 
-            return ApiResponseDto.Success(
-                    "You've been logged-in successfully.",
-                    JwtToken
-            );
+            return ApiResponseDto.Success("You've been logged-in successfully.", JwtToken);
 
         } catch (Exception ex) {
             ex.printStackTrace();
 
-            return ApiResponseDto.Error(
-                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                    "An internal error occurred."
-            );
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to log-in the user.");
         }
     }
 }

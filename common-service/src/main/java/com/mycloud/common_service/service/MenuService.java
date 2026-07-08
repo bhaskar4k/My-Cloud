@@ -7,6 +7,7 @@ import com.mycloud.common_models.database_entities.TMenuMaster;
 import com.mycloud.common_models.dto.ApiResponseDto;
 import com.mycloud.common_models.utils.JwtUtil;
 import com.mycloud.data_access_layer.repositories.TMenuMasterRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -73,10 +74,7 @@ public class MenuService {
         } catch (Exception ex) {
             ex.printStackTrace();
 
-            return ApiResponseDto.Error(
-                    500,
-                    ex.getMessage()
-            );
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to fetch the menu items.");
         }
     }
 }

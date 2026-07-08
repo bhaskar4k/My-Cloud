@@ -1,4 +1,6 @@
 {
-  "location": "/data/storage",
+  "rootDirectory": "E:/Project/MyCloudStorage/",
+  "tempDirectory": "Temp/",
+  "finalDirectory": "Final/",
   "maxFileSize": 104857600
 }

@@ -8,6 +8,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
 
@@ -176,9 +177,10 @@ public class FileGatewayController {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            response.setStatus(500);
+
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             try {
-                response.getWriter().write(ex.getMessage());
+                response.getWriter().write("An internal error was occurred.");
             } catch (Exception ignored) {}
         } finally {
             if (connection != null) {

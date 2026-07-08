@@ -5,6 +5,7 @@ import com.mycloud.common_models.dto.ApiResponseDto;
 import com.mycloud.file_service.service.UploadService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.InputStream;
@@ -22,26 +23,25 @@ public class UploadController {
             return uploadService.DoInitiateFileUpload(request);
         } catch (Exception ex) {
             ex.printStackTrace();
-            return ApiResponseDto.Error(500, ex.getMessage());
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An internal error was occurred.");
         }
     }
 
     @PostMapping("/chunk")
-    public ApiResponseDto<String> uploadChunk(
+    public ApiResponseDto<Boolean> uploadChunk(
             HttpServletRequest request,
             @RequestHeader("X-Upload-Id") String uploadId,
             @RequestHeader("X-Chunk-Index") int chunkIndex,
             @RequestHeader("X-Total-Chunks") int totalChunks) {
         try {
-            // Read binary body directly as InputStream
             InputStream inputStream = request.getInputStream();
 
-            uploadService.DoSaveChunk(inputStream, uploadId, chunkIndex, totalChunks);
-
-            return ApiResponseDto.Success("Chunk " + chunkIndex + " uploaded successfully", null);
+            return uploadService.DoSaveChunk(inputStream, uploadId, chunkIndex, totalChunks);
         } catch (Exception ex) {
             ex.printStackTrace();
-            return ApiResponseDto.Error(500, "Failed to upload chunk: " + ex.getMessage());
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An internal error was occurred.");
         }
     }
 }
