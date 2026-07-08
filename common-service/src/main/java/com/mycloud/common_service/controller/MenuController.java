@@ -5,6 +5,7 @@ import com.mycloud.common_models.dto.ApiResponseDto;
 import com.mycloud.common_service.service.MenuService;
 import com.mycloud.data_access_layer.repositories.TMenuMasterRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,10 +25,7 @@ public class MenuController {
         } catch (Exception ex) {
             ex.printStackTrace();
 
-            return ApiResponseDto.Error(
-                    500,
-                    ex.getMessage()
-            );
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An internal error was occurred.");
         }
     }
 }

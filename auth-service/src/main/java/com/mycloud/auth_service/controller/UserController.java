@@ -18,10 +18,7 @@ public class UserController {
         try {
             return userService.DoCreateUser(User);
         } catch (Exception ex) {
-            return ApiResponseDto.Error(
-                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                    "An internal error was occurred."
-            );
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An internal error was occurred.");
         }
     }
 
@@ -30,10 +27,7 @@ public class UserController {
         try {
             return userService.DoLoginUser(User);
         } catch (Exception ex) {
-            return ApiResponseDto.Error(
-                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                    "An internal error was occurred."
-            );
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An internal error was occurred.");
         }
     }
 }

@@ -205,7 +205,7 @@ public class ApiGatewayController {
 
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                    .body(ex.getMessage());
+                    .body("An internal error was occurred.");
         }
     }
 }
