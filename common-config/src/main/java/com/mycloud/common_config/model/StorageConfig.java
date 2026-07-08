@@ -11,7 +11,11 @@ import lombok.Setter;
 @AllArgsConstructor
 public class StorageConfig {
 
-    private String location;
+    private String rootDirectory;
+
+    private String tempDirectory;
+
+    private String finalDirectory;
 
     private long maxFileSize;
 }

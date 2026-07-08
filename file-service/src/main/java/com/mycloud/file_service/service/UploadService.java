@@ -1,6 +1,7 @@
 package com.mycloud.file_service.service;
 
 import com.mycloud.common_config.model.JwtConfig;
+import com.mycloud.common_config.model.StorageConfig;
 import com.mycloud.common_models.common_entities.InitiateUploadRequestEntity;
 import com.mycloud.common_models.common_entities.JwtUser;
 import com.mycloud.common_models.database_entities.TFileMaster;
@@ -23,13 +24,24 @@ public class UploadService {
     private final String BASE_TEMP_DIR;
     private final String FINAL_UPLOAD_DIR;
 
-    public UploadService(JwtConfig jwtConfig, TFileMasterRepository fileMasterRepository) {
+    public UploadService(StorageConfig storageConfig, JwtConfig jwtConfig, TFileMasterRepository fileMasterRepository) throws IOException {
         this.jwtUtil = new JwtUtil(jwtConfig.getSecret(), jwtConfig.getExpiration());
         this.fileMasterRepository = fileMasterRepository;
         this.CHUNK_SIZE = 10L * 1024 * 1024;
 
-        this.BASE_TEMP_DIR = "E:/Project/MyCloudStorageTemp/";
-        this.FINAL_UPLOAD_DIR = "E:/Project/MyCloudStorage/";
+        Path BASE_TEMP_PATH = Paths.get(storageConfig.getRootDirectory(), storageConfig.getTempDirectory());
+        Path BASE_FINAL_PATH = Paths.get(storageConfig.getRootDirectory(), storageConfig.getFinalDirectory());
+
+        if (!Files.exists(BASE_TEMP_PATH)) {
+            Files.createDirectories(BASE_TEMP_PATH);
+        }
+
+        if (!Files.exists(BASE_FINAL_PATH)) {
+            Files.createDirectories(BASE_FINAL_PATH);
+        }
+
+        this.BASE_TEMP_DIR = String.valueOf(BASE_TEMP_PATH);
+        this.FINAL_UPLOAD_DIR = String.valueOf(BASE_FINAL_PATH);
     }
 
     public ApiResponseDto<String> DoInitiateFileUpload(InitiateUploadRequestEntity request) {
