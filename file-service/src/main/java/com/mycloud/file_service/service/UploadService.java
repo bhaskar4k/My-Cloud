@@ -120,11 +120,11 @@ public class UploadService {
 
         // If this is the last chunk, kick off the assembly process
         if (chunkIndex == totalChunks - 1) {
-            mergeChunks(uploadId, totalChunks);
+            MergeChunks(uploadId, totalChunks);
         }
     }
 
-    private void mergeChunks(String UploadId, int TotalChunks) throws IOException {
+    private void MergeChunks(String UploadId, int TotalChunks) throws IOException {
         Path tempDirPath = Paths.get(BASE_TEMP_DIR, UploadId);
         Path finalDirPath = Paths.get(FINAL_UPLOAD_DIR);
 
