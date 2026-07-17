@@ -11,6 +11,7 @@ import com.mycloud.common_models.utils.JwtUtil;
 import com.mycloud.data_access_layer.repositories.TFileMasterRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
 import java.nio.file.*;
@@ -43,6 +44,16 @@ public class UploadService {
 
         this.BASE_TEMP_DIR = String.valueOf(BASE_TEMP_PATH);
         this.FINAL_UPLOAD_DIR = String.valueOf(BASE_FINAL_PATH);
+    }
+
+    @Transactional
+    public void UpdateStatusOfFileUploadProcess(String fileId, UploadStatus status) {
+        TFileMaster fileMaster = fileMasterRepository.findByFileId(fileId)
+                .orElseThrow(() -> new RuntimeException("File not found: " + fileId));
+
+        fileMaster.setStatus(status);
+
+        fileMasterRepository.save(fileMaster);
     }
 
     public ApiResponseDto<String> DoInitiateFileUpload(InitiateUploadRequestEntity request) {
@@ -115,6 +126,10 @@ public class UploadService {
 
     public ApiResponseDto<Boolean> DoSaveChunk(InputStream inputStream, String uploadId, int chunkIndex, int totalChunks) throws IOException {
         try {
+            if (chunkIndex == 0) {
+                UpdateStatusOfFileUploadProcess(uploadId, UploadStatus.UPLOADING);
+            }
+
             Path chunkFile = Paths.get(BASE_TEMP_DIR, uploadId, "chunk_" + chunkIndex);
 
             Files.copy(inputStream, chunkFile, StandardCopyOption.REPLACE_EXISTING);
@@ -131,13 +146,15 @@ public class UploadService {
             return ApiResponseDto.Error(HttpStatus.UNPROCESSABLE_CONTENT.value(), "All chunks have been uploaded successfully<br>but server failed to process and merge them.");
         } catch (Exception ex) {
             ex.printStackTrace();
-
+            UpdateStatusOfFileUploadProcess(uploadId, UploadStatus.FAILED);
             return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to upload chunk - " + chunkIndex + ".");
         }
     }
 
     private Boolean MergeChunks(String UploadId, int TotalChunks) throws IOException {
         try {
+            UpdateStatusOfFileUploadProcess(UploadId, UploadStatus.PROCESSING);
+
             Path tempDirPath = Paths.get(BASE_TEMP_DIR, UploadId);
             Path finalDirPath = Paths.get(FINAL_UPLOAD_DIR);
 
@@ -172,10 +189,11 @@ public class UploadService {
                         });
             }
 
+            UpdateStatusOfFileUploadProcess(UploadId, UploadStatus.COMPLETED);
             return true;
         } catch (Exception ex) {
             ex.printStackTrace();
-
+            UpdateStatusOfFileUploadProcess(UploadId, UploadStatus.FAILED);
             return false;
         }
     }
