@@ -61,7 +61,7 @@ public class UploadService {
         Path chunkDirPath = null;
 
         try {
-            JwtUser user = jwtUtil.GetCurrentUser(); // Kept your authentication hook
+            JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
                 return ApiResponseDto.Error(500, "Access denied. Please login again.");
             }
