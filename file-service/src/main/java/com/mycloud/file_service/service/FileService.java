@@ -1,13 +1,12 @@
 package com.mycloud.file_service.service;
 
 import com.mycloud.common_config.model.JwtConfig;
-import com.mycloud.common_config.model.StorageConfig;
 import com.mycloud.common_models.common_entities.FileInformationEntity;
 import com.mycloud.common_models.common_entities.JwtUser;
 import com.mycloud.common_models.database_entities.TFileMaster;
 import com.mycloud.common_models.dto.ApiResponseDto;
-import com.mycloud.common_models.enums.UploadStatus;
 import com.mycloud.common_models.utils.JwtUtil;
+import com.mycloud.common_models.utils.DatetimeUtil;
 import com.mycloud.data_access_layer.repositories.TFileMasterRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -36,7 +35,7 @@ public class FileService {
 
             List<TFileMaster> files = fileMasterRepository.findByUserIdAndDeletedFalseOrderByCreatedAtDesc(user.userId());
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm:ss");
 
             List<FileInformationEntity> Output = files.stream()
                     .map(file -> {
@@ -49,6 +48,7 @@ public class FileService {
 
                         if (file.getCreatedAt() != null) {
                             dto.setCreatedAt(file.getCreatedAt().format(formatter));
+                            dto.setUploadedAgo(DatetimeUtil.GetUploadedAgo(file.getCreatedAt()));
                         }
 
                         return dto;

@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FileController {
 
-    private FileService fileService;
+    private final FileService fileService;
 
     @GetMapping("/get-all")
     public ApiResponseDto<List<FileInformationEntity>> GetAll() {
