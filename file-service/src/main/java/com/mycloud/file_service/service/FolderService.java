@@ -31,7 +31,7 @@ public class FolderService {
         this.encryptionUtil = new EncryptionUtil(jwtConfig.getSecret());
     }
 
-    public ApiResponseDto<String> DoValidateFolderAccess(String FolderId) {
+    public ApiResponseDto<String[]> DoValidateFolderAccess(String FolderId) {
         try {
             JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
@@ -39,7 +39,7 @@ public class FolderService {
             }
 
             if (FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)){
-                return ApiResponseDto.Success("Folder access validation is done successfully.", CommonConstants.UserRootFolderName);
+                return ApiResponseDto.Success("Folder access validation is done successfully.", new String[] { CommonConstants.UserRootFolderName });
             }
 
             String DecryptedFolderId = FolderId;
@@ -66,7 +66,13 @@ public class FolderService {
                 throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
             }
 
-            return ApiResponseDto.Success("Folder access validation is done successfully.", ExistedFolder.getPath().replace(",", "/"));
+            String[] FolderPaths = ExistedFolder.getPath().split(",");
+
+            for (String Folder : FolderPaths){
+                Folder = encryptionUtil.Encrypt(Folder);
+            }
+
+            return ApiResponseDto.Success("Folder access validation is done successfully.", FolderPaths);
         } catch (IllegalArgumentException ex) {
             ex.printStackTrace();
 
