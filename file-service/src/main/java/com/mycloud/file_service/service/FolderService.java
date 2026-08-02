@@ -32,7 +32,7 @@ public class FolderService {
         this.jwtUtil = new JwtUtil(jwtConfig.getSecret(), jwtConfig.getExpiration());
         this.folderRepository = folderRepository;
         this.encryptionUtil = new EncryptionUtil(jwtConfig.getSecret());
-        this.dateTimeFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm:ss");
+        this.dateTimeFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
     }
 
 
