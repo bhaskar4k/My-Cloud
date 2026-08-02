@@ -66,7 +66,7 @@ export class ContentComponent {
     );
   }
 
-  TakeFolderNameInput() {
+  CreateFolder() {
     const dialogRef = this.dialog.open(CreateFolderComponent, {
       width: '30rem',
       disableClose: true
