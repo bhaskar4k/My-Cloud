@@ -77,7 +77,7 @@ public class FolderService {
 
             for (int i = 0; i < FolderPathIds.length; i++) {
                 if (i == 0) {
-                    FolderPathFullInfo[i] = new FolderInfoEntity(FolderPathIds[i], CommonConstants.UserRootFolderName);
+                    FolderPathFullInfo[i] = new FolderInfoEntity(FolderPathIds[i].toLowerCase(), CommonConstants.UserRootFolderName);
                     continue;
                 }
 

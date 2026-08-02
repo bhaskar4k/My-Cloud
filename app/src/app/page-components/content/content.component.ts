@@ -64,7 +64,8 @@ export class ContentComponent {
         this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
         return false;
       }),
-      catchError(() => {
+      catchError((ex) => {
+        console.log(ex)
         this.dialog.open(CustomAlertComponent, { data: { text: "Failed to validate folder access.", type: ResponseTypeColor.ERROR } });
         return of(false);
       })
@@ -124,6 +125,6 @@ export class ContentComponent {
   }
 
   NavigateToFolder(Folder: FolderInfoEntity) {
-    this.router.navigate(['/content', Folder.FolderId]);
+    window.location.href = "/content/" + Folder.FolderId;
   }
 }
