@@ -36,19 +36,21 @@ public class FolderService {
                 return ApiResponseDto.Error(500, "Access denied. Please login again.");
             }
 
-            String DecryptedFolderId = FolderId;
-            if (!FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)){
-                try {
-                    DecryptedFolderId = encryptionUtil.Decrypt(FolderId);
-                } catch (RuntimeException ex) {
-                    throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
-                }
+            if (FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)){
+                return ApiResponseDto.Success("Folder access validation is done successfully.", true);
             }
 
-            Long ActualFolderId = -1L;
+            String DecryptedFolderId = FolderId;
+            try {
+                DecryptedFolderId = encryptionUtil.Decrypt(FolderId);
+            } catch (RuntimeException ex) {
+                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
+            }
+
+            long ActualFolderId = -1L;
 
             try {
-                ActualFolderId = Long.valueOf(DecryptedFolderId);
+                ActualFolderId = Long.parseLong(DecryptedFolderId);
             } catch (NumberFormatException ex) {
                 throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
             }

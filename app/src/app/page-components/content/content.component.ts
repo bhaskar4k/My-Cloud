@@ -3,6 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CustomAlertComponent } from '../../common-components/custom-alert/custom-alert.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ResponseTypeColor } from '../../constants/commonConsts';
+import { FolderService } from '../../services/folder.service';
+import { ApiResponseDto } from '../../models/dto.model';
+import { catchError, map, Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-content',
@@ -15,7 +18,8 @@ export class ContentComponent {
   constructor(
     private route: ActivatedRoute,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private folderService: FolderService
   ) { }
 
   ngOnInit() {
@@ -24,16 +28,37 @@ export class ContentComponent {
       this.CurrentFolder = folder;
     });
 
-    if (!this.HasAccessToFolder(this.CurrentFolder)) {
-      this.dialog.open(CustomAlertComponent, {
-        data: { text: "You do not have access to this folder.", type: ResponseTypeColor.ERROR }
-      });
-      this.router.navigate(['/error']);
-    }
+    this.HasAccessToFolder().subscribe(hasAccess => {
+      if (!hasAccess) this.router.navigate(['/error']);
+    });
   }
 
-  HasAccessToFolder(folder: string): boolean {
-    // Implement folder access logic here
-    return true; // Placeholder return value
+  HasAccessToFolder(): Observable<boolean> {
+    return this.folderService.ValidateFolderAccess(this.CurrentFolder).pipe(
+      map((response: ApiResponseDto) => {
+        if (response.success && response.statusCode === 200) {
+          return true;
+        }
+
+        this.dialog.open(CustomAlertComponent, {
+          data: {
+            text: response.message,
+            type: ResponseTypeColor.ERROR
+          }
+        });
+
+        return false;
+      }),
+      catchError(() => {
+        this.dialog.open(CustomAlertComponent, {
+          data: {
+            text: "Failed to validate folder access.",
+            type: ResponseTypeColor.ERROR
+          }
+        });
+
+        return of(false);
+      })
+    );
   }
 }
