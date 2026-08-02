@@ -8,6 +8,7 @@ import { ApiResponseDto } from '../../models/dto.model';
 import { catchError, map, Observable, of } from 'rxjs';
 import { FolderInfoEntity } from '../../models/folder.model';
 import { CommonModule } from '@angular/common';
+import { CreateFolderComponent } from '../create-folder/create-folder.component';
 
 @Component({
   selector: 'app-content',
@@ -44,7 +45,12 @@ export class ContentComponent {
       map((response: ApiResponseDto) => {
         if (response.success && response.statusCode === 200) {
           this.FullFolderPath = response.data || [] as FolderInfoEntity[];
-          console.log('FullFolderPath:', this.FullFolderPath);
+
+          if (this.FullFolderPath.length === 0 || this.FullFolderPath[this.FullFolderPath.length - 1].FolderId !== this.CurrentFolderId) {
+            this.dialog.open(CustomAlertComponent, { data: { text: "Failed to validate folder access.", type: ResponseTypeColor.ERROR } });
+            return false;
+          }
+
           return true;
         }
 
@@ -56,5 +62,19 @@ export class ContentComponent {
         return of(false);
       })
     );
+  }
+
+  TakeFolderNameInput() {
+    const dialogRef = this.dialog.open(CreateFolderComponent, {
+      width: '30rem',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(folderName => {
+      if (folderName) {
+        console.log("Folder Created:", folderName);
+        // call API here
+      }
+    });
   }
 }
