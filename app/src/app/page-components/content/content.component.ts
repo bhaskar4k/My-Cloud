@@ -6,15 +6,21 @@ import { ResponseTypeColor } from '../../constants/commonConsts';
 import { FolderService } from '../../services/folder.service';
 import { ApiResponseDto } from '../../models/dto.model';
 import { catchError, map, Observable, of } from 'rxjs';
+import { FolderInfoEntity } from '../../models/folder.model';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-content',
-  imports: [],
+  imports: [
+    CommonModule
+  ],
   templateUrl: './content.component.html',
   styleUrl: './content.component.css'
 })
 export class ContentComponent {
-  CurrentFolder: string = 'root';
+  CurrentFolderId: string = 'root';
+  FullFolderPath: FolderInfoEntity[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private dialog: MatDialog,
@@ -25,7 +31,7 @@ export class ContentComponent {
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       const folder = params.get('folder')!;
-      this.CurrentFolder = folder;
+      this.CurrentFolderId = folder;
     });
 
     this.HasAccessToFolder().subscribe(hasAccess => {
@@ -34,9 +40,11 @@ export class ContentComponent {
   }
 
   HasAccessToFolder(): Observable<boolean> {
-    return this.folderService.ValidateFolderAccess(this.CurrentFolder).pipe(
+    return this.folderService.ValidateFolderAccess(this.CurrentFolderId).pipe(
       map((response: ApiResponseDto) => {
         if (response.success && response.statusCode === 200) {
+          this.FullFolderPath = response.data || [] as FolderInfoEntity[];
+          console.log('FullFolderPath:', this.FullFolderPath);
           return true;
         }
 

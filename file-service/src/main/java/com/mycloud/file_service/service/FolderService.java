@@ -2,12 +2,10 @@ package com.mycloud.file_service.service;
 
 import com.mycloud.common_config.model.JwtConfig;
 import com.mycloud.common_models.common_constants.CommonConstants;
-import com.mycloud.common_models.common_entities.FileInformationEntity;
+import com.mycloud.common_models.common_entities.FolderInfoEntity;
 import com.mycloud.common_models.common_entities.JwtUser;
-import com.mycloud.common_models.database_entities.TFileMaster;
 import com.mycloud.common_models.database_entities.TFolderMaster;
 import com.mycloud.common_models.dto.ApiResponseDto;
-import com.mycloud.common_models.utils.DatetimeUtil;
 import com.mycloud.common_models.utils.EncryptionUtil;
 import com.mycloud.common_models.utils.JwtUtil;
 import com.mycloud.data_access_layer.repositories.TFolderMasterRepository;
@@ -15,8 +13,6 @@ import com.mycloud.data_access_layer.repositories.TFolderMasterRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,7 +27,7 @@ public class FolderService {
         this.encryptionUtil = new EncryptionUtil(jwtConfig.getSecret());
     }
 
-    public ApiResponseDto<String[]> DoValidateFolderAccess(String FolderId) {
+    public ApiResponseDto<FolderInfoEntity[]> DoValidateFolderAccess(String FolderId) {
         try {
             JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
@@ -39,7 +35,8 @@ public class FolderService {
             }
 
             if (FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)){
-                return ApiResponseDto.Success("Folder access validation is done successfully.", new String[] { CommonConstants.UserRootFolderName });
+                return ApiResponseDto.Success("Folder access validation is done successfully.",
+                        new FolderInfoEntity[] { new FolderInfoEntity(CommonConstants.UserRootFolderName.toLowerCase(), CommonConstants.UserRootFolderName) });
             }
 
             String DecryptedFolderId = FolderId;
@@ -66,13 +63,25 @@ public class FolderService {
                 throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
             }
 
-            String[] FolderPaths = ExistedFolder.getPath().split(",");
+            String[] FolderPathIds = ExistedFolder.getPath().split(",");
+            FolderInfoEntity[] FolderPathFullInfo = new FolderInfoEntity[FolderPathIds.length];
 
-            for (String Folder : FolderPaths){
-                Folder = encryptionUtil.Encrypt(Folder);
+            for (int i = 0; i < FolderPathIds.length; i++){
+                if (i == 0) {
+                    FolderPathFullInfo[i] = new FolderInfoEntity(FolderPathIds[i], CommonConstants.UserRootFolderName);
+                    continue;
+                }
+
+                Optional<TFolderMaster> PathFolder = folderRepository.findById(Long.valueOf(FolderPathIds[i]));
+
+                if (PathFolder.isPresent()) {
+                    FolderPathFullInfo[i] = new FolderInfoEntity(encryptionUtil.Encrypt(FolderPathIds[i]), PathFolder.get().getName());
+                } else {
+                    throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
+                }
             }
 
-            return ApiResponseDto.Success("Folder access validation is done successfully.", FolderPaths);
+            return ApiResponseDto.Success("Folder access validation is done successfully.", FolderPathFullInfo);
         } catch (IllegalArgumentException ex) {
             ex.printStackTrace();
 

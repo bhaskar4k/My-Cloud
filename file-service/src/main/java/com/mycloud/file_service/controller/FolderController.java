@@ -1,6 +1,6 @@
 package com.mycloud.file_service.controller;
 
-import com.mycloud.common_models.common_entities.FileInformationEntity;
+import com.mycloud.common_models.common_entities.FolderInfoEntity;
 import com.mycloud.common_models.dto.ApiResponseDto;
 import com.mycloud.file_service.service.FolderService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class FolderController {
     private final FolderService folderService;
 
     @GetMapping("/validate-folder-access/{FolderId}")
-    public ApiResponseDto<String[]> ValidateFolderAccess(@PathVariable String FolderId) {
+    public ApiResponseDto<FolderInfoEntity[]> ValidateFolderAccess(@PathVariable String FolderId) {
         try {
             return folderService.DoValidateFolderAccess(FolderId);
         } catch (Exception ex) {
