@@ -133,4 +133,8 @@ export class ContentComponent {
   NavigateToFolder(Folder: FolderInfoEntity) {
     window.location.href = "/content/" + Folder.FolderId;
   }
+
+  ViewMoreInFolder(Folder: FolderInfoEntity) {
+
+  }
 }

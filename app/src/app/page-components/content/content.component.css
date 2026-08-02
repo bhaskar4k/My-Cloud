@@ -74,3 +74,13 @@
 .section_header {
     font-size: 1.01rem !important;
 }
+
+.folder_view_more {
+    border-radius: 50%;
+    transition: background-color 0.2s ease-in-out;
+    padding: 0.5px 5px;
+}
+
+.folder_view_more:hover {
+    background-color: rgba(170, 170, 170, 0.315);
+}
