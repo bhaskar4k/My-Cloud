@@ -35,15 +35,29 @@
 
     <!-- Folder List -->
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-4 g-3 mt-3">
-        <div class="col cursor_pointer" *ngFor="let folder of AllFolder.FoldersList">
+        <div class="col" *ngFor="let folder of AllFolder?.FoldersList">
 
-            <div class="card h-100 shadow-sm cursor-pointer" (click)="NavigateToFolder(folder)">
-                <div class="card-body d-flex align-items-center">
-                    <i class="bi bi-folder-fill fs-2 text-warning me-3"></i>
+            <div class="card h-100 border-0 shadow-sm dark-folder-card position-relative overflow-hidden cursor-pointer"
+                (click)="NavigateToFolder(folder)">
 
-                    <div class="text-truncate fw-medium">
-                        {{ folder.FolderName }}
+                <!-- Amber edge highlight bar on hover -->
+                <div class="folder-card-accent"></div>
+
+                <div class="card-body d-flex align-items-center p-3">
+                    <!-- Glowing dark icon badge -->
+                    <div class="icon-wrapper me-3 d-flex align-items-center justify-content-center rounded-3 p-2">
+                        <i class="bi bi-folder-fill fs-3 text-warning"></i>
                     </div>
+
+                    <!-- Text content -->
+                    <div class="text-truncate flex-grow-1">
+                        <h6 class="m-0 text-truncate fw-semibold text-light folder-name">
+                            {{ folder.FolderName }}
+                        </h6>
+                    </div>
+
+                    <!-- Hover chevron indicator -->
+                    <i class="bi bi-chevron-right text-secondary opacity-0 folder-arrow ms-2 fs-6"></i>
                 </div>
             </div>
 
