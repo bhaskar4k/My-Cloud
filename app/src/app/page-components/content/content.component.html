@@ -1,18 +1,53 @@
-<div class="container p-3">
-    <div class="d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center">
-            <h3 *ngFor="let folder of FullFolderPath"><span (click)="NavigateToFolder(folder)"
-                    class="cursor_pointer">{{folder.FolderName}}</span>&nbsp;/&nbsp;</h3>
-        </div>
+<div class="container-fluid py-3">
 
-        <button class="btn btn-primary btn-sm d-flex align-items-center" (click)="CreateFolder()">
-            <i class="bi bi-folder fs-5 me-2"></i> Create
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="overflow-auto">
+            <ol class="breadcrumb mb-0 flex-nowrap">
+                <li class="breadcrumb-item cursor_pointer" *ngFor="let folder of FullFolderPath; let last = last"
+                    [class.active]="last" [attr.aria-current]="last ? 'page' : null">
+
+                    <ng-container *ngIf="!last; else currentFolder">
+                        <a class="text-decoration-none text-primary" role="button" (click)="NavigateToFolder(folder)">
+                            {{ folder.FolderName }}
+                        </a>
+                    </ng-container>
+
+                    <ng-template #currentFolder>
+                        {{ folder.FolderName }}
+                    </ng-template>
+
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Create Button -->
+        <button class="btn btn-primary d-flex align-items-center align-self-start align-self-md-center"
+            (click)="CreateFolder()">
+            <i class="bi bi-folder-plus me-2"></i>
+            Create Folder
         </button>
+
     </div>
 
-    <div>
-        <div *ngFor="let folder of AllFolder.FoldersList">
-            <span (click)="NavigateToFolder(folder)" class="cursor_pointer">{{folder.FolderName}}</span>
+
+    <!-- Folder List -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-4 g-3 mt-3">
+        <div class="col cursor_pointer" *ngFor="let folder of AllFolder.FoldersList">
+
+            <div class="card h-100 shadow-sm cursor-pointer" (click)="NavigateToFolder(folder)">
+                <div class="card-body d-flex align-items-center">
+                    <i class="bi bi-folder-fill fs-2 text-warning me-3"></i>
+
+                    <div class="text-truncate fw-medium">
+                        {{ folder.FolderName }}
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
+
 </div>
