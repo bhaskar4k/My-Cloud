@@ -99,4 +99,8 @@ export class ContentComponent {
       }
     });
   }
+
+  NavigateToFolder(Folder: FolderInfoEntity) {
+    this.router.navigate(['/content', Folder.FolderId]);
+  }
 }

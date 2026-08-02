@@ -36,7 +36,7 @@ public class FolderService {
                 return ApiResponseDto.Error(500, "Access denied. Please login again.");
             }
 
-            if (FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)){
+            if (FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)) {
                 return ApiResponseDto.Success("Folder access validation is done successfully.",
                         new FolderInfoEntity[] { new FolderInfoEntity(CommonConstants.UserRootFolderName.toLowerCase(), CommonConstants.UserRootFolderName) });
             }
@@ -68,7 +68,7 @@ public class FolderService {
             String[] FolderPathIds = ExistedFolder.getPath().split(",");
             FolderInfoEntity[] FolderPathFullInfo = new FolderInfoEntity[FolderPathIds.length];
 
-            for (int i = 0; i < FolderPathIds.length; i++){
+            for (int i = 0; i < FolderPathIds.length; i++) {
                 if (i == 0) {
                     FolderPathFullInfo[i] = new FolderInfoEntity(FolderPathIds[i], CommonConstants.UserRootFolderName);
                     continue;
@@ -104,15 +104,9 @@ public class FolderService {
                 return ApiResponseDto.Error(500, "Access denied. Please login again.");
             }
 
-            Boolean IsRoot = false;
+            Optional<TFolderMaster> CurrentFolder;
 
-            if (FolderInfo.getFolderId().toUpperCase().equals(CommonConstants.UserRootFolderName)){
-                IsRoot = true;
-            }
-
-            Optional<TFolderMaster> CurrentFolder = null;
-
-            if (IsRoot) {
+            if (FolderInfo.getFolderId().toUpperCase().equals(CommonConstants.UserRootFolderName)) {
                 CurrentFolder = folderRepository.findByUserIdAndDeletedAndDepth(user.userId(), false, 1);
             } else {
                 try {
@@ -121,7 +115,7 @@ public class FolderService {
                     throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
                 }
 
-                Long ActualFolderId = -1L;
+                long ActualFolderId = -1L;
                 try {
                     ActualFolderId = Long.parseLong(FolderInfo.getFolderId());
                 } catch (NumberFormatException ex) {
