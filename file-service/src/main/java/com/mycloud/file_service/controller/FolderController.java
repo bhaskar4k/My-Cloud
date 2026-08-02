@@ -19,7 +19,7 @@ public class FolderController {
     private final FolderService folderService;
 
     @GetMapping("/validate-folder-access/{FolderId}")
-    public ApiResponseDto<Boolean> ValidateFolderAccess(@PathVariable String FolderId) {
+    public ApiResponseDto<String> ValidateFolderAccess(@PathVariable String FolderId) {
         try {
             return folderService.DoValidateFolderAccess(FolderId);
         } catch (Exception ex) {

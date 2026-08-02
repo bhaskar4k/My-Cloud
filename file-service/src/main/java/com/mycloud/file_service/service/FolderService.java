@@ -5,6 +5,7 @@ import com.mycloud.common_models.common_constants.CommonConstants;
 import com.mycloud.common_models.common_entities.FileInformationEntity;
 import com.mycloud.common_models.common_entities.JwtUser;
 import com.mycloud.common_models.database_entities.TFileMaster;
+import com.mycloud.common_models.database_entities.TFolderMaster;
 import com.mycloud.common_models.dto.ApiResponseDto;
 import com.mycloud.common_models.utils.DatetimeUtil;
 import com.mycloud.common_models.utils.EncryptionUtil;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FolderService {
@@ -29,7 +31,7 @@ public class FolderService {
         this.encryptionUtil = new EncryptionUtil(jwtConfig.getSecret());
     }
 
-    public ApiResponseDto<Boolean> DoValidateFolderAccess(String FolderId) {
+    public ApiResponseDto<String> DoValidateFolderAccess(String FolderId) {
         try {
             JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
@@ -37,7 +39,7 @@ public class FolderService {
             }
 
             if (FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)){
-                return ApiResponseDto.Success("Folder access validation is done successfully.", true);
+                return ApiResponseDto.Success("Folder access validation is done successfully.", CommonConstants.UserRootFolderName);
             }
 
             String DecryptedFolderId = FolderId;
@@ -55,9 +57,16 @@ public class FolderService {
                 throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
             }
 
-            Boolean IsValidFolder = folderRepository.existsByIdAndUserId(ActualFolderId, user.userId());
+            Optional<TFolderMaster> UserFolder = folderRepository.findByIdAndUserIdAndDeletedFalse(ActualFolderId, user.userId());
 
-            return ApiResponseDto.Success("Folder access validation is done successfully.", IsValidFolder);
+            TFolderMaster ExistedFolder = null;
+            if (UserFolder.isPresent()) {
+                ExistedFolder = UserFolder.get();
+            } else {
+                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
+            }
+
+            return ApiResponseDto.Success("Folder access validation is done successfully.", ExistedFolder.getPath().replace(",", "/"));
         } catch (IllegalArgumentException ex) {
             ex.printStackTrace();
 
