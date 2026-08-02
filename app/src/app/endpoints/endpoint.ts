@@ -21,5 +21,9 @@ export const Endpoints = {
     Upload: {
         Initiate: "file/upload/initiate",
         Chunk: "file/upload/chunk"
+    },
+    Folder: {
+        ValidateFolderAccess: "file/folder/validate-folder-access",
+        Create: "file/folder/create"
     }
 }

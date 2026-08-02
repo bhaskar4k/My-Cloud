@@ -24,6 +24,7 @@ export const routes: Routes = [
       // === PUBLIC ROUTES ===
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent },
+
       { path: 'register', component: RegisterComponent },
       { path: 'login', component: LoginComponent },
 
@@ -33,14 +34,22 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
         children: [
           { path: 'dashboard', component: DashboardComponent },
+
           { path: 'upload', component: UploadComponent },
-          { path: 'content', component: ContentComponent },
+
+          { path: 'content', redirectTo: 'content/root', pathMatch: 'full' },
+          { path: 'content/:folder', component: ContentComponent },
+
           { path: 'library', component: LibraryComponent },
+
           { path: 'favourite', component: FavouriteComponent },
+
           { path: 'settings/profile-settings', component: ProfileSettingsComponent },
           { path: 'settings/basic-settings', component: BasicSettingsComponent },
           { path: 'settings/delete-account', component: DeleteAccountComponent },
+
           { path: 'profile', component: ProfileComponent },
+
           { path: 'logout', component: LogoutComponent }
         ]
       },

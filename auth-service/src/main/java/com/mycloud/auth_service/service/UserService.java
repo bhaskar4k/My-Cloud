@@ -1,12 +1,16 @@
 package com.mycloud.auth_service.service;
 
 import com.mycloud.common_config.model.JwtConfig;
+import com.mycloud.common_models.common_constants.CommonConstants;
+import com.mycloud.common_models.database_entities.TFolderMaster;
 import com.mycloud.common_models.database_entities.TUserMaster;
 import com.mycloud.common_models.dto.ApiResponseDto;
 import com.mycloud.common_models.utils.JwtUtil;
+import com.mycloud.data_access_layer.repositories.TFolderMasterRepository;
 import com.mycloud.data_access_layer.repositories.TUserMasterRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -15,12 +19,15 @@ import java.util.Optional;
 public class UserService {
     private final JwtUtil jwtUtil;
     private final TUserMasterRepository userRepository;
+    private final TFolderMasterRepository folderRepository;
 
-    public UserService(JwtConfig jwtConfig, TUserMasterRepository userRepository) {
+    public UserService(JwtConfig jwtConfig, TUserMasterRepository userRepository, TFolderMasterRepository folderRepository) {
         this.jwtUtil = new JwtUtil(jwtConfig.getSecret(), jwtConfig.getExpiration());
         this.userRepository = userRepository;
+        this.folderRepository = folderRepository;
     }
 
+    @Transactional
     public ApiResponseDto<Boolean> DoCreateUser(TUserMaster User) {
         try {
             if (userRepository.existsByEmail(User.getEmail())) {
@@ -29,7 +36,17 @@ public class UserService {
 
             User.setActive(true);
             User.setDeleted(false);
+
             TUserMaster SavedUser = userRepository.save(User);
+
+            TFolderMaster UserFolderRoot = new TFolderMaster();
+            UserFolderRoot.setParentFolderId(null);
+            UserFolderRoot.setName(CommonConstants.UserRootFolderName);
+            UserFolderRoot.setDepth(1);
+            UserFolderRoot.setPath(CommonConstants.UserRootFolderName);
+            UserFolderRoot.setUserId(SavedUser.getId());
+
+            TFolderMaster SavedFolder = folderRepository.save(UserFolderRoot);
 
             return ApiResponseDto.Success("User has been registered successfully", true);
         } catch (Exception ex) {
