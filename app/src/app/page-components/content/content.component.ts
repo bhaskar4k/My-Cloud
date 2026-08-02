@@ -6,7 +6,7 @@ import { ResponseTypeColor } from '../../constants/commonConsts';
 import { FolderService } from '../../services/folder.service';
 import { ApiResponseDto } from '../../models/dto.model';
 import { catchError, map, Observable, of } from 'rxjs';
-import { FolderInfoEntity } from '../../models/folder.model';
+import { FolderDetailsEntity, FolderInfoEntity } from '../../models/folder.model';
 import { CommonModule } from '@angular/common';
 import { CreateFolderComponent } from '../create-folder/create-folder.component';
 
@@ -21,6 +21,7 @@ import { CreateFolderComponent } from '../create-folder/create-folder.component'
 export class ContentComponent {
   CurrentFolderId: string = 'root';
   FullFolderPath: FolderInfoEntity[] = [];
+  AllFolder: FolderDetailsEntity = { HasFolder: false, FolderCount: 0, FoldersList: [] };
 
   MatProgressBar = false;
 
@@ -38,7 +39,11 @@ export class ContentComponent {
     });
 
     this.HasAccessToFolder().subscribe(hasAccess => {
-      if (!hasAccess) this.router.navigate(['/error']);
+      if (!hasAccess) {
+        this.router.navigate(['/error']);
+      } else {
+        this.GetAllChildFolders();
+      }
     });
   }
 
@@ -76,7 +81,7 @@ export class ContentComponent {
       if (folderName) {
         let CreateFolderPayload: FolderInfoEntity = {
           FolderId: this.CurrentFolderId,
-          FolderName: folderName
+          FolderName: folderName,
         }
 
         this.MatProgressBar = true;
@@ -96,6 +101,24 @@ export class ContentComponent {
             this.MatProgressBar = false;
           }
         });
+      }
+    });
+  }
+
+  GetAllChildFolders() {
+    this.folderService.GetAllChildFoldersByFolderId(this.CurrentFolderId).subscribe({
+      next: (response: ApiResponseDto) => {
+        this.MatProgressBar = false;
+
+        if (response.success === false || response.statusCode !== 200) {
+          this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
+        }
+
+        this.AllFolder = response.data as FolderDetailsEntity;
+      },
+      error: (err: any) => {
+        this.dialog.open(CustomAlertComponent, { data: { text: "Failed to fetch all folder lists.", type: ResponseTypeColor.ERROR } });
+        this.MatProgressBar = false;
       }
     });
   }

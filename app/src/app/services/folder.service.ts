@@ -18,4 +18,8 @@ export class FolderService {
   CreateFolder(Payload: FolderInfoEntity): Observable<ApiResponseDto> {
     return this.http.post<ApiResponseDto>(GetBaseURL() + Endpoints.Folder.Create, Payload);
   }
+
+  GetAllChildFoldersByFolderId(FolderId: string): Observable<ApiResponseDto> {
+    return this.http.get<ApiResponseDto>(GetBaseURL() + Endpoints.Folder.GetAll + `/${FolderId}`);
+  }
 }

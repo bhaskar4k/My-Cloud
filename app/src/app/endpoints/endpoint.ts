@@ -24,6 +24,7 @@ export const Endpoints = {
     },
     Folder: {
         ValidateFolderAccess: "file/folder/validate-folder-access",
-        Create: "file/folder/create"
+        Create: "file/folder/create",
+        GetAll: "file/folder/get-all"
     }
 }

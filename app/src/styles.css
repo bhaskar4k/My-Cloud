@@ -151,3 +151,7 @@ hr {
     /* matches bootstrap rounded-3 */
     overflow: hidden !important;
 }
+
+.cursor_pointer {
+    cursor: pointer !important;
+}

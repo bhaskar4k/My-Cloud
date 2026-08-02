@@ -2,10 +2,13 @@ package com.mycloud.file_service.service;
 
 import com.mycloud.common_config.model.JwtConfig;
 import com.mycloud.common_models.common_constants.CommonConstants;
+import com.mycloud.common_models.common_entities.FileInformationEntity;
+import com.mycloud.common_models.common_entities.FolderDetailsEntity;
 import com.mycloud.common_models.common_entities.FolderInfoEntity;
 import com.mycloud.common_models.common_entities.JwtUser;
 import com.mycloud.common_models.database_entities.TFolderMaster;
 import com.mycloud.common_models.dto.ApiResponseDto;
+import com.mycloud.common_models.utils.DatetimeUtil;
 import com.mycloud.common_models.utils.EncryptionUtil;
 import com.mycloud.common_models.utils.JwtUtil;
 import com.mycloud.data_access_layer.repositories.TFolderMasterRepository;
@@ -14,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,11 +26,13 @@ public class FolderService {
     private final JwtUtil jwtUtil;
     private final TFolderMasterRepository folderRepository;
     private final EncryptionUtil encryptionUtil;
+    DateTimeFormatter dateTimeFormatter;
 
     public FolderService(JwtConfig jwtConfig, TFolderMasterRepository folderRepository) {
         this.jwtUtil = new JwtUtil(jwtConfig.getSecret(), jwtConfig.getExpiration());
         this.folderRepository = folderRepository;
         this.encryptionUtil = new EncryptionUtil(jwtConfig.getSecret());
+        this.dateTimeFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm:ss");
     }
 
 
@@ -96,6 +103,38 @@ public class FolderService {
     }
 
 
+
+
+    private TFolderMaster GetCurrentFolderInfoFromFolderId(Long UserId, String FolderId){
+        Optional<TFolderMaster> CurrentFolder;
+
+        if (FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)) {
+            CurrentFolder = folderRepository.findByUserIdAndDeletedAndDepth(UserId, false, 1);
+        } else {
+            try {
+                FolderId = encryptionUtil.Decrypt(FolderId);
+            } catch (RuntimeException ex) {
+                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
+            }
+
+            long ActualFolderId = -1L;
+            try {
+                ActualFolderId = Long.parseLong(FolderId);
+            } catch (NumberFormatException ex) {
+                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
+            }
+
+            CurrentFolder = folderRepository.findByIdAndUserIdAndDeletedFalse(ActualFolderId, UserId);
+        }
+
+        if (CurrentFolder.isEmpty()) {
+            throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
+        }
+
+        return CurrentFolder.get();
+    }
+
+
     @Transactional
     public ApiResponseDto<Boolean> DoCreateFolder(FolderInfoEntity FolderInfo) {
         try {
@@ -104,32 +143,7 @@ public class FolderService {
                 return ApiResponseDto.Error(500, "Access denied. Please login again.");
             }
 
-            Optional<TFolderMaster> CurrentFolder;
-
-            if (FolderInfo.getFolderId().toUpperCase().equals(CommonConstants.UserRootFolderName)) {
-                CurrentFolder = folderRepository.findByUserIdAndDeletedAndDepth(user.userId(), false, 1);
-            } else {
-                try {
-                    FolderInfo.setFolderId(encryptionUtil.Decrypt(FolderInfo.getFolderId()));
-                } catch (RuntimeException ex) {
-                    throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
-                }
-
-                long ActualFolderId = -1L;
-                try {
-                    ActualFolderId = Long.parseLong(FolderInfo.getFolderId());
-                } catch (NumberFormatException ex) {
-                    throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
-                }
-
-                CurrentFolder = folderRepository.findByIdAndUserIdAndDeletedFalse(ActualFolderId, user.userId());
-            }
-
-            if (CurrentFolder.isEmpty()) {
-                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
-            }
-
-            TFolderMaster CurrentFetchedFolder = CurrentFolder.get();
+            TFolderMaster CurrentFetchedFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderInfo.getFolderId());
 
             TFolderMaster NewFolder = new TFolderMaster();
             NewFolder.setDepth(CurrentFetchedFolder.getDepth() + 1);
@@ -152,6 +166,49 @@ public class FolderService {
             ex.printStackTrace();
 
             return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to create folder.");
+        }
+    }
+
+
+    public ApiResponseDto<FolderDetailsEntity> DoGetAllFolders(String FolderId) {
+        try {
+            JwtUser user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ApiResponseDto.Error(500, "Access denied. Please login again.");
+            }
+
+            TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderId);
+
+            List<TFolderMaster> ChildFolders = folderRepository.findByParentFolderIdAndUserIdAndDeleted(CurrentFolder.getId(), user.userId(), false);
+
+            FolderDetailsEntity Output = new FolderDetailsEntity();
+            Output.HasFolder = !ChildFolders.isEmpty();
+            Output.FolderCount = ChildFolders.size();
+
+            Output.FoldersList = ChildFolders.stream()
+                    .map(folder -> {
+                        FolderInfoEntity dto = new FolderInfoEntity();
+                        dto.setFolderId(encryptionUtil.Encrypt(folder.getId().toString()));
+                        dto.setFolderName(folder.getName());
+                        dto.setDepth(folder.getDepth());
+
+                        if (folder.getCreatedAt() != null) {
+                            dto.setCreatedAt(folder.getCreatedAt().format(dateTimeFormatter));
+                        }
+
+                        return dto;
+                    })
+                    .toList();
+
+            return ApiResponseDto.Success("Folder list has been fetched successfully.", Output);
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to fetch all folders list.");
         }
     }
 }
