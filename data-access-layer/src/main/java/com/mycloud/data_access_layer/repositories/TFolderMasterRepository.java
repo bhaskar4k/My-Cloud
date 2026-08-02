@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TFolderMasterRepository extends JpaRepository<TFolderMaster, Long> {
-
+    boolean existsByIdAndUserId(Long id, Long userId);
 }
