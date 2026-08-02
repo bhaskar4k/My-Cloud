@@ -1,5 +1,6 @@
 package com.mycloud.file_service.controller;
 
+import com.mycloud.common_models.common_entities.FolderDetailsEntity;
 import com.mycloud.common_models.common_entities.FolderInfoEntity;
 import com.mycloud.common_models.dto.ApiResponseDto;
 import com.mycloud.file_service.service.FolderService;
@@ -27,9 +28,20 @@ public class FolderController {
     }
 
     @PostMapping("/create")
-    public ApiResponseDto<Boolean> ValidateFolderAccess(@RequestBody FolderInfoEntity FolderInfo) {
+    public ApiResponseDto<FolderInfoEntity> Create(@RequestBody FolderInfoEntity FolderInfo) {
         try {
             return folderService.DoCreateFolder(FolderInfo);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An internal error was occurred.");
+        }
+    }
+
+    @GetMapping("/get-all/{FolderId}")
+    public ApiResponseDto<FolderDetailsEntity> GetALl(@PathVariable String FolderId) {
+        try {
+            return folderService.DoGetAllFolders(FolderId);
         } catch (Exception ex) {
             ex.printStackTrace();
 

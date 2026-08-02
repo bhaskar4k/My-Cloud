@@ -6,7 +6,7 @@ import { MenuItem } from '../../../models/menu.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiResponseDto } from '../../../models/dto.model';
 import { MatDialog } from '@angular/material/dialog';
-import { ResponseTypeColor } from '../../../constants/commonConsts';
+import { MenuToggleFlag, ResponseTypeColor } from '../../../constants/commonConsts';
 import { CustomAlertComponent } from '../../../common-components/custom-alert/custom-alert.component';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../../services/auth.service';
@@ -34,7 +34,15 @@ export class SidePanelComponent implements OnInit, OnDestroy {
     private menuService: MenuService,
     private authService: AuthService,
     private dialog: MatDialog
-  ) { }
+  ) {
+    const menuToggleFlag = localStorage.getItem(MenuToggleFlag);
+
+    if (menuToggleFlag === 'true') {
+      this.isOpen = true;
+    } else {
+      this.isOpen = false;
+    }
+  }
 
   ngOnInit() {
     this.authSubscription = this.authService.isLoggedIn$.subscribe((loggedIn) => {
@@ -63,6 +71,8 @@ export class SidePanelComponent implements OnInit, OnDestroy {
 
   onToggleSidePanel() {
     this.isOpen = !this.isOpen;
+    localStorage.removeItem(MenuToggleFlag);
+    localStorage.setItem(MenuToggleFlag, this.isOpen ? 'true' : 'false');
   }
 
   toggleSubmenu(menuId: number) {
