@@ -50,7 +50,7 @@ public class FolderService {
 
             String DecryptedFolderId = FolderId;
             try {
-                DecryptedFolderId = encryptionUtil.Decrypt(FolderId);
+                DecryptedFolderId = encryptionUtil.DecryptHexEncoding(FolderId);
             } catch (RuntimeException ex) {
                 throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
             }
@@ -84,7 +84,7 @@ public class FolderService {
                 Optional<TFolderMaster> PathFolder = folderRepository.findById(Long.valueOf(FolderPathIds[i]));
 
                 if (PathFolder.isPresent()) {
-                    FolderPathFullInfo[i] = new FolderInfoEntity(encryptionUtil.Encrypt(FolderPathIds[i]), PathFolder.get().getName());
+                    FolderPathFullInfo[i] = new FolderInfoEntity(encryptionUtil.EncryptHexEncoding(FolderPathIds[i]), PathFolder.get().getName());
                 } else {
                     throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
                 }
@@ -112,7 +112,7 @@ public class FolderService {
             CurrentFolder = folderRepository.findByUserIdAndDeletedAndDepth(UserId, false, 1);
         } else {
             try {
-                FolderId = encryptionUtil.Decrypt(FolderId);
+                FolderId = encryptionUtil.DecryptHexEncoding(FolderId);
             } catch (RuntimeException ex) {
                 throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
             }
@@ -188,7 +188,7 @@ public class FolderService {
             Output.FoldersList = ChildFolders.stream()
                     .map(folder -> {
                         FolderInfoEntity dto = new FolderInfoEntity();
-                        dto.setFolderId(encryptionUtil.Encrypt(folder.getId().toString()));
+                        dto.setFolderId(encryptionUtil.EncryptHexEncoding(folder.getId().toString()));
                         dto.setFolderName(folder.getName());
                         dto.setDepth(folder.getDepth());
 
