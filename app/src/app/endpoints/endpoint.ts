@@ -23,6 +23,7 @@ export const Endpoints = {
         Chunk: "file/upload/chunk"
     },
     Folder: {
-        ValidateFolderAccess: "file/folder/validate-folder-access"
+        ValidateFolderAccess: "file/folder/validate-folder-access",
+        Create: "file/folder/create"
     }
 }

@@ -5,10 +5,7 @@ import com.mycloud.common_models.dto.ApiResponseDto;
 import com.mycloud.file_service.service.FolderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,6 +19,17 @@ public class FolderController {
     public ApiResponseDto<FolderInfoEntity[]> ValidateFolderAccess(@PathVariable String FolderId) {
         try {
             return folderService.DoValidateFolderAccess(FolderId);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An internal error was occurred.");
+        }
+    }
+
+    @PostMapping("/create")
+    public ApiResponseDto<Boolean> ValidateFolderAccess(@RequestBody FolderInfoEntity FolderInfo) {
+        try {
+            return folderService.DoCreateFolder(FolderInfo);
         } catch (Exception ex) {
             ex.printStackTrace();
 

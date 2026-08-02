@@ -11,4 +11,6 @@ public interface TFolderMasterRepository extends JpaRepository<TFolderMaster, Lo
     boolean existsByIdAndUserId(Long id, Long userId);
 
     Optional<TFolderMaster> findByIdAndUserIdAndDeletedFalse(Long id, Long userId);
+
+    Optional<TFolderMaster> findByUserIdAndDeletedAndDepth(Long userId, Boolean deleted, Integer depth);
 }

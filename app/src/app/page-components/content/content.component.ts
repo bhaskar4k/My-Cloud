@@ -22,6 +22,8 @@ export class ContentComponent {
   CurrentFolderId: string = 'root';
   FullFolderPath: FolderInfoEntity[] = [];
 
+  MatProgressBar = false;
+
   constructor(
     private route: ActivatedRoute,
     private dialog: MatDialog,
@@ -72,8 +74,28 @@ export class ContentComponent {
 
     dialogRef.afterClosed().subscribe(folderName => {
       if (folderName) {
-        console.log("Folder Created:", folderName);
-        // call API here
+        let CreateFolderPayload: FolderInfoEntity = {
+          FolderId: this.CurrentFolderId,
+          FolderName: folderName
+        }
+
+        this.MatProgressBar = true;
+
+        this.folderService.CreateFolder(CreateFolderPayload).subscribe({
+          next: (response: ApiResponseDto) => {
+            this.MatProgressBar = false;
+
+            if (response.success === true && response.statusCode === 200) {
+              this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.SUCCESS } });
+            } else {
+              this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
+            }
+          },
+          error: (err: any) => {
+            this.dialog.open(CustomAlertComponent, { data: { text: "Failed to create folder.", type: ResponseTypeColor.ERROR } });
+            this.MatProgressBar = false;
+          }
+        });
       }
     });
   }
