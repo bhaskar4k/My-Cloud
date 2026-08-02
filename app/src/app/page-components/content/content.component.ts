@@ -34,6 +34,6 @@ export class ContentComponent {
 
   HasAccessToFolder(folder: string): boolean {
     // Implement folder access logic here
-    return false; // Placeholder return value
+    return true; // Placeholder return value
   }
 }
