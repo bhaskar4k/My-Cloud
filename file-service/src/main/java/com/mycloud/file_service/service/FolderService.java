@@ -104,7 +104,6 @@ public class FolderService {
 
 
 
-
     private TFolderMaster GetCurrentFolderInfoFromFolderId(Long UserId, String FolderId){
         Optional<TFolderMaster> CurrentFolder;
 
@@ -135,8 +134,9 @@ public class FolderService {
     }
 
 
+
     @Transactional
-    public ApiResponseDto<Boolean> DoCreateFolder(FolderInfoEntity FolderInfo) {
+    public ApiResponseDto<FolderInfoEntity> DoCreateFolder(FolderInfoEntity FolderInfo) {
         try {
             JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
@@ -150,14 +150,23 @@ public class FolderService {
             NewFolder.setName(FolderInfo.getFolderName());
             NewFolder.setParentFolderId(CurrentFetchedFolder.getId());
             NewFolder.setUserId(user.userId());
-            NewFolder.setPath(CurrentFetchedFolder.getPath().toString());
+            NewFolder.setPath(CurrentFetchedFolder.getPath());
 
             TFolderMaster CreatedFolder = folderRepository.save(NewFolder);
 
             CreatedFolder.setPath(CreatedFolder.getPath() + "," + CreatedFolder.getId().toString());
             folderRepository.save(CreatedFolder);
 
-            return ApiResponseDto.Success("Folder has been created successfully.", true);
+            FolderInfoEntity Output = new FolderInfoEntity();
+            Output.setFolderId(encryptionUtil.EncryptHexEncoding(CreatedFolder.getId().toString()));
+            Output.setFolderName(CreatedFolder.getName());
+            Output.setDepth(CreatedFolder.getDepth());
+
+            if (CreatedFolder.getCreatedAt() != null) {
+                Output.setCreatedAt(CreatedFolder.getCreatedAt().format(dateTimeFormatter));
+            }
+
+            return ApiResponseDto.Success("Folder has been created successfully.", Output);
         } catch (IllegalArgumentException ex) {
             ex.printStackTrace();
 
@@ -168,6 +177,7 @@ public class FolderService {
             return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to create folder.");
         }
     }
+
 
 
     public ApiResponseDto<FolderDetailsEntity> DoGetAllFolders(String FolderId) {

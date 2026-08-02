@@ -93,6 +93,11 @@ export class ContentComponent {
 
             if (response.success === true && response.statusCode === 200) {
               this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.SUCCESS } });
+              this.AllFolder.FolderCount += 1;
+              this.AllFolder.HasFolder = true;
+              this.AllFolder.FoldersList.reverse();
+              this.AllFolder.FoldersList.push(response.data as FolderInfoEntity);
+              this.AllFolder.FoldersList.reverse();
             } else {
               this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
             }
@@ -116,6 +121,7 @@ export class ContentComponent {
         }
 
         this.AllFolder = response.data as FolderDetailsEntity;
+        this.AllFolder.FoldersList.reverse();
       },
       error: (err: any) => {
         this.dialog.open(CustomAlertComponent, { data: { text: "Failed to fetch all folder lists.", type: ResponseTypeColor.ERROR } });

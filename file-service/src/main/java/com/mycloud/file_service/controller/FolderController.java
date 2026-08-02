@@ -28,7 +28,7 @@ public class FolderController {
     }
 
     @PostMapping("/create")
-    public ApiResponseDto<Boolean> Create(@RequestBody FolderInfoEntity FolderInfo) {
+    public ApiResponseDto<FolderInfoEntity> Create(@RequestBody FolderInfoEntity FolderInfo) {
         try {
             return folderService.DoCreateFolder(FolderInfo);
         } catch (Exception ex) {
