@@ -40,23 +40,11 @@ export class ContentComponent {
           return true;
         }
 
-        this.dialog.open(CustomAlertComponent, {
-          data: {
-            text: response.message,
-            type: ResponseTypeColor.ERROR
-          }
-        });
-
+        this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
         return false;
       }),
       catchError(() => {
-        this.dialog.open(CustomAlertComponent, {
-          data: {
-            text: "Failed to validate folder access.",
-            type: ResponseTypeColor.ERROR
-          }
-        });
-
+        this.dialog.open(CustomAlertComponent, { data: { text: "Failed to validate folder access.", type: ResponseTypeColor.ERROR } });
         return of(false);
       })
     );
