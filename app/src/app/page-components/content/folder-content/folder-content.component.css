@@ -1,86 +1,91 @@
-/* Base Dark Card Styling */
+/* Folder Card */
 .dark-folder-card {
-    background-color: #21303b !important;
-    /* Soft, light border for default state */
-    border: 2px solid rgba(87, 202, 255, 0.356) !important;
-    border-radius: 0.5rem;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    background-color: rgba(88, 60, 128, 0.18) !important;
+    border: 2px solid rgba(167, 139, 250, 0.35) !important;
+    border-radius: 12px;
+    transition: transform .22s ease,
+        box-shadow .22s ease,
+        border-color .22s ease,
+        background-color .22s ease;
 }
 
-/* Hover State */
+/* Hover */
 .dark-folder-card:hover {
-    background-color: #2a3d4b !important;
-    /* Glowing periwinkle accent border on hover */
-    border-color: #9797ff !important;
-    transform: translateY(-3px);
-    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.4) !important;
+    background-color: rgba(107, 70, 193, 0.28) !important;
+    border-color: #c4b5fd !important;
+    transform: translateY(-4px);
+    box-shadow: 0 .6rem 1.5rem rgba(109, 40, 217, .28) !important;
 }
 
-/* Ensure inner card-body inherits the parent background */
+/* Body */
 .dark-folder-card .card-body {
-    background-color: transparent !important;
+    background: transparent !important;
 }
 
-/* Icon Container */
-.icon-wrapper {
-    width: 48px;
-    height: 48px;
-    background-color: rgba(255, 193, 7, 0.12);
-    border: 1px solid rgba(255, 193, 7, 0.2);
-    transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
-}
-
-.dark-folder-card:hover .icon-wrapper {
-    transform: scale(1.05);
-    background-color: rgba(255, 193, 7, 0.2);
-}
-
-/* Hover Accent Bar */
+/* Left Accent */
 .folder-card-accent {
     position: absolute;
-    top: 0;
     left: 0;
+    top: 0;
     width: 4px;
     height: 100%;
-    background-color: #9797ff;
+    background: linear-gradient(to bottom, #d8b4fe, #8b5cf6);
     opacity: 0;
-    transition: opacity 0.2s ease-in-out;
+    transition: opacity .22s ease;
 }
 
 .dark-folder-card:hover .folder-card-accent {
     opacity: 1;
 }
 
-/* Hover Arrow Indicator */
-.folder-arrow {
-    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+/* Folder Icon */
+.icon-wrapper {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 193, 7, .12);
+    border: 1px solid rgba(255, 193, 7, .22);
+    transition: transform .22s ease,
+        background-color .22s ease,
+        box-shadow .22s ease;
 }
 
-.dark-folder-card:hover .folder-arrow {
-    opacity: 0.8 !important;
-    transform: translateX(2px);
-    color: #9797ff !important;
+.dark-folder-card:hover .icon-wrapper {
+    transform: scale(1.08);
+    background: rgba(255, 193, 7, .18);
+    box-shadow: 0 0 12px rgba(255, 193, 7, .22);
 }
 
-/* Utility classes */
-.cursor-pointer {
-    cursor: pointer;
+.icon-wrapper i {
+    color: #ffc107 !important;
 }
 
+/* Folder Name */
+.dark-folder-card h6 {
+    transition: color .2s ease;
+}
+
+.dark-folder-card:hover h6 {
+    color: #ffffff;
+}
+
+/* Three Dot Menu */
+.folder_view_more {
+    border-radius: 50%;
+    padding: 3px 7px;
+    color: #b8bcc7;
+    transition: all .2s ease;
+}
+
+.folder_view_more:hover {
+    background: rgba(255, 255, 255, .12);
+    color: #d8b4fe;
+}
+
+/* Utilities */
 .fs-7 {
-    font-size: 0.75rem;
+    font-size: .75rem;
 }
 
 .section_header {
     font-size: 1.01rem !important;
-}
-
-.folder_view_more {
-    border-radius: 50%;
-    transition: background-color 0.2s ease-in-out;
-    padding: 0.5px 5px;
-}
-
-.folder_view_more:hover {
-    background-color: rgba(170, 170, 170, 0.315);
 }

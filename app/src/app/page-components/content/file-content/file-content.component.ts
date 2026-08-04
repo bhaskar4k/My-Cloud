@@ -1,9 +1,12 @@
 import { Component, Input } from '@angular/core';
-import { FileDetailsEntity } from '../../../models/folder.model';
+import { FileDetailsEntity, FileInfoEntity } from '../../../models/folder.model';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-file-content',
-  imports: [],
+  imports: [
+    CommonModule
+  ],
   templateUrl: './file-content.component.html',
   styleUrl: './file-content.component.css'
 })
@@ -14,5 +17,9 @@ export class FileContentComponent {
 
   ngOnInit(): void {
     this.AllFile = this.AllFileDetails;
+  }
+
+  ViewMoreInFile(File: FileInfoEntity): void {
+
   }
 }

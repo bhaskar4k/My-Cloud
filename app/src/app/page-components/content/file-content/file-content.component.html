@@ -1,1 +1,44 @@
-<p>file-content works!</p>
+<!-- Empty State (shows when no folders exist) -->
+<div *ngIf="!AllFile.HasFile" class="empty-folder-state text-center p-5 my-4 rounded-3">
+    <div class="empty-icon-wrapper mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle">
+        <i class="bi bi-folder2-open fs-1 text-muted"></i>
+    </div>
+    <h5 class="text-light fw-semibold mb-1">No Files Found</h5>
+    <p class="text-secondary fs-7 mb-0">There are no files to display in this location right now.</p>
+</div>
+
+<!-- File List -->
+<h5 *ngIf="AllFile.HasFile" class="text-muted my-3 section_header">Files</h5>
+
+<div *ngIf="AllFile.HasFile" class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-4 g-3">
+
+    <div class="col" *ngFor="let file of AllFile.FilesList">
+
+        <div class="card h-100 border-0 shadow-sm dark-file-card position-relative overflow-hidden cursor_pointer">
+
+            <div class="file-card-accent"></div>
+
+            <div class="card-body d-flex align-items-center p-3">
+
+                <div class="file-icon-wrapper me-3 d-flex align-items-center justify-content-center rounded-3 p-2">
+                    <i class="bi bi-file-earmark-fill fs-3 text-info"></i>
+                </div>
+
+                <div class="text-truncate flex-grow-1">
+                    <h6 class="m-0 text-truncate fw-semibold text-light">
+                        {{ file.OriginalName }}
+                    </h6>
+
+                    <small class="text-muted">{{ file.CreatedAt }}</small>
+                </div>
+
+                <i class="bi bi-three-dots-vertical ms-2 fs-6 file-view-more"
+                    (click)="ViewMoreInFile(file); $event.stopPropagation()">
+                </i>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
