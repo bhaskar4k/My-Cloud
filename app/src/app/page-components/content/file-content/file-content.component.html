@@ -13,32 +13,6 @@
 <div *ngIf="AllFile.HasFile" class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-4 g-3">
 
     <div class="col" *ngFor="let file of AllFile.FilesList">
-
-        <div class="card h-100 border-0 shadow-sm dark-file-card position-relative overflow-hidden cursor_pointer">
-
-            <div class="file-card-accent"></div>
-
-            <div class="card-body d-flex align-items-center p-3">
-
-                <div class="file-icon-wrapper me-3 d-flex align-items-center justify-content-center rounded-3 p-2">
-                    <i class="bi bi-file-earmark-fill fs-3 text-info"></i>
-                </div>
-
-                <div class="text-truncate flex-grow-1">
-                    <h6 class="m-0 text-truncate fw-semibold text-light">
-                        {{ file.OriginalName }}
-                    </h6>
-
-                    <small class="text-muted">{{ file.CreatedAt }}</small>
-                </div>
-
-                <i class="bi bi-three-dots-vertical ms-2 fs-6 file-view-more"
-                    (click)="ViewMoreInFile(file); $event.stopPropagation()">
-                </i>
-
-            </div>
-
-        </div>
-
+        <app-file-card [FileInfo]="file"></app-file-card>
     </div>
 </div>

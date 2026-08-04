@@ -1,11 +1,41 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, Input } from '@angular/core';
+import { FileDetailsEntity, FileInfoEntity } from '../../models/folder.model';
 
 @Component({
   selector: 'app-file-card',
-  imports: [],
+  imports: [
+    CommonModule
+  ],
   templateUrl: './file-card.component.html',
   styleUrl: './file-card.component.css'
 })
 export class FileCardComponent {
+  @Input() FileInfo: FileInfoEntity = {
+    Id: 0,
+    FileId: '',
+    OriginalName: '',
+    FileExtension: '',
+    FileSize: 0,
+    CreatedAt: '',
+    UploadedAgo: ''
+  };
 
+  File: FileInfoEntity = {
+    Id: 0,
+    FileId: '',
+    OriginalName: '',
+    FileExtension: '',
+    FileSize: 0,
+    CreatedAt: '',
+    UploadedAgo: ''
+  };
+
+  ngOnInit(): void {
+    this.File = this.FileInfo;
+  }
+
+  ViewMoreInFile(): void {
+
+  }
 }
