@@ -4,6 +4,7 @@ import com.mycloud.common_config.model.JwtConfig;
 import com.mycloud.common_models.common_entities.FileInformationEntity;
 import com.mycloud.common_models.common_entities.JwtUser;
 import com.mycloud.common_models.database_entities.TFileMaster;
+import com.mycloud.common_models.database_entities.TFolderMaster;
 import com.mycloud.common_models.dto.ApiResponseDto;
 import com.mycloud.common_models.utils.JwtUtil;
 import com.mycloud.common_models.utils.DatetimeUtil;
@@ -20,22 +21,25 @@ import java.util.List;
 public class FileService {
     private final JwtUtil jwtUtil;
     private final TFileMasterRepository fileMasterRepository;
+    private final FolderService folderService;
 
-    public FileService(JwtConfig jwtConfig, TFileMasterRepository fileMasterRepository) throws IOException {
+    public FileService(JwtConfig jwtConfig, TFileMasterRepository fileMasterRepository, FolderService folderService) throws IOException {
         this.jwtUtil = new JwtUtil(jwtConfig.getSecret(), jwtConfig.getExpiration());
         this.fileMasterRepository = fileMasterRepository;
+        this.folderService = folderService;
     }
 
-    public ApiResponseDto<List<FileInformationEntity>> DoGetAllFileListByUserId() {
+
+    public ApiResponseDto<List<FileInformationEntity>> DoGetAllFileListByUserId(String FolderId) {
         try {
             JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
                 return ApiResponseDto.Error(500, "Access denied. Please login again.");
             }
 
-            List<TFileMaster> files = fileMasterRepository.findByUserIdAndDeletedFalseOrderByCreatedAtDesc(user.userId());
+            TFolderMaster CurrentFolder = folderService.GetCurrentFolderInfoFromFolderId(user.userId(), FolderId);
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm:ss");
+            List<TFileMaster> files = fileMasterRepository.findByUserIdAndParentFolderIdAndDeletedFalseOrderByCreatedAtDesc(user.userId(), CurrentFolder.getId());
 
             List<FileInformationEntity> Output = files.stream()
                     .map(file -> {
@@ -47,7 +51,7 @@ public class FileService {
                         dto.setFileSize(file.getFileSize());
 
                         if (file.getCreatedAt() != null) {
-                            dto.setCreatedAt(file.getCreatedAt().format(formatter));
+                            dto.setCreatedAt(file.getCreatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
                             dto.setUploadedAgo(DatetimeUtil.GetUploadedAgo(file.getCreatedAt()));
                         }
 

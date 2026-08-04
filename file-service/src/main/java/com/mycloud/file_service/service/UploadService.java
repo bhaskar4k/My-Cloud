@@ -49,6 +49,7 @@ public class UploadService {
         this.FINAL_UPLOAD_DIR = String.valueOf(BASE_FINAL_PATH);
     }
 
+
     @Transactional
     public void UpdateStatusOfFileUploadProcess(String fileId, UploadStatus status) {
         TFileMaster fileMaster = fileMasterRepository.findByFileId(fileId)
@@ -58,6 +59,7 @@ public class UploadService {
 
         fileMasterRepository.save(fileMaster);
     }
+
 
     public ApiResponseDto<String> DoInitiateFileUpload(InitiateUploadRequestEntity request) {
         TFileMaster fileMetadata = null;
@@ -130,6 +132,7 @@ public class UploadService {
         }
     }
 
+
     public ApiResponseDto<Boolean> DoSaveChunk(InputStream inputStream, String uploadId, int chunkIndex, int totalChunks) throws IOException {
         try {
             if (chunkIndex == 0) {
@@ -156,6 +159,7 @@ public class UploadService {
             return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to upload chunk - " + chunkIndex + ".");
         }
     }
+
 
     private Boolean MergeChunks(String UploadId, int TotalChunks) throws IOException {
         try {

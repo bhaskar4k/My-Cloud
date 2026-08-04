@@ -17,10 +17,10 @@ public class FileController {
 
     private final FileService fileService;
 
-    @GetMapping("/get-all")
-    public ApiResponseDto<List<FileInformationEntity>> GetAll() {
+    @GetMapping("/get-all/{FolderId}")
+    public ApiResponseDto<List<FileInformationEntity>> GetAll(@PathVariable String FolderId) {
         try {
-            return fileService.DoGetAllFileListByUserId();
+            return fileService.DoGetAllFileListByUserId(FolderId);
         } catch (Exception ex) {
             ex.printStackTrace();
 

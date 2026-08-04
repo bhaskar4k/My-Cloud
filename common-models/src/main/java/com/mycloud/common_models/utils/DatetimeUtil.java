@@ -1,6 +1,7 @@
 package com.mycloud.common_models.utils;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class DatetimeUtil {
     public static String GetUploadedAgo(LocalDateTime uploadedTime) {
@@ -36,4 +37,8 @@ public class DatetimeUtil {
         long years = months / 12;
         return years + (years == 1 ? " year ago" : " years ago");
     }
+
+    public static DateTimeFormatter DateTimeShortMonthFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
+
+    public static DateTimeFormatter DateTimeFullMonthFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm:ss");
 }
