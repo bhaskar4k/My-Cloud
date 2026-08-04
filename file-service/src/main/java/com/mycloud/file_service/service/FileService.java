@@ -1,6 +1,7 @@
 package com.mycloud.file_service.service;
 
 import com.mycloud.common_config.model.JwtConfig;
+import com.mycloud.common_models.common_entities.FileDetailsEntity;
 import com.mycloud.common_models.common_entities.FileInformationEntity;
 import com.mycloud.common_models.common_entities.JwtUser;
 import com.mycloud.common_models.database_entities.TFileMaster;
@@ -30,7 +31,7 @@ public class FileService {
     }
 
 
-    public ApiResponseDto<List<FileInformationEntity>> DoGetAllFileListByUserId(String FolderId) {
+    public ApiResponseDto<FileDetailsEntity> DoGetAllFileListByUserId(String FolderId) {
         try {
             JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
@@ -41,7 +42,11 @@ public class FileService {
 
             List<TFileMaster> files = fileMasterRepository.findByUserIdAndParentFolderIdAndDeletedFalseOrderByCreatedAtDesc(user.userId(), CurrentFolder.getId());
 
-            List<FileInformationEntity> Output = files.stream()
+            FileDetailsEntity Output = new FileDetailsEntity();
+            Output.HasFile = !files.isEmpty();
+            Output.FileCount = files.size();
+
+            Output.FilesList = files.stream()
                     .map(file -> {
                         FileInformationEntity dto = new FileInformationEntity();
                         dto.setId(file.getId().intValue());
