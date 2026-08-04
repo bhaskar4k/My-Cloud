@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FileDetailsEntity, FileInfoEntity } from '../../models/folder.model';
 
 @Component({
@@ -10,7 +10,7 @@ import { FileDetailsEntity, FileInfoEntity } from '../../models/folder.model';
   templateUrl: './file-card.component.html',
   styleUrl: './file-card.component.css'
 })
-export class FileCardComponent {
+export class FileCardComponent implements OnInit {
   @Input() FileInfo: FileInfoEntity = {
     Id: 0,
     FileId: '',
