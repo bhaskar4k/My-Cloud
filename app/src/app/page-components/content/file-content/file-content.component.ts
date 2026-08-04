@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FileDetailsEntity, FileInfoEntity } from '../../../models/folder.model';
 import { CommonModule } from '@angular/common';
-import { FileCardComponent } from '../../../common-components/file-card/file-card.component';
+import { FileCardComponent } from '../../../common-components/file-common/file-card/file-card.component';
 
 @Component({
   selector: 'app-file-content',

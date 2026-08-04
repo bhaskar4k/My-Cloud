@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
-import { FileDetailsEntity, FileInfoEntity } from '../../models/folder.model';
+import { FileDetailsEntity, FileInfoEntity } from '../../../models/folder.model';
 
 @Component({
   selector: 'app-file-card',
