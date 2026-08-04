@@ -12,7 +12,6 @@ import { FileDetailsEntity, FileInfoEntity } from '../../../models/folder.model'
 })
 export class FileCardComponent implements OnInit {
   @Input() FileInfo: FileInfoEntity = {
-    Id: 0,
     FileId: '',
     OriginalName: '',
     FileExtension: '',
@@ -22,7 +21,6 @@ export class FileCardComponent implements OnInit {
   };
 
   File: FileInfoEntity = {
-    Id: 0,
     FileId: '',
     OriginalName: '',
     FileExtension: '',

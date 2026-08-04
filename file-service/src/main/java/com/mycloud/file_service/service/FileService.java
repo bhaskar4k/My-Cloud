@@ -7,6 +7,7 @@ import com.mycloud.common_models.common_entities.JwtUser;
 import com.mycloud.common_models.database_entities.TFileMaster;
 import com.mycloud.common_models.database_entities.TFolderMaster;
 import com.mycloud.common_models.dto.ApiResponseDto;
+import com.mycloud.common_models.utils.EncryptionUtil;
 import com.mycloud.common_models.utils.JwtUtil;
 import com.mycloud.common_models.utils.DatetimeUtil;
 import com.mycloud.data_access_layer.repositories.TFileMasterRepository;
@@ -23,11 +24,13 @@ public class FileService {
     private final JwtUtil jwtUtil;
     private final TFileMasterRepository fileMasterRepository;
     private final FolderService folderService;
+    private final EncryptionUtil encryptionUtil;
 
     public FileService(JwtConfig jwtConfig, TFileMasterRepository fileMasterRepository, FolderService folderService) throws IOException {
         this.jwtUtil = new JwtUtil(jwtConfig.getSecret(), jwtConfig.getExpiration());
         this.fileMasterRepository = fileMasterRepository;
         this.folderService = folderService;
+        this.encryptionUtil = new EncryptionUtil(jwtConfig.getSecret());
     }
 
 
@@ -49,8 +52,7 @@ public class FileService {
             Output.FilesList = files.stream()
                     .map(file -> {
                         FileInformationEntity dto = new FileInformationEntity();
-                        dto.setId(file.getId().intValue());
-                        dto.setFileId(file.getFileId());
+                        dto.setFileId(encryptionUtil.EncryptHexEncoding(file.getId().toString()));
                         dto.setOriginalName(file.getOriginalName());
                         dto.setFileExtension(file.getFileExtension());
                         dto.setFileSize(file.getFileSize());
