@@ -61,4 +61,8 @@ export class UploadComponent implements OnInit {
       this.MatProgressBar = false;
     }
   }
+
+  close() {
+    this.dialogRef.close(null);
+  }
 }
