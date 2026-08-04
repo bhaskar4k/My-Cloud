@@ -18,7 +18,6 @@ export interface FileDetailsEntity {
 }
 
 export interface FileInfoEntity {
-    Id: number;
     FileId: string;
     OriginalName: string;
     FileExtension: string;
