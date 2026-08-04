@@ -7,7 +7,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiResponseDto } from '../../../models/dto.model';
 import { MatDialog } from '@angular/material/dialog';
 import { MenuToggleFlag, ResponseTypeColor } from '../../../constants/commonConsts';
-import { CustomAlertComponent } from '../../../common-components/custom-alert/custom-alert.component';
+import { CustomAlertComponent } from '../../../page-components-shared/custom-alert/custom-alert.component';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../../services/auth.service';
 

@@ -6,7 +6,7 @@ import {
   ReactiveFormsModule
 } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { CustomAlertComponent } from '../../../common-components/custom-alert/custom-alert.component';
+import { CustomAlertComponent } from '../../../page-components-shared/custom-alert/custom-alert.component';
 import { ResponseTypeColor } from '../../../constants/commonConsts';
 import { AuthService } from '../../../services/auth.service';
 import { ApiResponseDto } from '../../../models/dto.model';
