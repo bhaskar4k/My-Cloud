@@ -1,6 +1,4 @@
-<div class="card h-100 border-0 shadow-sm dark-file-card position-relative overflow-hidden cursor_pointer">
-
-    <div class="file-card-accent"></div>
+<div class="card h-100 border-0 shadow-sm dark-file-card position-relative">
 
     <div class="card-body d-flex align-items-center p-3">
 
@@ -16,9 +14,13 @@
             <small class="text-muted">{{ File.CreatedAt }}</small>
         </div>
 
-        <i class="bi bi-three-dots-vertical ms-2 fs-6 file-view-more" (click)="ViewMoreInFile();">
-        </i>
+        <div class="position-relative">
+            <i class="bi bi-three-dots-vertical fs-6 file-view-more cursor_pointer" (click)="ViewMoreInFile()">
+            </i>
 
+            <app-file-properties *ngIf="ShowMore" [FileInfo]="File">
+            </app-file-properties>
+        </div>
     </div>
 
 </div>
