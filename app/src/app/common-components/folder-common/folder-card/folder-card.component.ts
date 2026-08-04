@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FolderInfoEntity } from '../../models/folder.model';
+import { FolderInfoEntity } from '../../../models/folder.model';
 
 @Component({
   selector: 'app-folder-card',

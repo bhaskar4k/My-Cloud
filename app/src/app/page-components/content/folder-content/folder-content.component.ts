@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FolderDetailsEntity, FolderInfoEntity } from '../../../models/folder.model';
 import { CommonModule } from '@angular/common';
-import { FolderCardComponent } from '../../../common-components/folder-card/folder-card.component';
+import { FolderCardComponent } from '../../../common-components/folder-common/folder-card/folder-card.component';
 
 @Component({
   selector: 'app-folder-content',
