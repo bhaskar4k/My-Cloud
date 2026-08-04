@@ -1,1 +1,25 @@
-<p>file-properties works!</p>
+<div class="file-properties-menu">
+
+    <button class="menu-item" (click)="ViewDetails()">
+        <i class="bi bi-info-circle"></i>
+        <span>Details</span>
+    </button>
+
+    <button class="menu-item" (click)="DownloadFile()">
+        <i class="bi bi-download"></i>
+        <span>Download</span>
+    </button>
+
+    <button class="menu-item" (click)="RenameFile()">
+        <i class="bi bi-pencil-square"></i>
+        <span>Rename</span>
+    </button>
+
+    <div class="menu-divider"></div>
+
+    <button class="menu-item text-danger" (click)="DeleteFile()">
+        <i class="bi bi-trash3"></i>
+        <span>Delete</span>
+    </button>
+
+</div>
