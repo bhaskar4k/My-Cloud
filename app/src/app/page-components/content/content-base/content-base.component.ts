@@ -1,25 +1,25 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CustomAlertComponent } from '../../common-components/custom-alert/custom-alert.component';
+import { CustomAlertComponent } from '../../../common-components/custom-alert/custom-alert.component';
 import { MatDialog } from '@angular/material/dialog';
-import { ResponseTypeColor } from '../../constants/commonConsts';
-import { FolderService } from '../../services/folder.service';
-import { ApiResponseDto } from '../../models/dto.model';
+import { ResponseTypeColor } from '../../../constants/commonConsts';
+import { FolderService } from '../../../services/folder.service';
+import { ApiResponseDto } from '../../../models/dto.model';
 import { catchError, map, Observable, of } from 'rxjs';
-import { FolderDetailsEntity, FolderInfoEntity } from '../../models/folder.model';
+import { FolderDetailsEntity, FolderInfoEntity } from '../../../models/folder.model';
 import { CommonModule } from '@angular/common';
-import { CreateFolderComponent } from '../../common-components/create-folder/create-folder.component';
-import { UploadComponent } from '../../common-components/upload/upload.component';
+import { CreateFolderComponent } from '../../../common-components/create-folder/create-folder.component';
+import { UploadComponent } from '../../../common-components/upload/upload.component';
 
 @Component({
-  selector: 'app-content',
+  selector: 'app-content-base',
   imports: [
     CommonModule
   ],
-  templateUrl: './content.component.html',
-  styleUrl: './content.component.css'
+  templateUrl: './content-base.component.html',
+  styleUrl: './content-base.component.css'
 })
-export class ContentComponent {
+export class ContentBaseComponent {
   CurrentFolderId: string = 'root';
   FullFolderPath: FolderInfoEntity[] = [];
   AllFolder: FolderDetailsEntity = { HasFolder: false, FolderCount: 0, FoldersList: [] };
