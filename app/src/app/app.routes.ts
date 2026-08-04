@@ -24,6 +24,7 @@ export const routes: Routes = [
       // === PUBLIC ROUTES ===
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent },
+      { path: 'dashboard', component: DashboardComponent },
 
       { path: 'register', component: RegisterComponent },
       { path: 'login', component: LoginComponent },
@@ -33,10 +34,6 @@ export const routes: Routes = [
         path: '',
         canActivate: [AuthGuard],
         children: [
-          { path: 'dashboard', component: DashboardComponent },
-
-          { path: 'upload', component: UploadComponent },
-
           { path: 'content', redirectTo: 'content/root', pathMatch: 'full' },
           { path: 'content/:folder', component: ContentComponent },
 
