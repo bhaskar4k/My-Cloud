@@ -29,4 +29,20 @@ export class FilePropertiesComponent {
   ngOnInit(): void {
     this.File = this.FileInfo;
   }
+
+  ViewDetails() {
+
+  }
+
+  DownloadFile() {
+
+  }
+
+  RenameFile() {
+
+  }
+
+  DeleteFile() {
+
+  }
 }
