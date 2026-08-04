@@ -143,6 +143,12 @@ coverage/
 npm-debug.log
 yarn-error.log
 pnpm-lock.yaml
+/dist
+/dist/
+/dist/*
+dist
+dist/
+dist/*
 
 # =========================================================
 # Test Reports

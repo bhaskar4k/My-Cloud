@@ -6,10 +6,10 @@ import {
   ReactiveFormsModule
 } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { CustomAlertComponent } from '../../common-components/custom-alert/custom-alert.component';
-import { ResponseTypeColor } from '../../constants/commonConsts';
-import { AuthService } from '../../services/auth.service';
-import { ApiResponseDto } from '../../models/dto.model';
+import { CustomAlertComponent } from '../../../common-components/custom-alert/custom-alert.component';
+import { ResponseTypeColor } from '../../../constants/commonConsts';
+import { AuthService } from '../../../services/auth.service';
+import { ApiResponseDto } from '../../../models/dto.model';
 import { Router } from '@angular/router';
 
 @Component({

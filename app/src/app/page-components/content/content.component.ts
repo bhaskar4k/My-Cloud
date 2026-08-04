@@ -8,8 +8,8 @@ import { ApiResponseDto } from '../../models/dto.model';
 import { catchError, map, Observable, of } from 'rxjs';
 import { FolderDetailsEntity, FolderInfoEntity } from '../../models/folder.model';
 import { CommonModule } from '@angular/common';
-import { CreateFolderComponent } from '../create-folder/create-folder.component';
-import { UploadComponent } from '../upload/upload.component';
+import { CreateFolderComponent } from '../../common-components/create-folder/create-folder.component';
+import { UploadComponent } from '../../common-components/upload/upload.component';
 
 @Component({
   selector: 'app-content',

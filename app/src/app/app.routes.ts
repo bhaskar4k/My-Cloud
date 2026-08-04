@@ -2,10 +2,10 @@ import { Routes } from '@angular/router';
 import { LayoutBaseComponent } from './page-components/layout/layout-base/layout-base.component';
 import { HomeComponent } from './page-components/home/home.component';
 import { ErrorComponent } from './page-components/error/error.component';
-import { RegisterComponent } from './page-components/register/register.component';
-import { LoginComponent } from './page-components/login/login.component';
+import { RegisterComponent } from './page-components/auth-components/register/register.component';
+import { LoginComponent } from './page-components/auth-components/login/login.component';
 import { DashboardComponent } from './page-components/dashboard/dashboard.component';
-import { UploadComponent } from './page-components/upload/upload.component';
+import { UploadComponent } from './common-components/upload/upload.component';
 import { ContentComponent } from './page-components/content/content.component';
 import { LibraryComponent } from './page-components/library/library.component';
 import { FavouriteComponent } from './page-components/favourite/favourite.component';
@@ -13,7 +13,7 @@ import { ProfileSettingsComponent } from './page-components/settings/profile-set
 import { BasicSettingsComponent } from './page-components/settings/basic-settings/basic-settings.component';
 import { DeleteAccountComponent } from './page-components/settings/delete-account/delete-account.component';
 import { ProfileComponent } from './page-components/profile/profile.component';
-import { LogoutComponent } from './page-components/logout/logout.component';
+import { LogoutComponent } from './page-components/auth-components/logout/logout.component';
 import { AuthGuard } from './middleware/AuthGuard';
 
 export const routes: Routes = [
