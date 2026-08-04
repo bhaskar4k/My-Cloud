@@ -64,11 +64,11 @@ public class FileService {
                     })
                     .toList();
 
-            return ApiResponseDto.Success("Files retrieved successfully.", Output);
+            return ApiResponseDto.Success("File list has been fetched successfully.", Output);
         } catch (Exception ex) {
             ex.printStackTrace();
 
-            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to retrieve file list.");
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to fetch all files list.");
         }
     }
 }

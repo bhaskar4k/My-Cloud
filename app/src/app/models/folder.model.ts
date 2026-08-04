@@ -10,3 +10,19 @@ export interface FolderDetailsEntity {
     FolderCount: number;
     FoldersList: FolderInfoEntity[];
 }
+
+export interface FileDetailsEntity {
+    HasFile: boolean;
+    FileCount: number;
+    FilesList: FileInfoEntity[];
+}
+
+export interface FileInfoEntity {
+    Id: number;
+    FileId: string;
+    OriginalName: string;
+    FileExtension: string;
+    FileSize: number;
+    CreatedAt: string;
+    UploadedAgo: string;
+}

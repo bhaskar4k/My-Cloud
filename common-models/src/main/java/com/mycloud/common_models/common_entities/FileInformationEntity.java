@@ -8,11 +8,11 @@ import lombok.Data;
 
 @Data
 public class FileInformationEntity {
-    private int id;
-    private String fileId;
-    private String originalName;
-    private String fileExtension;
-    private Long fileSize;
-    private String createdAt;
-    private String uploadedAgo;
+    private int Id;
+    private String FileId;
+    private String OriginalName;
+    private String FileExtension;
+    private Long FileSize;
+    private String CreatedAt;
+    private String UploadedAgo;
 }
