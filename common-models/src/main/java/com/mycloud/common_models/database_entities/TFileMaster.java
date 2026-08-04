@@ -15,6 +15,8 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class TFileMaster extends BaseEntity {
+    @Column(name = "parent_folder_id", nullable = false)
+    private Long parentFolderId;
 
     @Column(name = "file_id", nullable = false, unique = true, length = 36)
     private String fileId;

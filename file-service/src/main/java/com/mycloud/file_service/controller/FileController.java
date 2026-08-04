@@ -1,5 +1,6 @@
 package com.mycloud.file_service.controller;
 
+import com.mycloud.common_models.common_entities.FileDetailsEntity;
 import com.mycloud.common_models.common_entities.FileInformationEntity;
 import com.mycloud.common_models.common_entities.InitiateUploadRequestEntity;
 import com.mycloud.common_models.dto.ApiResponseDto;
@@ -17,10 +18,10 @@ public class FileController {
 
     private final FileService fileService;
 
-    @GetMapping("/get-all")
-    public ApiResponseDto<List<FileInformationEntity>> GetAll() {
+    @GetMapping("/get-all/{FolderId}")
+    public ApiResponseDto<FileDetailsEntity> GetAll(@PathVariable String FolderId) {
         try {
-            return fileService.DoGetAllFileListByUserId();
+            return fileService.DoGetAllFileListByUserId(FolderId);
         } catch (Exception ex) {
             ex.printStackTrace();
 

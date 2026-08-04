@@ -98,19 +98,10 @@ public class DatabaseSeeder implements CommandLineRunner {
 
                 TMenuMaster.builder()
                         .parentId(null)
-                        .label("Upload")
-                        .icon("bi bi-upload")
-                        .route("/upload")
-                        .displayOrder(2)
-                        .active(true)
-                        .build(),
-
-                TMenuMaster.builder()
-                        .parentId(null)
                         .label("Content")
                         .icon("bi bi-diagram-3")
                         .route("/content")
-                        .displayOrder(3)
+                        .displayOrder(2)
                         .active(true)
                         .build(),
 
@@ -119,7 +110,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .label("Library")
                         .icon("bi bi-collection")
                         .route("/library")
-                        .displayOrder(4)
+                        .displayOrder(3)
                         .active(true)
                         .build(),
 
@@ -128,7 +119,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .label("Favourite")
                         .icon("bi bi-star-fill")
                         .route("/favourite")
-                        .displayOrder(5)
+                        .displayOrder(4)
                         .active(true)
                         .build(),
 
@@ -137,7 +128,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .label("Settings")
                         .icon("bi bi-gear")
                         .route(null)
-                        .displayOrder(6)
+                        .displayOrder(5)
                         .active(true)
                         .build(),
 
@@ -146,7 +137,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .label("Profile")
                         .icon("bi bi-person-circle")
                         .route("/profile")
-                        .displayOrder(7)
+                        .displayOrder(6)
                         .active(true)
                         .build(),
 
@@ -155,7 +146,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .label("Login")
                         .icon("bi bi-box-arrow-in-right")
                         .route("/login")
-                        .displayOrder(8)
+                        .displayOrder(7)
                         .active(true)
                         .build(),
 
@@ -164,7 +155,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .label("Register")
                         .icon("bi bi-person-add")
                         .route("/register")
-                        .displayOrder(9)
+                        .displayOrder(8)
                         .active(true)
                         .build(),
 
@@ -173,13 +164,13 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .label("Logout")
                         .icon("bi bi-box-arrow-left")
                         .route("/logout")
-                        .displayOrder(10)
+                        .displayOrder(9)
                         .active(true)
                         .build(),
 
-                // SETTINGS CHILD MENUS
+                // SETTINGS CHILD MENUS (parentId = Settings = 5)
                 TMenuMaster.builder()
-                        .parentId(6)
+                        .parentId(5)
                         .label("Profile Settings")
                         .icon("bi bi-person-gear")
                         .route("/settings/profile-settings")
@@ -188,7 +179,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .build(),
 
                 TMenuMaster.builder()
-                        .parentId(6)
+                        .parentId(5)
                         .label("Basic Settings")
                         .icon("bi bi-sliders2")
                         .route("/settings/basic-settings")
@@ -197,7 +188,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .build(),
 
                 TMenuMaster.builder()
-                        .parentId(6)
+                        .parentId(5)
                         .label("Delete Account")
                         .icon("bi bi-person-slash")
                         .route("/settings/delete-account")
@@ -227,73 +218,68 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(8L)
+                        .menuMasterId(7L)   // Login
                         .roleMasterId(1L)
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(9L)
+                        .menuMasterId(8L)   // Register
                         .roleMasterId(1L)
                         .build(),
 
                 // Bronze
                 TRoleMenuMapping.builder()
-                        .menuMasterId(1L)
+                        .menuMasterId(1L)   // Dashboard
                         .roleMasterId(2L)
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(2L)
+                        .menuMasterId(2L)   // Content
                         .roleMasterId(2L)
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(3L)
+                        .menuMasterId(3L)   // Library
                         .roleMasterId(2L)
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(4L)
+                        .menuMasterId(4L)   // Favourite
                         .roleMasterId(2L)
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(5L)
+                        .menuMasterId(5L)   // Settings
                         .roleMasterId(2L)
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(6L)
+                        .menuMasterId(6L)   // Profile
                         .roleMasterId(2L)
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(7L)
+                        .menuMasterId(9L)   // Logout
                         .roleMasterId(2L)
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(10L)
+                        .menuMasterId(10L)  // Profile Settings
                         .roleMasterId(2L)
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(11L)
+                        .menuMasterId(11L)  // Basic Settings
                         .roleMasterId(2L)
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(12L)
+                        .menuMasterId(11L)  // Basic Settings (duplicate preserved)
                         .roleMasterId(2L)
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(12L)
-                        .roleMasterId(2L)
-                        .build(),
-
-                TRoleMenuMapping.builder()
-                        .menuMasterId(13L)
+                        .menuMasterId(12L)  // Delete Account
                         .roleMasterId(2L)
                         .build()
         );

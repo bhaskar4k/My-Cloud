@@ -5,6 +5,7 @@ import com.mycloud.common_config.model.StorageConfig;
 import com.mycloud.common_models.common_entities.InitiateUploadRequestEntity;
 import com.mycloud.common_models.common_entities.JwtUser;
 import com.mycloud.common_models.database_entities.TFileMaster;
+import com.mycloud.common_models.database_entities.TFolderMaster;
 import com.mycloud.common_models.dto.ApiResponseDto;
 import com.mycloud.common_models.enums.UploadStatus;
 import com.mycloud.common_models.utils.JwtUtil;
@@ -21,14 +22,16 @@ import java.util.UUID;
 public class UploadService {
     private final JwtUtil jwtUtil;
     private final TFileMasterRepository fileMasterRepository;
+    private final FolderService folderService;
     private final Long CHUNK_SIZE;
 
     private final String BASE_TEMP_DIR;
     private final String FINAL_UPLOAD_DIR;
 
-    public UploadService(StorageConfig storageConfig, JwtConfig jwtConfig, TFileMasterRepository fileMasterRepository) throws IOException {
+    public UploadService(StorageConfig storageConfig, JwtConfig jwtConfig, TFileMasterRepository fileMasterRepository, FolderService folderService) throws IOException {
         this.jwtUtil = new JwtUtil(jwtConfig.getSecret(), jwtConfig.getExpiration());
         this.fileMasterRepository = fileMasterRepository;
+        this.folderService = folderService;
         this.CHUNK_SIZE = 10L * 1024 * 1024;
 
         Path BASE_TEMP_PATH = Paths.get(storageConfig.getRootDirectory(), storageConfig.getTempDirectory());
@@ -46,6 +49,7 @@ public class UploadService {
         this.FINAL_UPLOAD_DIR = String.valueOf(BASE_FINAL_PATH);
     }
 
+
     @Transactional
     public void UpdateStatusOfFileUploadProcess(String fileId, UploadStatus status) {
         TFileMaster fileMaster = fileMasterRepository.findByFileId(fileId)
@@ -55,6 +59,7 @@ public class UploadService {
 
         fileMasterRepository.save(fileMaster);
     }
+
 
     public ApiResponseDto<String> DoInitiateFileUpload(InitiateUploadRequestEntity request) {
         TFileMaster fileMetadata = null;
@@ -79,7 +84,10 @@ public class UploadService {
             // 3. Compute total chunks based on your 10MB math boundary
             int totalChunks = (int) Math.ceil((double) request.getFileSize() / CHUNK_SIZE);
 
+            TFolderMaster ParentFolderInfo = folderService.GetCurrentFolderInfoFromFolderId(user.userId(), request.getFolderId());
+
             fileMetadata = TFileMaster.builder()
+                    .parentFolderId(ParentFolderInfo.getId())
                     .fileId(uploadId)
                     .originalName(fileName)
                     .fileExtension(fileExtension)
@@ -124,6 +132,7 @@ public class UploadService {
         }
     }
 
+
     public ApiResponseDto<Boolean> DoSaveChunk(InputStream inputStream, String uploadId, int chunkIndex, int totalChunks) throws IOException {
         try {
             if (chunkIndex == 0) {
@@ -150,6 +159,7 @@ public class UploadService {
             return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to upload chunk - " + chunkIndex + ".");
         }
     }
+
 
     private Boolean MergeChunks(String UploadId, int TotalChunks) throws IOException {
         try {

@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { CustomAlertComponent } from '../../common-components/custom-alert/custom-alert.component';
-import { ResponseTypeColor } from '../../constants/commonConsts';
+import { CustomAlertComponent } from '../../../common-components/custom-alert/custom-alert.component';
+import { ResponseTypeColor } from '../../../constants/commonConsts';
 
 @Component({
   selector: 'app-logout',

@@ -12,4 +12,9 @@ public interface TFileMasterRepository extends JpaRepository<TFileMaster, Long> 
     Optional<TFileMaster> findByFileId(String fileId);
 
     List<TFileMaster> findByUserIdAndDeletedFalseOrderByCreatedAtDesc(Long userId);
+
+    List<TFileMaster> findByUserIdAndParentFolderIdAndDeletedFalseOrderByCreatedAtDesc(
+            Long userId,
+            Long parentFolderId
+    );
 }

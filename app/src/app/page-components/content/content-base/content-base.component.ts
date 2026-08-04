@@ -1,29 +1,40 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CustomAlertComponent } from '../../common-components/custom-alert/custom-alert.component';
+import { CustomAlertComponent } from '../../../common-components/custom-alert/custom-alert.component';
 import { MatDialog } from '@angular/material/dialog';
-import { ResponseTypeColor } from '../../constants/commonConsts';
-import { FolderService } from '../../services/folder.service';
-import { ApiResponseDto } from '../../models/dto.model';
+import { ResponseTypeColor } from '../../../constants/commonConsts';
+import { FolderService } from '../../../services/folder.service';
+import { ApiResponseDto } from '../../../models/dto.model';
 import { catchError, map, Observable, of } from 'rxjs';
-import { FolderDetailsEntity, FolderInfoEntity } from '../../models/folder.model';
+import { FileDetailsEntity, FolderDetailsEntity, FolderInfoEntity } from '../../../models/folder.model';
 import { CommonModule } from '@angular/common';
-import { CreateFolderComponent } from '../create-folder/create-folder.component';
+import { CreateFolderComponent } from '../../../common-components/folder-common/create-folder/create-folder.component';
+import { UploadComponent } from '../../../common-components/file-common/upload/upload.component';
+import { FolderContentComponent } from '../folder-content/folder-content.component';
+import { FileContentComponent } from '../file-content/file-content.component';
 
 @Component({
-  selector: 'app-content',
+  selector: 'app-content-base',
   imports: [
-    CommonModule
+    CommonModule,
+    FolderContentComponent,
+    FileContentComponent
   ],
-  templateUrl: './content.component.html',
-  styleUrl: './content.component.css'
+  templateUrl: './content-base.component.html',
+  styleUrl: './content-base.component.css'
 })
-export class ContentComponent {
+export class ContentBaseComponent {
   CurrentFolderId: string = 'root';
   FullFolderPath: FolderInfoEntity[] = [];
+
   AllFolder: FolderDetailsEntity = { HasFolder: false, FolderCount: 0, FoldersList: [] };
+  RenderFolderList: boolean = true;
+
+  AllFile: FileDetailsEntity = { HasFile: false, FileCount: 0, FilesList: [] };
+  RenderFileList: boolean = true;
 
   MatProgressBar = false;
+  MatProgressBar1 = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -43,6 +54,7 @@ export class ContentComponent {
         this.router.navigate(['/error']);
       } else {
         this.GetAllChildFolders();
+        this.GetAllChildFiles();
       }
     });
   }
@@ -112,6 +124,9 @@ export class ContentComponent {
   }
 
   GetAllChildFolders() {
+    this.RenderFolderList = false;
+    this.MatProgressBar = true;
+
     this.folderService.GetAllChildFoldersByFolderId(this.CurrentFolderId).subscribe({
       next: (response: ApiResponseDto) => {
         this.MatProgressBar = false;
@@ -122,6 +137,7 @@ export class ContentComponent {
 
         this.AllFolder = response.data as FolderDetailsEntity;
         this.AllFolder.FoldersList.reverse();
+        this.RenderFolderList = true;
       },
       error: (err: any) => {
         this.dialog.open(CustomAlertComponent, { data: { text: "Failed to fetch all folder lists.", type: ResponseTypeColor.ERROR } });
@@ -130,11 +146,37 @@ export class ContentComponent {
     });
   }
 
-  NavigateToFolder(Folder: FolderInfoEntity) {
-    window.location.href = "/content/" + Folder.FolderId;
+  GetAllChildFiles() {
+    this.RenderFileList = false;
+    this.MatProgressBar1 = true;
+
+    this.folderService.GetAllChildFilesByFolderId(this.CurrentFolderId).subscribe({
+      next: (response: ApiResponseDto) => {
+        this.MatProgressBar1 = false;
+
+        if (response.success === false || response.statusCode !== 200) {
+          this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
+        }
+
+        this.AllFile = response.data as FileDetailsEntity;
+        this.AllFile.FilesList.reverse();
+        this.RenderFileList = true;
+      },
+      error: (err: any) => {
+        this.dialog.open(CustomAlertComponent, { data: { text: "Failed to fetch all file lists.", type: ResponseTypeColor.ERROR } });
+        this.MatProgressBar1 = false;
+      }
+    });
   }
 
-  ViewMoreInFolder(Folder: FolderInfoEntity) {
+  UploadFile() {
+    const dialogRef = this.dialog.open(UploadComponent, {
+      data: { FolderId: this.CurrentFolderId },
+      disableClose: true
+    });
+  }
 
+  NavigateToFolder(Folder: FolderInfoEntity) {
+    window.location.href = "/content/" + Folder.FolderId;
   }
 }

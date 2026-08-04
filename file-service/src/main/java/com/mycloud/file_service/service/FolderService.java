@@ -26,13 +26,11 @@ public class FolderService {
     private final JwtUtil jwtUtil;
     private final TFolderMasterRepository folderRepository;
     private final EncryptionUtil encryptionUtil;
-    DateTimeFormatter dateTimeFormatter;
 
     public FolderService(JwtConfig jwtConfig, TFolderMasterRepository folderRepository) {
         this.jwtUtil = new JwtUtil(jwtConfig.getSecret(), jwtConfig.getExpiration());
         this.folderRepository = folderRepository;
         this.encryptionUtil = new EncryptionUtil(jwtConfig.getSecret());
-        this.dateTimeFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
     }
 
 
@@ -103,8 +101,7 @@ public class FolderService {
     }
 
 
-
-    private TFolderMaster GetCurrentFolderInfoFromFolderId(Long UserId, String FolderId){
+    public TFolderMaster GetCurrentFolderInfoFromFolderId(Long UserId, String FolderId){
         Optional<TFolderMaster> CurrentFolder;
 
         if (FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)) {
@@ -132,7 +129,6 @@ public class FolderService {
 
         return CurrentFolder.get();
     }
-
 
 
     @Transactional
@@ -163,7 +159,7 @@ public class FolderService {
             Output.setDepth(CreatedFolder.getDepth());
 
             if (CreatedFolder.getCreatedAt() != null) {
-                Output.setCreatedAt(CreatedFolder.getCreatedAt().format(dateTimeFormatter));
+                Output.setCreatedAt(CreatedFolder.getCreatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
             }
 
             return ApiResponseDto.Success("Folder has been created successfully.", Output);
@@ -177,7 +173,6 @@ public class FolderService {
             return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to create folder.");
         }
     }
-
 
 
     public ApiResponseDto<FolderDetailsEntity> DoGetAllFolders(String FolderId) {
@@ -203,7 +198,7 @@ public class FolderService {
                         dto.setDepth(folder.getDepth());
 
                         if (folder.getCreatedAt() != null) {
-                            dto.setCreatedAt(folder.getCreatedAt().format(dateTimeFormatter));
+                            dto.setCreatedAt(folder.getCreatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
                         }
 
                         return dto;
