@@ -9,7 +9,7 @@ import { catchError, map, Observable, of } from 'rxjs';
 import { FileDetailsEntity, FolderDetailsEntity, FolderInfoEntity } from '../../../models/folder.model';
 import { CommonModule } from '@angular/common';
 import { CreateFolderComponent } from '../../../common-components/folder-common/create-folder/create-folder.component';
-import { UploadComponent } from '../../../common-components/upload/upload.component';
+import { UploadComponent } from '../../../common-components/file-common/upload/upload.component';
 import { FolderContentComponent } from '../folder-content/folder-content.component';
 import { FileContentComponent } from '../file-content/file-content.component';
 

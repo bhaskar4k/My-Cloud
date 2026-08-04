@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
-import { UploadService } from '../../services/upload.service';
-import { CustomAlertComponent } from '../../common-components/custom-alert/custom-alert.component';
+import { UploadService } from '../../../services/upload.service';
+import { CustomAlertComponent } from '../../../common-components/custom-alert/custom-alert.component';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { ResponseTypeColor } from '../../constants/commonConsts';
+import { ResponseTypeColor } from '../../../constants/commonConsts';
 
 @Component({
   selector: 'app-upload',
