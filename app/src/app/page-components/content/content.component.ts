@@ -9,6 +9,7 @@ import { catchError, map, Observable, of } from 'rxjs';
 import { FolderDetailsEntity, FolderInfoEntity } from '../../models/folder.model';
 import { CommonModule } from '@angular/common';
 import { CreateFolderComponent } from '../create-folder/create-folder.component';
+import { UploadComponent } from '../upload/upload.component';
 
 @Component({
   selector: 'app-content',
@@ -127,6 +128,13 @@ export class ContentComponent {
         this.dialog.open(CustomAlertComponent, { data: { text: "Failed to fetch all folder lists.", type: ResponseTypeColor.ERROR } });
         this.MatProgressBar = false;
       }
+    });
+  }
+
+  UploadFile() {
+    const dialogRef = this.dialog.open(UploadComponent, {
+      data: { FolderId: this.CurrentFolderId },
+      disableClose: true
     });
   }
 

@@ -155,3 +155,7 @@ hr {
 .cursor_pointer {
     cursor: pointer !important;
 }
+
+.cdk-overlay-container {
+    z-index: 99999 !important;
+}
