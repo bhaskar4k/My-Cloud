@@ -1,7 +1,13 @@
-.input_border {
-    border: 0.5px solid rgb(77, 77, 77) !important;
+.card {
+    border-radius: 1rem;
+    overflow: hidden;
 }
 
-.form_background {
-    background-color: rgb(38, 49, 65) !important;
+.input_border {
+    height: 48px;
+    border-radius: .6rem;
+}
+
+.input_border:focus {
+    box-shadow: none;
 }
