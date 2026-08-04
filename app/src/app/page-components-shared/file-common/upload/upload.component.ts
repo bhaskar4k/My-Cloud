@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
 import { UploadService } from '../../../services/upload.service';
-import { CustomAlertComponent } from '../../../common-components/custom-alert/custom-alert.component';
+import { CustomAlertComponent } from '../../../page-components-shared/custom-alert/custom-alert.component';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ResponseTypeColor } from '../../../constants/commonConsts';
 
@@ -60,5 +60,9 @@ export class UploadComponent implements OnInit {
     finally {
       this.MatProgressBar = false;
     }
+  }
+
+  close() {
+    this.dialogRef.close(null);
   }
 }

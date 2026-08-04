@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { CustomAlertComponent } from '../../../common-components/custom-alert/custom-alert.component';
+import { CustomAlertComponent } from '../../../page-components-shared/custom-alert/custom-alert.component';
 import { ResponseTypeColor } from '../../../constants/commonConsts';
 
 @Component({

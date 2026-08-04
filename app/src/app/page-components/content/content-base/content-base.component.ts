@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CustomAlertComponent } from '../../../common-components/custom-alert/custom-alert.component';
+import { CustomAlertComponent } from '../../../page-components-shared/custom-alert/custom-alert.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ResponseTypeColor } from '../../../constants/commonConsts';
 import { FolderService } from '../../../services/folder.service';
@@ -8,8 +8,8 @@ import { ApiResponseDto } from '../../../models/dto.model';
 import { catchError, map, Observable, of } from 'rxjs';
 import { FileDetailsEntity, FolderDetailsEntity, FolderInfoEntity } from '../../../models/folder.model';
 import { CommonModule } from '@angular/common';
-import { CreateFolderComponent } from '../../../common-components/folder-common/create-folder/create-folder.component';
-import { UploadComponent } from '../../../common-components/file-common/upload/upload.component';
+import { CreateFolderComponent } from '../../../page-components-shared/folder-common/create-folder/create-folder.component';
+import { UploadComponent } from '../../../page-components-shared/file-common/upload/upload.component';
 import { FolderContentComponent } from '../folder-content/folder-content.component';
 import { FileContentComponent } from '../file-content/file-content.component';
 

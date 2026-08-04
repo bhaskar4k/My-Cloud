@@ -6,7 +6,7 @@ import { throwError } from 'rxjs';
 import { JwtTokenKey, ResponseTypeColor } from '../constants/commonConsts';
 import { AuthService } from '../services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
-import { CustomAlertComponent } from '../common-components/custom-alert/custom-alert.component';
+import { CustomAlertComponent } from '../page-components-shared/custom-alert/custom-alert.component';
 
 export const JwtInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
