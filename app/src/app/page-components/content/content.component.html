@@ -46,7 +46,7 @@
 
 
     <!-- Empty State (shows when no folders exist) -->
-    <div *ngIf="!AllFolder?.HasFolder" class="empty-folder-state text-center p-5 my-4 rounded-3">
+    <div *ngIf="!AllFolder.HasFolder" class="empty-folder-state text-center p-5 my-4 rounded-3">
         <div class="empty-icon-wrapper mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle">
             <i class="bi bi-folder2-open fs-1 text-muted"></i>
         </div>
@@ -59,7 +59,7 @@
 
     <div *ngIf="AllFolder.HasFolder" class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-4 g-3">
 
-        <div class="col" *ngFor="let folder of AllFolder?.FoldersList">
+        <div class="col" *ngFor="let folder of AllFolder.FoldersList">
 
             <div class="card h-100 border-0 shadow-sm dark-folder-card position-relative overflow-hidden cursor-pointer"
                 (click)="NavigateToFolder(folder)">
