@@ -104,7 +104,7 @@ public class FolderService {
 
 
 
-    private TFolderMaster GetCurrentFolderInfoFromFolderId(Long UserId, String FolderId){
+    public TFolderMaster GetCurrentFolderInfoFromFolderId(Long UserId, String FolderId){
         Optional<TFolderMaster> CurrentFolder;
 
         if (FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)) {

@@ -42,7 +42,7 @@ export class UploadService {
     });
   }
 
-  async StartBackgroundUpload(file: File): Promise<void> {
+  async StartBackgroundUpload(file: File, FolderId: string): Promise<void> {
     this.IsUploading$.next(true);
     this.UploadProgress$.next(0);
     this.ActiveFileName$.next(file.name);
@@ -58,7 +58,8 @@ export class UploadService {
       const payload = {
         fileName: file.name,
         fileSize: file.size,
-        contentType: file.type || 'application/octet-stream'
+        contentType: file.type || 'application/octet-stream',
+        folderId: FolderId
       };
 
       const initiatedResponse = await firstValueFrom(this.InitiateUpload(payload));

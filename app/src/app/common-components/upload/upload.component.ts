@@ -46,7 +46,7 @@ export class UploadComponent implements OnInit {
     this.SelectedFile = null;
 
     try {
-      await this.uploadService.StartBackgroundUpload(fileToUpload);
+      await this.uploadService.StartBackgroundUpload(fileToUpload, this.FolderId);
 
       this.dialog.open(CustomAlertComponent, {
         data: { text: "File has been uploaded successfully.", type: ResponseTypeColor.SUCCESS }

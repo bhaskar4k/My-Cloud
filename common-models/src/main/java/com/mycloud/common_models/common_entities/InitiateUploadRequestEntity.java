@@ -7,4 +7,5 @@ public class InitiateUploadRequestEntity {
     private String fileName;
     private long fileSize;
     private String contentType;
+    private String folderId;
 }
