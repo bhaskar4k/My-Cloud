@@ -10,11 +10,13 @@ import { FolderDetailsEntity, FolderInfoEntity } from '../../../models/folder.mo
 import { CommonModule } from '@angular/common';
 import { CreateFolderComponent } from '../../../common-components/create-folder/create-folder.component';
 import { UploadComponent } from '../../../common-components/upload/upload.component';
+import { FolderContentComponent } from '../folder-content/folder-content.component';
 
 @Component({
   selector: 'app-content-base',
   imports: [
-    CommonModule
+    CommonModule,
+    FolderContentComponent
   ],
   templateUrl: './content-base.component.html',
   styleUrl: './content-base.component.css'
@@ -24,6 +26,7 @@ export class ContentBaseComponent {
   FullFolderPath: FolderInfoEntity[] = [];
   AllFolder: FolderDetailsEntity = { HasFolder: false, FolderCount: 0, FoldersList: [] };
 
+  RenderFolderList: boolean = true;
   MatProgressBar = false;
 
   constructor(
@@ -113,6 +116,9 @@ export class ContentBaseComponent {
   }
 
   GetAllChildFolders() {
+    this.RenderFolderList = false;
+    this.MatProgressBar = true;
+
     this.folderService.GetAllChildFoldersByFolderId(this.CurrentFolderId).subscribe({
       next: (response: ApiResponseDto) => {
         this.MatProgressBar = false;
@@ -123,6 +129,7 @@ export class ContentBaseComponent {
 
         this.AllFolder = response.data as FolderDetailsEntity;
         this.AllFolder.FoldersList.reverse();
+        this.RenderFolderList = true;
       },
       error: (err: any) => {
         this.dialog.open(CustomAlertComponent, { data: { text: "Failed to fetch all folder lists.", type: ResponseTypeColor.ERROR } });
@@ -140,9 +147,5 @@ export class ContentBaseComponent {
 
   NavigateToFolder(Folder: FolderInfoEntity) {
     window.location.href = "/content/" + Folder.FolderId;
-  }
-
-  ViewMoreInFolder(Folder: FolderInfoEntity) {
-
   }
 }
