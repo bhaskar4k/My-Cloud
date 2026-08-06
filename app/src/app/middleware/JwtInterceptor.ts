@@ -15,13 +15,17 @@ export const JwtInterceptor: HttpInterceptorFn = (req, next) => {
 
   const token = localStorage.getItem(JwtTokenKey);
 
-  const authReq = token
-    ? req.clone({
+  let authReq = req.clone({
+    withCredentials: true
+  });
+
+  if (token) {
+    authReq = authReq.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
       }
-    })
-    : req;
+    });
+  }
 
   return next(authReq).pipe(
     catchError((error) => {
