@@ -205,81 +205,81 @@ export const FILE_TYPE_ICON_MAP: Record<FileType, FileIcon> = {
 
     [FileType.IMAGE]: {
         icon: 'bi-file-earmark-image-fill',
-        color: 'text-success'
+        color: 'file-color-image'
     },
 
     [FileType.VIDEO]: {
         icon: 'bi-file-earmark-play-fill',
-        color: 'text-danger'
+        color: 'file-color-video'
     },
 
     [FileType.AUDIO]: {
         icon: 'bi-file-earmark-music-fill',
-        color: 'text-primary'
+        color: 'file-color-audio'
     },
 
     [FileType.PDF]: {
         icon: 'bi-file-earmark-pdf-fill',
-        color: 'text-danger'
+        color: 'file-color-pdf'
     },
 
     [FileType.WORD]: {
         icon: 'bi-file-earmark-word-fill',
-        color: 'text-primary'
+        color: 'file-color-word'
     },
 
     [FileType.EXCEL]: {
         icon: 'bi-file-earmark-excel-fill',
-        color: 'text-success'
+        color: 'file-color-excel'
     },
 
     [FileType.POWERPOINT]: {
         icon: 'bi-file-earmark-ppt-fill',
-        color: 'text-warning'
+        color: 'file-color-powerpoint'
     },
 
     [FileType.TEXT]: {
         icon: 'bi-file-earmark-text-fill',
-        color: 'text-secondary'
+        color: 'file-color-text'
     },
 
     [FileType.CSV]: {
         icon: 'bi-filetype-csv',
-        color: 'text-success'
+        color: 'file-color-csv'
     },
 
     [FileType.JSON]: {
         icon: 'bi-filetype-json',
-        color: 'text-warning'
+        color: 'file-color-json'
     },
 
     [FileType.XML]: {
         icon: 'bi-filetype-xml',
-        color: 'text-danger'
+        color: 'file-color-xml'
     },
 
     [FileType.ARCHIVE]: {
         icon: 'bi-file-earmark-zip-fill',
-        color: 'text-warning'
+        color: 'file-color-archive'
     },
 
     [FileType.FONT]: {
         icon: 'bi-file-earmark-font-fill',
-        color: 'text-info'
+        color: 'file-color-font'
     },
 
     [FileType.CODE]: {
         icon: 'bi-file-earmark-code-fill',
-        color: 'text-dark'
+        color: 'file-color-code'
     },
 
     [FileType.DOCUMENT]: {
         icon: 'bi-file-earmark-fill',
-        color: 'text-secondary'
+        color: 'file-color-document'
     },
 
     [FileType.UNKNOWN]: {
         icon: 'bi-file-earmark-fill',
-        color: 'text-secondary'
+        color: 'file-color-unknown'
     }
 };
