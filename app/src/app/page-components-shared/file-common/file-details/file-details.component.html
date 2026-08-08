@@ -18,7 +18,8 @@
 
             <hr>
 
-            <i [class]="'bi fs-3 p-0 m-0 ' + GetFileIcon(File.ContentType).icon + ' ' + GetFileIcon(File.ContentType).color">
+            <i
+                [class]="'bi fs-3 p-0 m-0 ' + GetFileIcon(File.ContentType).icon + ' ' + GetFileIcon(File.ContentType).color">
             </i>
 
             <table class="file-details-table mt-2">
@@ -29,8 +30,8 @@
                     </tr>
 
                     <tr>
-                        <th class="fw-bold width_max_content">Size (Byte)</th>
-                        <td class="fw-semibold">{{ File.FileSize }}</td>
+                        <th class="fw-bold width_max_content">Actual Size</th>
+                        <td class="fw-semibold">{{ File.FileSize }} Bytes</td>
                     </tr>
 
                     <tr>
@@ -57,6 +58,11 @@
                     <tr>
                         <th class="fw-bold width_max_content">Uploaded Ago</th>
                         <td class="fw-semibold">{{ File.UploadedAgo }}</td>
+                    </tr>
+
+                    <tr>
+                        <th class="fw-bold width_max_content">Modified At</th>
+                        <td class="fw-semibold">{{ File.ModifiedAt }}</td>
                     </tr>
                 </tbody>
             </table>

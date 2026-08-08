@@ -15,4 +15,5 @@ public class FileInformationEntity {
     private Long FileSize;
     private String CreatedAt;
     private String UploadedAgo;
+    private String ModifiedAt;
 }

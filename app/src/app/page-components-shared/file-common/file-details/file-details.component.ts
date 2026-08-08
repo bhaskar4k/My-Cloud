@@ -17,7 +17,8 @@ export class FileDetailsComponent implements OnInit {
     ContentType: '',
     FileSize: 0,
     CreatedAt: '',
-    UploadedAgo: ''
+    UploadedAgo: '',
+    ModifiedAt: ''
   };
 
   GetReadableFileSize = GetReadableFileSize;

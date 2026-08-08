@@ -90,6 +90,7 @@ public class FileService {
                         if (file.getCreatedAt() != null) {
                             dto.setCreatedAt(file.getCreatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
                             dto.setUploadedAgo(DatetimeUtil.GetUploadedAgo(file.getCreatedAt()));
+                            dto.setModifiedAt(file.getUpdatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
                         }
 
                         return dto;

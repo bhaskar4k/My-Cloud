@@ -23,7 +23,8 @@ export class FileCardComponent implements OnInit, OnDestroy {
     ContentType: '',
     FileSize: 0,
     CreatedAt: '',
-    UploadedAgo: ''
+    UploadedAgo: '',
+    ModifiedAt: ''
   };
 
   File: FileInfoEntity = {
@@ -33,7 +34,8 @@ export class FileCardComponent implements OnInit, OnDestroy {
     ContentType: '',
     FileSize: 0,
     CreatedAt: '',
-    UploadedAgo: ''
+    UploadedAgo: '',
+    ModifiedAt: ''
   };
 
   ShowMore: boolean = false;

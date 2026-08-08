@@ -25,4 +25,5 @@ export interface FileInfoEntity {
     FileSize: number;
     CreatedAt: string;
     UploadedAgo: string;
+    ModifiedAt: string;
 }

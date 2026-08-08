@@ -36,7 +36,8 @@ export class FilePropertiesComponent {
     ContentType: '',
     FileSize: 0,
     CreatedAt: '',
-    UploadedAgo: ''
+    UploadedAgo: '',
+    ModifiedAt: ''
   };
 
   File: FileInfoEntity = {
@@ -46,7 +47,8 @@ export class FilePropertiesComponent {
     ContentType: '',
     FileSize: 0,
     CreatedAt: '',
-    UploadedAgo: ''
+    UploadedAgo: '',
+    ModifiedAt: ''
   };
 
   constructor(
@@ -70,7 +72,6 @@ export class FilePropertiesComponent {
   ViewDetails() {
     this.dialog.open(FileDetailsComponent, {
       width: '60rem',
-      disableClose: true,
       data: this.File
     });
   }
