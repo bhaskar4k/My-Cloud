@@ -11,6 +11,7 @@ public class FileInformationEntity {
     private String FileId;
     private String OriginalName;
     private String FileExtension;
+    private String ContentType;
     private Long FileSize;
     private String CreatedAt;
     private String UploadedAgo;

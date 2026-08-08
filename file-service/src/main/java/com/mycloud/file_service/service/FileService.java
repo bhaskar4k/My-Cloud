@@ -84,6 +84,7 @@ public class FileService {
                         dto.setFileId(encryptionUtil.EncryptHexEncoding(file.getId().toString()));
                         dto.setOriginalName(file.getOriginalName());
                         dto.setFileExtension(file.getFileExtension());
+                        dto.setContentType(file.getContentType());
                         dto.setFileSize(file.getFileSize());
 
                         if (file.getCreatedAt() != null) {

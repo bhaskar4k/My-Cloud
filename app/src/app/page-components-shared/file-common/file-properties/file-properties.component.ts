@@ -33,6 +33,7 @@ export class FilePropertiesComponent {
     FileId: '',
     OriginalName: '',
     FileExtension: '',
+    ContentType: '',
     FileSize: 0,
     CreatedAt: '',
     UploadedAgo: ''
@@ -42,6 +43,7 @@ export class FilePropertiesComponent {
     FileId: '',
     OriginalName: '',
     FileExtension: '',
+    ContentType: '',
     FileSize: 0,
     CreatedAt: '',
     UploadedAgo: ''

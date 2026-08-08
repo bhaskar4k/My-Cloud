@@ -13,6 +13,7 @@ export class FileDetailsComponent implements OnInit {
     FileId: '',
     OriginalName: '',
     FileExtension: '',
+    ContentType: '',
     FileSize: 0,
     CreatedAt: '',
     UploadedAgo: ''
