@@ -53,7 +53,6 @@ export class FilePropertiesComponent {
 
   ngOnInit(): void {
     this.File = this.FileInfo;
-    console.log('File Properties Component Initialized with File Info:', this.File);
   }
 
   @HostListener('document:click', ['$event'])
