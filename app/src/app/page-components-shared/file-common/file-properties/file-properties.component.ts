@@ -97,31 +97,9 @@ export class FilePropertiesComponent {
       disableClose: true
     });
 
-    dialogRef.afterClosed().subscribe((RenamedFile: FileInfoEntity) => {
-      if (RenamedFile) {
-        let CreateFolderPayload: FileRenameInputEntity = {
-          FileId: this.File.FileId,
-          UpdatedFileName: RenamedFile.OriginalName
-        }
-
-        this.MatProgressBar = true;
-
-        this.fileService.RenameFile(CreateFolderPayload).subscribe({
-          next: (response: ApiResponseDto) => {
-            this.MatProgressBar = false;
-
-            if (response.success === true && response.statusCode === 200) {
-              this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.SUCCESS } });
-              this.File = response.data as FileInfoEntity;
-            } else {
-              this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
-            }
-          },
-          error: (err: any) => {
-            this.dialog.open(CustomAlertComponent, { data: { text: "Failed to rename this file.", type: ResponseTypeColor.ERROR } });
-            this.MatProgressBar = false;
-          }
-        });
+    dialogRef.afterClosed().subscribe((UpdatedFile: FileInfoEntity) => {
+      if (UpdatedFile) {
+        this.File = UpdatedFile;
       }
     });
   }
