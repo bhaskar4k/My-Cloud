@@ -5,6 +5,7 @@ import { FileMenuStateService } from '../../../services/file-menu-state.service'
 import { trigger, transition, style, animate } from '@angular/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { FileDetailsComponent } from '../file-details/file-details.component';
+import { RenameFileComponent } from '../rename-file/rename-file.component';
 
 @Component({
   selector: 'app-file-properties',
@@ -82,7 +83,13 @@ export class FilePropertiesComponent {
 
   FavouriteFile() { }
 
-  RenameFile() { }
+  RenameFile() {
+    const dialogRef = this.dialog.open(RenameFileComponent, {
+      data: this.File.OriginalName,
+      width: '30rem',
+      disableClose: true
+    });
+  }
 
   DeleteFile() { }
 }

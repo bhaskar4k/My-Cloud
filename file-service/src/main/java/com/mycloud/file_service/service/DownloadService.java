@@ -66,7 +66,7 @@ public class DownloadService {
                         .contentType(MediaType.parseMediaType(CurrentFile.getContentType()))
                         .header(HttpHeaders.ACCEPT_RANGES, "bytes")
                         .header(HttpHeaders.CONTENT_DISPOSITION,
-                                "attachment; filename=\"" + CurrentFile.getOriginalName() + "\"")
+                                "attachment; filename=\"" + CurrentFile.getOriginalName() + "." + CurrentFile.getFileExtension() + "\"")
                         .contentLength(length)
                         .body(region);
             }
