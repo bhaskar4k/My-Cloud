@@ -90,6 +90,10 @@ public class FileService {
 
     public ApiResponseDto<FileDetailsEntity> DoGetAllFileListByUserId(String FolderId) {
         try {
+            if (FolderId == null || FolderId.isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
             JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
                 return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
@@ -119,7 +123,7 @@ public class FileService {
     @Transactional
     public ApiResponseDto<FileInformationEntity> DoRenameFile(FileRenameInputEntity File) {
         try {
-            if (File.getFileId() == null || File.getFileId().isEmpty() ||
+            if (File == null || File.getFileId() == null || File.getFileId().isEmpty() ||
                     File.getUpdatedFileName() == null || File.getUpdatedFileName().isEmpty()){
                 return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
             }

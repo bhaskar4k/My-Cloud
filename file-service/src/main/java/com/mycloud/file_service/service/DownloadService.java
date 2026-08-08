@@ -48,6 +48,10 @@ public class DownloadService {
 
     public ResponseEntity<ResourceRegion> DownloadFile(String fileId, HttpHeaders headers) {
         try {
+            if (fileId == null || fileId.isEmpty() || headers == null || headers.isEmpty()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+
             JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

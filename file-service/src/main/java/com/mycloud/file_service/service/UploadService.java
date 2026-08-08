@@ -66,6 +66,13 @@ public class UploadService {
         Path chunkDirPath = null;
 
         try {
+            if (request == null || request.getFileName() == null || request.getFileName().isEmpty() ||
+                    request.getFileSize() == null || request.getFileSize() == 0 ||
+                    request.getContentType() == null || request.getContentType().isEmpty() ||
+                    request.getFolderId() == null || request.getFolderId().isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
             JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
                 return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");

@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class InitiateUploadRequestEntity {
     private String fileName;
-    private long fileSize;
+    private Long fileSize;
     private String contentType;
     private String folderId;
 }

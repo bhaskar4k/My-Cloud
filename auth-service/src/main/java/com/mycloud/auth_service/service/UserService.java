@@ -30,6 +30,13 @@ public class UserService {
     @Transactional
     public ApiResponseDto<Boolean> DoCreateUser(TUserMaster User) {
         try {
+            if (User == null || User.getName() == null || User.getName().isEmpty() ||
+                    User.getEmail() == null || User.getEmail().isEmpty() ||
+                    User.getPhone() == null || User.getPhone() == 0 ||
+                    User.getPassword() == null || User.getPassword().isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
             if (userRepository.existsByEmail(User.getEmail())) {
                 return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "An user with this email already exists.");
             }
@@ -56,8 +63,14 @@ public class UserService {
         }
     }
 
+
     public ApiResponseDto<String> DoLoginUser(TUserMaster user) {
         try {
+            if (user == null || user.getEmail() == null || user.getEmail().isEmpty() ||
+                    user.getPassword() == null || user.getPassword().isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
             Optional<TUserMaster> existingUser = userRepository.findByEmail(user.getEmail());
 
             if (existingUser.isEmpty()) {

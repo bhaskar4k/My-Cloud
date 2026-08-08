@@ -36,6 +36,10 @@ public class FolderService {
 
     public ApiResponseDto<FolderInfoEntity[]> DoValidateFolderAccess(String FolderId) {
         try {
+            if (FolderId == null || FolderId.isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
             JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
                 return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
@@ -134,6 +138,11 @@ public class FolderService {
     @Transactional
     public ApiResponseDto<FolderInfoEntity> DoCreateFolder(FolderInfoEntity FolderInfo) {
         try {
+            if (FolderInfo == null || FolderInfo.getFolderId() == null || FolderInfo.getFolderId().isEmpty() ||
+                FolderInfo.getFolderName() == null || FolderInfo.getFolderName().isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
             JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
                 return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
@@ -177,6 +186,10 @@ public class FolderService {
 
     public ApiResponseDto<FolderDetailsEntity> DoGetAllFolders(String FolderId) {
         try {
+            if (FolderId == null || FolderId.isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
             JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
                 return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
