@@ -12,7 +12,7 @@ import { CreateFolderComponent } from '../../../page-components-shared/folder-co
 import { UploadComponent } from '../../../page-components-shared/file-common/upload/upload.component';
 import { FolderContentComponent } from '../folder-content/folder-content.component';
 import { FileContentComponent } from '../file-content/file-content.component';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-content-base',
@@ -62,8 +62,12 @@ export class ContentBaseComponent {
   }
 
   HasAccessToFolder(): Observable<boolean> {
+    this.MatProgressBar = true;
+
     return this.folderService.ValidateFolderAccess(this.CurrentFolderId).pipe(
       map((response: ApiResponseDto) => {
+        this.MatProgressBar = false;
+
         if (response.success && response.statusCode === 200) {
           this.FullFolderPath = response.data || [] as FolderInfoEntity[];
 
@@ -79,7 +83,7 @@ export class ContentBaseComponent {
         return false;
       }),
       catchError((ex) => {
-        console.log(ex)
+        this.MatProgressBar = false;
         this.dialog.open(CustomAlertComponent, { data: { text: "Failed to validate folder access.", type: ResponseTypeColor.ERROR } });
         return of(false);
       })

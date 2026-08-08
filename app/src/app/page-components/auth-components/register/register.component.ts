@@ -11,11 +11,15 @@ import { ResponseTypeColor } from '../../../constants/commonConsts';
 import { AuthService } from '../../../services/auth.service';
 import { ApiResponseDto } from '../../../models/dto.model';
 import { Router } from '@angular/router';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-register',
   imports: [
-    ReactiveFormsModule
+    CommonModule,
+    ReactiveFormsModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
@@ -47,6 +51,8 @@ export class RegisterComponent {
     ])
   });
 
+  MatProgressBar = false;
+
   constructor(
     private dialog: MatDialog,
     private authService: AuthService,
@@ -71,8 +77,12 @@ export class RegisterComponent {
       password: this.registerForm.value.password
     };
 
+    this.MatProgressBar = true;
+
     this.authService.Register(Payload).subscribe({
       next: (response: ApiResponseDto) => {
+        this.MatProgressBar = false;
+
         if (response.success === true && response.statusCode === 200) {
           this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.SUCCESS } });
           this.router.navigate(['/login']);
@@ -81,6 +91,7 @@ export class RegisterComponent {
         }
       },
       error: (err: any) => {
+        this.MatProgressBar = false;
         this.dialog.open(CustomAlertComponent, { data: { text: "Failed to register user.", type: ResponseTypeColor.ERROR } });
       }
     });

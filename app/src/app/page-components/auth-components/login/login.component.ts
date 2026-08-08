@@ -11,11 +11,15 @@ import { Router } from '@angular/router';
 import { CustomAlertComponent } from '../../../page-components-shared/custom-alert/custom-alert.component';
 import { ResponseTypeColor } from '../../../constants/commonConsts';
 import { ApiResponseDto } from '../../../models/dto.model';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   imports: [
-    ReactiveFormsModule
+    CommonModule,
+    ReactiveFormsModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
@@ -32,6 +36,8 @@ export class LoginComponent {
     ]),
   });
 
+  MatProgressBar = false;
+
   constructor(
     private dialog: MatDialog,
     private authService: AuthService,
@@ -45,6 +51,8 @@ export class LoginComponent {
       return;
     }
 
+    this.MatProgressBar = true;
+
     const Payload = {
       email: this.loginForm.value.email,
       password: this.loginForm.value.password
@@ -52,6 +60,8 @@ export class LoginComponent {
 
     this.authService.Login(Payload).subscribe({
       next: (response: ApiResponseDto) => {
+        this.MatProgressBar = false;
+
         if (response.success === true && response.statusCode === 200) {
           this.authService.SaveJwtTokenIntoLocalStorage(response.data);
           this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.SUCCESS } });
@@ -61,6 +71,7 @@ export class LoginComponent {
         }
       },
       error: (err: any) => {
+        this.MatProgressBar = false;
         this.dialog.open(CustomAlertComponent, { data: { text: "Failed to login user.", type: ResponseTypeColor.ERROR } });
       }
     });
