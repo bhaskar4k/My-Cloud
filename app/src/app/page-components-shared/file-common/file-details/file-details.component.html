@@ -7,6 +7,51 @@
                 File Details
             </h2>
 
+            <table class="file-details-table">
+                <tbody>
+                    <tr>
+                        <th class="fw-bold width_max_content">Name</th>
+                        <td class="fw-semibold">{{ File.OriginalName }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <table class="file-details-table">
+                <tbody>
+                    <tr>
+                        <th class="fw-bold width_max_content">Size</th>
+                        <td class="fw-semibold">{{ File.FileSize }}</td>
+                    </tr>
+
+                    <tr>
+                        <th class="fw-bold width_max_content">Extension</th>
+                        <td class="fw-semibold">{{ File.FileExtension }}</td>
+                    </tr>
+
+                    <tr>
+                        <th class="fw-bold width_max_content">Content Type</th>
+                        <td class="fw-semibold">{{ File.ContentType }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <table class="file-details-table">
+                <tbody>
+                    <tr>
+                        <th class="fw-bold width_max_content">Created At</th>
+                        <td class="fw-semibold">{{ File.CreatedAt }}</td>
+                    </tr>
+
+                    <tr>
+                        <th class="fw-bold width_max_content">Uploaded Ago</th>
+                        <td class="fw-semibold">{{ File.UploadedAgo }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <div class="d-flex justify-content-end gap-2 px-3 pb-3">

@@ -69,8 +69,9 @@ export class FilePropertiesComponent {
 
   ViewDetails() {
     this.dialog.open(FileDetailsComponent, {
-      width: '30rem',
-      disableClose: true
+      width: '60rem',
+      disableClose: true,
+      data: this.File
     });
   }
 
