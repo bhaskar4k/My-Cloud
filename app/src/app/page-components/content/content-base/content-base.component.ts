@@ -12,13 +12,15 @@ import { CreateFolderComponent } from '../../../page-components-shared/folder-co
 import { UploadComponent } from '../../../page-components-shared/file-common/upload/upload.component';
 import { FolderContentComponent } from '../folder-content/folder-content.component';
 import { FileContentComponent } from '../file-content/file-content.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-content-base',
   imports: [
     CommonModule,
     FolderContentComponent,
-    FileContentComponent
+    FileContentComponent,
+    MatProgressSpinnerModule
   ],
   templateUrl: './content-base.component.html',
   styleUrl: './content-base.component.css'
@@ -60,8 +62,12 @@ export class ContentBaseComponent {
   }
 
   HasAccessToFolder(): Observable<boolean> {
+    this.MatProgressBar = true;
+
     return this.folderService.ValidateFolderAccess(this.CurrentFolderId).pipe(
       map((response: ApiResponseDto) => {
+        this.MatProgressBar = false;
+
         if (response.success && response.statusCode === 200) {
           this.FullFolderPath = response.data || [] as FolderInfoEntity[];
 
@@ -77,7 +83,7 @@ export class ContentBaseComponent {
         return false;
       }),
       catchError((ex) => {
-        console.log(ex)
+        this.MatProgressBar = false;
         this.dialog.open(CustomAlertComponent, { data: { text: "Failed to validate folder access.", type: ResponseTypeColor.ERROR } });
         return of(false);
       })
@@ -178,5 +184,9 @@ export class ContentBaseComponent {
 
   NavigateToFolder(Folder: FolderInfoEntity) {
     window.location.href = "/content/" + Folder.FolderId;
+  }
+
+  IsMatProgressBarVisible(): boolean {
+    return this.MatProgressBar || this.MatProgressBar1;
   }
 }

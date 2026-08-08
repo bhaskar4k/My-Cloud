@@ -21,7 +21,9 @@ export interface FileInfoEntity {
     FileId: string;
     OriginalName: string;
     FileExtension: string;
+    ContentType: string;
     FileSize: number;
     CreatedAt: string;
     UploadedAgo: string;
+    ModifiedAt: string;
 }

@@ -3,6 +3,8 @@ import { FileInfoEntity } from '../../../models/folder.model';
 import { DownloadService } from '../../../services/download.service';
 import { FileMenuStateService } from '../../../services/file-menu-state.service';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { MatDialog } from '@angular/material/dialog';
+import { FileDetailsComponent } from '../file-details/file-details.component';
 
 @Component({
   selector: 'app-file-properties',
@@ -31,29 +33,33 @@ export class FilePropertiesComponent {
     FileId: '',
     OriginalName: '',
     FileExtension: '',
+    ContentType: '',
     FileSize: 0,
     CreatedAt: '',
-    UploadedAgo: ''
+    UploadedAgo: '',
+    ModifiedAt: ''
   };
 
   File: FileInfoEntity = {
     FileId: '',
     OriginalName: '',
     FileExtension: '',
+    ContentType: '',
     FileSize: 0,
     CreatedAt: '',
-    UploadedAgo: ''
+    UploadedAgo: '',
+    ModifiedAt: ''
   };
 
   constructor(
     private downloadService: DownloadService,
     private elementRef: ElementRef,
-    private menuState: FileMenuStateService
+    private menuState: FileMenuStateService,
+    private dialog: MatDialog,
   ) { }
 
   ngOnInit(): void {
     this.File = this.FileInfo;
-    console.log('File Properties Component Initialized with File Info:', this.File);
   }
 
   @HostListener('document:click', ['$event'])
@@ -63,11 +69,18 @@ export class FilePropertiesComponent {
     }
   }
 
-  ViewDetails() { }
+  ViewDetails() {
+    this.dialog.open(FileDetailsComponent, {
+      width: '60rem',
+      data: this.File
+    });
+  }
 
   DownloadFile(): void {
     this.downloadService.DownloadSingleFile(this.File.FileId);
   }
+
+  FavouriteFile() { }
 
   RenameFile() { }
 

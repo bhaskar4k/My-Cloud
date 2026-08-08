@@ -75,10 +75,13 @@ public class UploadService {
             String uploadId = UUID.randomUUID().toString();
 
             String fileName = request.getFileName();
+            String originalFileName = fileName;
             String fileExtension = "";
+
             int lastIndexOfDot = fileName.lastIndexOf('.');
             if (lastIndexOfDot > 0) {
                 fileExtension = fileName.substring(lastIndexOfDot + 1);
+                originalFileName = fileName.substring(0, lastIndexOfDot);
             }
 
             // 3. Compute total chunks based on your 10MB math boundary
@@ -89,7 +92,7 @@ public class UploadService {
             fileMetadata = TFileMaster.builder()
                     .parentFolderId(ParentFolderInfo.getId())
                     .fileId(uploadId)
-                    .originalName(fileName)
+                    .originalName(originalFileName)
                     .fileExtension(fileExtension)
                     .contentType(request.getContentType() != null ? request.getContentType() : "application/octet-stream")
                     .fileSize(request.getFileSize())
