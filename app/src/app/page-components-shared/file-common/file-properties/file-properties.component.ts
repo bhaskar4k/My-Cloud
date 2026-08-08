@@ -80,6 +80,8 @@ export class FilePropertiesComponent {
     this.downloadService.DownloadSingleFile(this.File.FileId);
   }
 
+  FavouriteFile() { }
+
   RenameFile() { }
 
   DeleteFile() { }
