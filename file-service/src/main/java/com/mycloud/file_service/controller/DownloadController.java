@@ -21,7 +21,7 @@ public class DownloadController {
 
     private final DownloadService downloadService;
 
-    @GetMapping("/download/{fileId}")
+    @GetMapping("/single-file/{fileId}")
     public ResponseEntity<ResourceRegion> download(
             @PathVariable String fileId,
             @RequestHeader HttpHeaders headers)

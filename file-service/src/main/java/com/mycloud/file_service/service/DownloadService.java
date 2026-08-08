@@ -2,7 +2,11 @@ package com.mycloud.file_service.service;
 
 import com.mycloud.common_config.model.JwtConfig;
 import com.mycloud.common_config.model.StorageConfig;
+import com.mycloud.common_models.common_entities.JwtUser;
 import com.mycloud.common_models.database_entities.TFileMaster;
+import com.mycloud.common_models.database_entities.TFolderMaster;
+import com.mycloud.common_models.dto.ApiResponseDto;
+import com.mycloud.common_models.enums.UploadStatus;
 import com.mycloud.common_models.utils.JwtUtil;
 import com.mycloud.data_access_layer.repositories.TFileMasterRepository;
 import org.springframework.core.io.FileSystemResource;
@@ -18,16 +22,14 @@ import java.nio.file.Paths;
 @Service
 public class DownloadService {
     private final JwtUtil jwtUtil;
-    private final TFileMasterRepository fileMasterRepository;
-    private final FolderService folderService;
+    private final FileService fileService;
 
     private final String BASE_TEMP_DIR;
     private final String FINAL_UPLOAD_DIR;
 
-    public DownloadService(StorageConfig storageConfig, JwtConfig jwtConfig, TFileMasterRepository fileMasterRepository, FolderService folderService) throws IOException {
+    public DownloadService(StorageConfig storageConfig, JwtConfig jwtConfig, FileService fileService) throws IOException {
         this.jwtUtil = new JwtUtil(jwtConfig.getSecret(), jwtConfig.getExpiration());
-        this.fileMasterRepository = fileMasterRepository;
-        this.folderService = folderService;
+        this.fileService = fileService;
 
         Path BASE_TEMP_PATH = Paths.get(storageConfig.getRootDirectory(), storageConfig.getTempDirectory());
         Path BASE_FINAL_PATH = Paths.get(storageConfig.getRootDirectory(), storageConfig.getFinalDirectory());
@@ -46,9 +48,14 @@ public class DownloadService {
 
     public ResponseEntity<ResourceRegion> DownloadFile(String fileId, HttpHeaders headers) {
         try {
-            TFileMaster meta = fileMasterRepository.findByFileId(fileId).orElseThrow();
+            JwtUser user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
 
-            FileSystemResource resource = new FileSystemResource(this.FINAL_UPLOAD_DIR + "/" + meta.getFileId() + ".file");
+            TFileMaster CurrentFile = fileService.GetCurrentFileInfoFromFileIdAndUploadStatus(user.userId(), fileId, UploadStatus.COMPLETED);
+
+            FileSystemResource resource = new FileSystemResource(this.FINAL_UPLOAD_DIR + "/" + CurrentFile.getFileId() + ".file");
 
             long length = resource.contentLength();
 
@@ -56,10 +63,10 @@ public class DownloadService {
                 ResourceRegion region = new ResourceRegion(resource, 0, length);
 
                 return ResponseEntity.ok()
-                        .contentType(MediaType.parseMediaType(meta.getContentType()))
+                        .contentType(MediaType.parseMediaType(CurrentFile.getContentType()))
                         .header(HttpHeaders.ACCEPT_RANGES, "bytes")
                         .header(HttpHeaders.CONTENT_DISPOSITION,
-                                "attachment; filename=\"" + meta.getOriginalName() + "\"")
+                                "attachment; filename=\"" + CurrentFile.getOriginalName() + "\"")
                         .contentLength(length)
                         .body(region);
             }
@@ -72,10 +79,10 @@ public class DownloadService {
             ResourceRegion region = new ResourceRegion(resource, start, end - start + 1);
 
             return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
-                    .contentType(MediaType.parseMediaType(meta.getContentType()))
+                    .contentType(MediaType.parseMediaType(CurrentFile.getContentType()))
                     .header(HttpHeaders.ACCEPT_RANGES, "bytes")
                     .header(HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment; filename=\"" + meta.getOriginalName() + "\"")
+                            "attachment; filename=\"" + CurrentFile.getOriginalName() + "\"")
                     .header(HttpHeaders.CONTENT_RANGE,
                             "bytes " + start + "-" + end + "/" + length)
                     .contentLength(end - start + 1)

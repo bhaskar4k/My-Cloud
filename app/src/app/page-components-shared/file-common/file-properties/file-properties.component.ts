@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { FileInfoEntity } from '../../../models/folder.model';
-import { HttpClient } from '@angular/common/http';
+import { DownloadService } from '../../../services/download.service';
 
 @Component({
   selector: 'app-file-properties',
@@ -27,7 +27,7 @@ export class FilePropertiesComponent {
     UploadedAgo: ''
   };
 
-  constructor(private http: HttpClient) { }
+  constructor(private downloadService: DownloadService) { }
 
   ngOnInit(): void {
     this.File = this.FileInfo;
@@ -39,42 +39,7 @@ export class FilePropertiesComponent {
   }
 
   DownloadFile(): void {
-    window.open(
-      `http://localhost:8080/api/file/download/download/1e9041ec-5aa0-4ab9-aaea-6e87ac08db6e`,
-      "_blank"
-    );
-
-    // this.http.get(
-    //   `http://localhost:8080/api/file/download/download/1e9041ec-5aa0-4ab9-aaea-6e87ac08db6e`,
-    //   {
-    //     responseType: 'blob',
-    //     observe: 'response'
-    //   }
-    // ).subscribe(response => {
-
-    //   const blob = response.body!;
-
-    //   const disposition = response.headers.get('Content-Disposition');
-
-    //   let filename = 'download';
-
-    //   if (disposition) {
-    //     const match = disposition.match(/filename="?(.+?)"?$/);
-    //     if (match) {
-    //       filename = match[1];
-    //     }
-    //   }
-
-
-    //   const url = window.URL.createObjectURL(blob);
-
-    //   const a = document.createElement('a');
-    //   a.href = url;
-    //   a.download = filename;
-    //   a.click();
-
-    //   URL.revokeObjectURL(url);
-    // });
+    this.downloadService.DownloadSingleFile(this.File.FileId);
   }
 
   RenameFile() {

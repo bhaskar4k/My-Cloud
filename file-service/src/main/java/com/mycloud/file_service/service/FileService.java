@@ -1,12 +1,14 @@
 package com.mycloud.file_service.service;
 
 import com.mycloud.common_config.model.JwtConfig;
+import com.mycloud.common_models.common_constants.CommonConstants;
 import com.mycloud.common_models.common_entities.FileDetailsEntity;
 import com.mycloud.common_models.common_entities.FileInformationEntity;
 import com.mycloud.common_models.common_entities.JwtUser;
 import com.mycloud.common_models.database_entities.TFileMaster;
 import com.mycloud.common_models.database_entities.TFolderMaster;
 import com.mycloud.common_models.dto.ApiResponseDto;
+import com.mycloud.common_models.enums.UploadStatus;
 import com.mycloud.common_models.utils.EncryptionUtil;
 import com.mycloud.common_models.utils.JwtUtil;
 import com.mycloud.common_models.utils.DatetimeUtil;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -31,6 +34,32 @@ public class FileService {
         this.fileMasterRepository = fileMasterRepository;
         this.folderService = folderService;
         this.encryptionUtil = new EncryptionUtil(jwtConfig.getSecret());
+    }
+
+
+    public TFileMaster GetCurrentFileInfoFromFileIdAndUploadStatus(Long UserId, String FileId, UploadStatus Status){
+        Optional<TFileMaster> CurrentFile;
+
+        try {
+            FileId = encryptionUtil.DecryptHexEncoding(FileId);
+        } catch (RuntimeException ex) {
+            throw new IllegalArgumentException("The file you're trying to access is an invalid file.");
+        }
+
+        long ActualFolderId = -1L;
+        try {
+            ActualFolderId = Long.parseLong(FileId);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("The file you're trying to access is an invalid file.");
+        }
+
+        CurrentFile = fileMasterRepository.findByIdAndUserIdAndDeletedFalseAndStatus(ActualFolderId, UserId, Status);
+
+        if (CurrentFile.isEmpty()) {
+            throw new IllegalArgumentException("The file you're trying to access is an invalid file.");
+        }
+
+        return CurrentFile.get();
     }
 
 
