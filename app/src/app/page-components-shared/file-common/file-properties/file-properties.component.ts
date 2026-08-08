@@ -3,6 +3,8 @@ import { FileInfoEntity } from '../../../models/folder.model';
 import { DownloadService } from '../../../services/download.service';
 import { FileMenuStateService } from '../../../services/file-menu-state.service';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { MatDialog } from '@angular/material/dialog';
+import { FileDetailsComponent } from '../file-details/file-details.component';
 
 @Component({
   selector: 'app-file-properties',
@@ -48,7 +50,8 @@ export class FilePropertiesComponent {
   constructor(
     private downloadService: DownloadService,
     private elementRef: ElementRef,
-    private menuState: FileMenuStateService
+    private menuState: FileMenuStateService,
+    private dialog: MatDialog,
   ) { }
 
   ngOnInit(): void {
@@ -62,7 +65,12 @@ export class FilePropertiesComponent {
     }
   }
 
-  ViewDetails() { }
+  ViewDetails() {
+    this.dialog.open(FileDetailsComponent, {
+      width: '30rem',
+      disableClose: true
+    });
+  }
 
   DownloadFile(): void {
     this.downloadService.DownloadSingleFile(this.File.FileId);

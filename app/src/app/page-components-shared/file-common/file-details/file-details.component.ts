@@ -1,0 +1,35 @@
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { FileInfoEntity } from '../../../models/folder.model';
+
+@Component({
+  selector: 'app-file-details',
+  imports: [],
+  templateUrl: './file-details.component.html',
+  styleUrl: './file-details.component.css'
+})
+export class FileDetailsComponent implements OnInit {
+  File: FileInfoEntity = {
+    FileId: '',
+    OriginalName: '',
+    FileExtension: '',
+    FileSize: 0,
+    CreatedAt: '',
+    UploadedAgo: ''
+  };
+
+  constructor(
+    private dialogRef: MatDialogRef<FileDetailsComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: FileInfoEntity
+  ) {
+    this.File = data;
+  }
+
+  ngOnInit(): void {
+    this.File = this.data;
+  }
+
+  close() {
+    this.dialogRef.close(null);
+  }
+}
