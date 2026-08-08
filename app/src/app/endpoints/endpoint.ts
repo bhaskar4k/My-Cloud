@@ -22,6 +22,9 @@ export const Endpoints = {
         Initiate: "file/upload/initiate",
         Chunk: "file/upload/chunk"
     },
+    Download: {
+        SingleFile: "file/download/single-file"
+    },
     Folder: {
         ValidateFolderAccess: "file/folder/validate-folder-access",
         Create: "file/folder/create",

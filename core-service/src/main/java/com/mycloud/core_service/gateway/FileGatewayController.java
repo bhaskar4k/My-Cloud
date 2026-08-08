@@ -5,6 +5,7 @@ import com.mycloud.common_config.model.JwtConfig;
 import com.mycloud.common_models.enums.ServiceName;
 import com.mycloud.common_models.utils.JwtUtil; // Injected to read user data
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -99,24 +100,37 @@ public class FileGatewayController {
             }
 
             boolean hasValidToken = false;
+            String token = null;
 
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String token = authHeader.substring(7);
-                try {
-                    if (jwtUtil.ValidateToken(token)) {
-                        Long userId = jwtUtil.ExtractUserId(token);
-                        String email = jwtUtil.ExtractEmail(token);
+                token = authHeader.substring(7);
+            } else {
+                Cookie[] cookies = request.getCookies();
 
-                        // Inject verified user contexts into the connection
-                        connection.setRequestProperty("X-User-Id", String.valueOf(userId));
-                        connection.setRequestProperty("X-User-Email", email);
-                        connection.setRequestProperty("X-User-Authenticated", "true");
-
-                        hasValidToken = true;
+                if (cookies != null) {
+                    for (Cookie cookie : cookies) {
+                        if ("MY_CLOUD_COOKIE".equals(cookie.getName())) {
+                            token = cookie.getValue();
+                            break;
+                        }
                     }
-                } catch (Exception e) {
-                    System.err.println("Failed to propagate user context headers in File Gateway: " + e.getMessage());
                 }
+            }
+
+            try {
+                if (jwtUtil.ValidateToken(token)) {
+                    Long userId = jwtUtil.ExtractUserId(token);
+                    String email = jwtUtil.ExtractEmail(token);
+
+                    // Inject verified user contexts into the connection
+                    connection.setRequestProperty("X-User-Id", String.valueOf(userId));
+                    connection.setRequestProperty("X-User-Email", email);
+                    connection.setRequestProperty("X-User-Authenticated", "true");
+
+                    hasValidToken = true;
+                }
+            } catch (Exception e) {
+                System.err.println("Failed to propagate user context headers in File Gateway: " + e.getMessage());
             }
 
             // 3. Explicitly overwrite spoofed data if request is unauthenticated/public

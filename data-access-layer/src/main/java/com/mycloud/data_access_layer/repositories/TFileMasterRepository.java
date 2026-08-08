@@ -1,6 +1,7 @@
 package com.mycloud.data_access_layer.repositories;
 
 import com.mycloud.common_models.database_entities.TFileMaster;
+import com.mycloud.common_models.enums.UploadStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,5 +17,11 @@ public interface TFileMasterRepository extends JpaRepository<TFileMaster, Long> 
     List<TFileMaster> findByUserIdAndParentFolderIdAndDeletedFalseOrderByCreatedAtDesc(
             Long userId,
             Long parentFolderId
+    );
+
+    Optional<TFileMaster> findByIdAndUserIdAndDeletedFalseAndStatus(
+            Long id,
+            Long userId,
+            UploadStatus status
     );
 }

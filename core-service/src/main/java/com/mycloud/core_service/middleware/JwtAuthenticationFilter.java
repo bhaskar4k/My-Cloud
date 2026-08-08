@@ -5,6 +5,7 @@ import com.mycloud.common_models.common_entities.JwtUser;
 import com.mycloud.common_models.utils.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -46,13 +47,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
+        Cookie[] cookies = request.getCookies();
+
+        String token = null;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            sendUnauthorized(response);
-            return;
-        }
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("MY_CLOUD_COOKIE".equals(cookie.getName())) {
+                        token = cookie.getValue();
+                        break;
+                    }
+                }
+            }
 
-        String token = authHeader.substring(7);
+            if (token == null){
+                sendUnauthorized(response);
+                return;
+            }
+        } else {
+            token = authHeader.substring(7);
+        }
 
         try {
             if (!jwtUtil.ValidateToken(token)) {
