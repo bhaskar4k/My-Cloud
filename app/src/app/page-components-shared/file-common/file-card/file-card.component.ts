@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FileDetailsEntity, FileInfoEntity } from '../../../models/folder.model';
 import { FilePropertiesComponent } from '../file-properties/file-properties.component';
+import { Subscription } from 'rxjs';
+import { FileMenuStateService } from '../../../services/file-menu-state.service';
 
 @Component({
   selector: 'app-file-card',
@@ -12,7 +14,7 @@ import { FilePropertiesComponent } from '../file-properties/file-properties.comp
   templateUrl: './file-card.component.html',
   styleUrl: './file-card.component.css'
 })
-export class FileCardComponent implements OnInit {
+export class FileCardComponent implements OnInit, OnDestroy {
   @Input() FileInfo: FileInfoEntity = {
     FileId: '',
     OriginalName: '',
@@ -32,12 +34,30 @@ export class FileCardComponent implements OnInit {
   };
 
   ShowMore: boolean = false;
+  private sub: Subscription;
+
+  constructor(
+    private menuState: FileMenuStateService
+  ) {
+    this.sub = this.menuState.openId.subscribe(id => {
+      this.ShowMore = id === this.fileId;
+    });
+  }
+
+  get fileId(): string {
+    return this.File?.FileId;
+  }
 
   ngOnInit(): void {
     this.File = this.FileInfo;
   }
 
-  ViewMoreInFile(): void {
-    this.ShowMore = !this.ShowMore;
+  ViewMoreInFile(event: MouseEvent): void {
+    event.stopPropagation();
+    this.menuState.toggle(this.fileId);
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 }
