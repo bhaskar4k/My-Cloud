@@ -4,6 +4,7 @@ import com.mycloud.common_config.model.JwtConfig;
 import com.mycloud.common_models.common_constants.CommonConstants;
 import com.mycloud.common_models.common_entities.FileDetailsEntity;
 import com.mycloud.common_models.common_entities.FileInformationEntity;
+import com.mycloud.common_models.common_entities.FileRenameInputEntity;
 import com.mycloud.common_models.common_entities.JwtUser;
 import com.mycloud.common_models.database_entities.TFileMaster;
 import com.mycloud.common_models.database_entities.TFolderMaster;
@@ -14,7 +15,9 @@ import com.mycloud.common_models.utils.JwtUtil;
 import com.mycloud.common_models.utils.DatetimeUtil;
 import com.mycloud.data_access_layer.repositories.TFileMasterRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
@@ -63,11 +66,33 @@ public class FileService {
     }
 
 
+    private FileInformationEntity GetFileInformationDto(TFileMaster File) {
+        try {
+            FileInformationEntity dto = new FileInformationEntity();
+            dto.setFileId(encryptionUtil.EncryptHexEncoding(File.getId().toString()));
+            dto.setOriginalName(File.getOriginalName());
+            dto.setFileExtension(File.getFileExtension());
+            dto.setContentType(File.getContentType());
+            dto.setFileSize(File.getFileSize());
+
+            if (File.getCreatedAt() != null) {
+                dto.setCreatedAt(File.getCreatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
+                dto.setUploadedAgo(DatetimeUtil.GetUploadedAgo(File.getCreatedAt()));
+                dto.setModifiedAt(File.getUpdatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
+            }
+
+            return dto;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     public ApiResponseDto<FileDetailsEntity> DoGetAllFileListByUserId(String FolderId) {
         try {
             JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
-                return ApiResponseDto.Error(500, "Access denied. Please login again.");
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
             }
 
             TFolderMaster CurrentFolder = folderService.GetCurrentFolderInfoFromFolderId(user.userId(), FolderId);
@@ -79,22 +104,7 @@ public class FileService {
             Output.FileCount = files.size();
 
             Output.FilesList = files.stream()
-                    .map(file -> {
-                        FileInformationEntity dto = new FileInformationEntity();
-                        dto.setFileId(encryptionUtil.EncryptHexEncoding(file.getId().toString()));
-                        dto.setOriginalName(file.getOriginalName());
-                        dto.setFileExtension(file.getFileExtension());
-                        dto.setContentType(file.getContentType());
-                        dto.setFileSize(file.getFileSize());
-
-                        if (file.getCreatedAt() != null) {
-                            dto.setCreatedAt(file.getCreatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
-                            dto.setUploadedAgo(DatetimeUtil.GetUploadedAgo(file.getCreatedAt()));
-                            dto.setModifiedAt(file.getUpdatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
-                        }
-
-                        return dto;
-                    })
+                    .map(this::GetFileInformationDto)
                     .toList();
 
             return ApiResponseDto.Success("File list has been fetched successfully.", Output);
@@ -102,6 +112,32 @@ public class FileService {
             ex.printStackTrace();
 
             return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to fetch all files list.");
+        }
+    }
+
+
+    @Transactional
+    public ApiResponseDto<FileInformationEntity> DoRenameFile(FileRenameInputEntity File) {
+        try {
+            if (File.getFileId() == null || File.getFileId().isEmpty() ||
+                    File.getUpdatedFileName() == null || File.getUpdatedFileName().isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
+            JwtUser user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
+            }
+
+            TFileMaster CurrentFile = GetCurrentFileInfoFromFileIdAndUploadStatus(user.userId(), File.getFileId(), UploadStatus.COMPLETED);
+            CurrentFile.setOriginalName(File.getUpdatedFileName());
+            fileMasterRepository.save(CurrentFile);
+
+            return ApiResponseDto.Success("File has been renamed successfully.", GetFileInformationDto(CurrentFile));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to rename this file.");
         }
     }
 }

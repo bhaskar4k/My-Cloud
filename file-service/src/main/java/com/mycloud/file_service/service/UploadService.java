@@ -51,7 +51,7 @@ public class UploadService {
 
 
     @Transactional
-    public void UpdateStatusOfFileUploadProcess(String fileId, UploadStatus status) {
+    private void UpdateStatusOfFileUploadProcess(String fileId, UploadStatus status) {
         TFileMaster fileMaster = fileMasterRepository.findByFileId(fileId)
                 .orElseThrow(() -> new RuntimeException("File not found: " + fileId));
 
@@ -68,7 +68,7 @@ public class UploadService {
         try {
             JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
-                return ApiResponseDto.Error(500, "Access denied. Please login again.");
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
             }
 
             // Generate a secure unique ID for this upload session

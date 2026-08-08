@@ -38,7 +38,7 @@ public class FolderService {
         try {
             JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
-                return ApiResponseDto.Error(500, "Access denied. Please login again.");
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
             }
 
             if (FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)) {
@@ -136,7 +136,7 @@ public class FolderService {
         try {
             JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
-                return ApiResponseDto.Error(500, "Access denied. Please login again.");
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
             }
 
             TFolderMaster CurrentFetchedFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderInfo.getFolderId());
@@ -179,7 +179,7 @@ public class FolderService {
         try {
             JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
-                return ApiResponseDto.Error(500, "Access denied. Please login again.");
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
             }
 
             TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderId);

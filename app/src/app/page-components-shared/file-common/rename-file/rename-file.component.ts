@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
+import { FileInfoEntity } from '../../../models/folder.model';
 
 @Component({
   selector: 'app-rename-file',
@@ -9,25 +10,34 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './rename-file.component.css'
 })
 export class RenameFileComponent implements OnInit {
-  fileName: string = '';
+  File: FileInfoEntity = {
+    FileId: '',
+    OriginalName: '',
+    FileExtension: '',
+    ContentType: '',
+    FileSize: 0,
+    CreatedAt: '',
+    UploadedAgo: '',
+    ModifiedAt: ''
+  };
 
   constructor(
     private dialogRef: MatDialogRef<RenameFileComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: string
+    @Inject(MAT_DIALOG_DATA) public data: FileInfoEntity
   ) {
-    this.fileName = data;
+    this.File = structuredClone(data);
   }
 
   ngOnInit(): void {
-    this.fileName = this.data;
+    this.File = structuredClone(this.data);
   }
 
   isSaveDisabled(): boolean {
-    return this.fileName.trim().length === 0;
+    return this.File.OriginalName.trim().length === 0;
   }
 
   save() {
-    const trimmed = this.fileName.trim();
+    const trimmed = this.File.OriginalName.trim();
     if (trimmed) {
       this.dialogRef.close(trimmed);
     }

@@ -85,7 +85,7 @@ export class FilePropertiesComponent {
 
   RenameFile() {
     const dialogRef = this.dialog.open(RenameFileComponent, {
-      data: this.File.OriginalName,
+      data: this.File,
       width: '30rem',
       disableClose: true
     });
