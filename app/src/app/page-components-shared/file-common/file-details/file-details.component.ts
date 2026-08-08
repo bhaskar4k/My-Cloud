@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FileInfoEntity } from '../../../models/folder.model';
+import { GetFileIcon, GetFileType, GetReadableFileSize } from '../../../common/FileUtil';
 
 @Component({
   selector: 'app-file-details',
@@ -18,6 +19,10 @@ export class FileDetailsComponent implements OnInit {
     CreatedAt: '',
     UploadedAgo: ''
   };
+
+  GetReadableFileSize = GetReadableFileSize;
+  GetFileType = GetFileType;
+  GetFileIcon = GetFileIcon;
 
   constructor(
     private dialogRef: MatDialogRef<FileDetailsComponent>,

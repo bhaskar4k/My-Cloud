@@ -18,10 +18,18 @@
 
             <hr>
 
-            <table class="file-details-table">
+            <i [class]="'bi fs-3 p-0 m-0 ' + GetFileIcon(File.ContentType).icon + ' ' + GetFileIcon(File.ContentType).color">
+            </i>
+
+            <table class="file-details-table mt-2">
                 <tbody>
                     <tr>
                         <th class="fw-bold width_max_content">Size</th>
+                        <td class="fw-semibold">{{ GetReadableFileSize(File.FileSize) }}</td>
+                    </tr>
+
+                    <tr>
+                        <th class="fw-bold width_max_content">Size (Byte)</th>
                         <td class="fw-semibold">{{ File.FileSize }}</td>
                     </tr>
 
@@ -42,7 +50,7 @@
             <table class="file-details-table">
                 <tbody>
                     <tr>
-                        <th class="fw-bold width_max_content">Created At</th>
+                        <th class="fw-bold width_max_content">Uploaded At</th>
                         <td class="fw-semibold">{{ File.CreatedAt }}</td>
                     </tr>
 

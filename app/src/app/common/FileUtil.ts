@@ -64,3 +64,38 @@ export function GetFileIcon(
     return FILE_TYPE_ICON_MAP[fileType]
         ?? FILE_TYPE_ICON_MAP[FileType.UNKNOWN];
 }
+
+
+export function GetReadableFileSize(
+    bytes: number | null | undefined,
+    decimals: number = 2
+): string {
+
+    if (bytes === null || bytes === undefined || isNaN(bytes)) {
+        return '0 Bytes';
+    }
+
+    if (bytes === 0) {
+        return '0 Bytes';
+    }
+
+    const k = 1024;
+
+    const units = [
+        'Bytes',
+        'KB',
+        'MB',
+        'GB',
+        'TB',
+        'PB',
+        'EB',
+        'ZB',
+        'YB'
+    ];
+
+    const index = Math.floor(Math.log(bytes) / Math.log(k));
+
+    const size = bytes / Math.pow(k, index);
+
+    return `${parseFloat(size.toFixed(decimals))} ${units[index]}`;
+}
