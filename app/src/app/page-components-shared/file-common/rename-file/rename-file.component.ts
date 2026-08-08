@@ -39,7 +39,8 @@ export class RenameFileComponent implements OnInit {
   save() {
     const trimmed = this.File.OriginalName.trim();
     if (trimmed) {
-      this.dialogRef.close(trimmed);
+      this.File.OriginalName = trimmed;
+      this.dialogRef.close(this.File);
     }
   }
 

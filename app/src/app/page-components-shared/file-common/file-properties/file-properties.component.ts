@@ -1,11 +1,15 @@
 import { Component, ElementRef, HostListener, Input } from '@angular/core';
-import { FileInfoEntity } from '../../../models/folder.model';
+import { FileInfoEntity, FileRenameInputEntity } from '../../../models/folder.model';
 import { DownloadService } from '../../../services/download.service';
 import { FileMenuStateService } from '../../../services/file-menu-state.service';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { FileDetailsComponent } from '../file-details/file-details.component';
 import { RenameFileComponent } from '../rename-file/rename-file.component';
+import { FileService } from '../../../services/file.service';
+import { ApiResponseDto } from '../../../models/dto.model';
+import { CustomAlertComponent } from '../../custom-alert/custom-alert.component';
+import { ResponseTypeColor } from '../../../constants/commonConsts';
 
 @Component({
   selector: 'app-file-properties',
@@ -52,11 +56,14 @@ export class FilePropertiesComponent {
     ModifiedAt: ''
   };
 
+  MatProgressBar: boolean = false;
+
   constructor(
     private downloadService: DownloadService,
     private elementRef: ElementRef,
     private menuState: FileMenuStateService,
     private dialog: MatDialog,
+    private fileService: FileService,
   ) { }
 
   ngOnInit(): void {
@@ -88,6 +95,34 @@ export class FilePropertiesComponent {
       data: this.File,
       width: '30rem',
       disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((RenamedFile: FileInfoEntity) => {
+      if (RenamedFile) {
+        let CreateFolderPayload: FileRenameInputEntity = {
+          FileId: this.File.FileId,
+          UpdatedFileName: RenamedFile.OriginalName
+        }
+
+        this.MatProgressBar = true;
+
+        this.fileService.RenameFile(CreateFolderPayload).subscribe({
+          next: (response: ApiResponseDto) => {
+            this.MatProgressBar = false;
+
+            if (response.success === true && response.statusCode === 200) {
+              this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.SUCCESS } });
+              this.File = response.data as FileInfoEntity;
+            } else {
+              this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
+            }
+          },
+          error: (err: any) => {
+            this.dialog.open(CustomAlertComponent, { data: { text: "Failed to rename this file.", type: ResponseTypeColor.ERROR } });
+            this.MatProgressBar = false;
+          }
+        });
+      }
     });
   }
 
