@@ -12,13 +12,15 @@ import { CreateFolderComponent } from '../../../page-components-shared/folder-co
 import { UploadComponent } from '../../../page-components-shared/file-common/upload/upload.component';
 import { FolderContentComponent } from '../folder-content/folder-content.component';
 import { FileContentComponent } from '../file-content/file-content.component';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-content-base',
   imports: [
     CommonModule,
     FolderContentComponent,
-    FileContentComponent
+    FileContentComponent,
+    MatProgressSpinnerModule
   ],
   templateUrl: './content-base.component.html',
   styleUrl: './content-base.component.css'
@@ -178,5 +180,9 @@ export class ContentBaseComponent {
 
   NavigateToFolder(Folder: FolderInfoEntity) {
     window.location.href = "/content/" + Folder.FolderId;
+  }
+
+  IsMatProgressBarVisible(): boolean {
+    return this.MatProgressBar || this.MatProgressBar1;
   }
 }
