@@ -2,10 +2,7 @@ package com.mycloud.file_service.service;
 
 import com.mycloud.common_config.model.JwtConfig;
 import com.mycloud.common_models.common_constants.CommonConstants;
-import com.mycloud.common_models.common_entities.FileDetailsEntity;
-import com.mycloud.common_models.common_entities.FileInformationEntity;
-import com.mycloud.common_models.common_entities.FileRenameInputEntity;
-import com.mycloud.common_models.common_entities.JwtUser;
+import com.mycloud.common_models.common_entities.*;
 import com.mycloud.common_models.database_entities.TFileMaster;
 import com.mycloud.common_models.database_entities.TFolderMaster;
 import com.mycloud.common_models.dto.ApiResponseDto;
@@ -140,6 +137,33 @@ public class FileService {
             CurrentFile = GetCurrentFileInfoFromFileIdAndUploadStatus(user.userId(), File.getFileId(), UploadStatus.COMPLETED);
 
             return ApiResponseDto.Success("File has been renamed successfully.", GetFileInformationDto(CurrentFile));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to rename this file.");
+        }
+    }
+
+
+    @Transactional
+    public ApiResponseDto<FileInformationEntity> DoDelete(FileDeleteInputEntity File) {
+        try {
+            if (File == null || File.getFileId() == null || File.getFileId().isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
+            JwtUser user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
+            }
+
+//            TFileMaster CurrentFile = GetCurrentFileInfoFromFileIdAndUploadStatus(user.userId(), File.getFileId(), UploadStatus.COMPLETED);
+//            CurrentFile.setOriginalName(File.getUpdatedFileName());
+//            fileMasterRepository.save(CurrentFile);
+//
+//            CurrentFile = GetCurrentFileInfoFromFileIdAndUploadStatus(user.userId(), File.getFileId(), UploadStatus.COMPLETED);
+
+            return ApiResponseDto.Success("File has been renamed successfully.", null);
         } catch (Exception ex) {
             ex.printStackTrace();
 

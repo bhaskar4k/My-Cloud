@@ -1,9 +1,6 @@
 package com.mycloud.file_service.controller;
 
-import com.mycloud.common_models.common_entities.FileDetailsEntity;
-import com.mycloud.common_models.common_entities.FileInformationEntity;
-import com.mycloud.common_models.common_entities.FileRenameInputEntity;
-import com.mycloud.common_models.common_entities.InitiateUploadRequestEntity;
+import com.mycloud.common_models.common_entities.*;
 import com.mycloud.common_models.dto.ApiResponseDto;
 import com.mycloud.file_service.service.FileService;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +31,17 @@ public class FileController {
     public ApiResponseDto<FileInformationEntity> Rename(@RequestBody FileRenameInputEntity File) {
         try {
             return fileService.DoRenameFile(File);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An internal error was occurred.");
+        }
+    }
+
+    @DeleteMapping("/delete")
+    public ApiResponseDto<FileInformationEntity> Delete(@RequestBody FileDeleteInputEntity File) {
+        try {
+            return fileService.DoDelete(File);
         } catch (Exception ex) {
             ex.printStackTrace();
 

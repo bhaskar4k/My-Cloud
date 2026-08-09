@@ -13,9 +13,12 @@ import java.util.List;
 
 @Repository
 public interface TFileMasterRepository extends JpaRepository<TFileMaster, Long> {
-    Optional<TFileMaster> findByFileId(String fileId);
+    Optional<TFileMaster> findByFileIdAndUserIdAndDeleted(
+            String fileId,
+            Long userId,
+            Boolean deleted
+    );
 
-    List<TFileMaster> findByUserIdAndDeletedFalseOrderByCreatedAtDesc(Long userId);
 
     List<TFileMaster> findByUserIdAndParentFolderIdAndDeletedFalseOrderByCreatedAtDesc(
             Long userId,
@@ -26,16 +29,5 @@ public interface TFileMasterRepository extends JpaRepository<TFileMaster, Long> 
             Long id,
             Long userId,
             UploadStatus status
-    );
-
-    @Modifying
-    @Query("""
-        UPDATE TFileMaster f
-        SET f.originalName = :originalName
-        WHERE f.id = :id
-    """)
-    int updateOriginalNameById(
-            @Param("id") Long id,
-            @Param("originalName") String originalName
     );
 }
