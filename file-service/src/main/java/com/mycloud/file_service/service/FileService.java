@@ -98,7 +98,12 @@ public class FileService {
 
             TFolderMaster CurrentFolder = folderService.GetCurrentFolderInfoFromFolderId(user.userId(), FolderId);
 
-            List<TFileMaster> files = fileMasterRepository.findByUserIdAndParentFolderIdAndDeletedFalseOrderByCreatedAtDesc(user.userId(), CurrentFolder.getId());
+            List<TFileMaster> files = fileMasterRepository.findByUserIdAndParentFolderIdAndDeletedAndStatusOrderByCreatedAtDesc(
+                    user.userId(),
+                    CurrentFolder.getId(),
+                    false,
+                    UploadStatus.COMPLETED
+            );
 
             FileDetailsEntity Output = new FileDetailsEntity();
             Output.HasFile = !files.isEmpty();

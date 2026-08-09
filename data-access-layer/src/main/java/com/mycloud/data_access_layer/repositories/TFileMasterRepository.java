@@ -20,9 +20,11 @@ public interface TFileMasterRepository extends JpaRepository<TFileMaster, Long> 
     );
 
 
-    List<TFileMaster> findByUserIdAndParentFolderIdAndDeletedFalseOrderByCreatedAtDesc(
+    List<TFileMaster> findByUserIdAndParentFolderIdAndDeletedAndStatusOrderByCreatedAtDesc(
             Long userId,
-            Long parentFolderId
+            Long parentFolderId,
+            Boolean deleted,
+            UploadStatus status
     );
 
     Optional<TFileMaster> findByIdAndUserIdAndDeletedFalseAndStatus(
