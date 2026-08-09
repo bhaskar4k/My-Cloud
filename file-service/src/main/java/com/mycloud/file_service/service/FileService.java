@@ -42,6 +42,7 @@ public class FileService {
     }
 
 
+    // UTIL :: START
     public TFileMaster GetCurrentFileInfoFromFileIdAndUploadStatusAndDeleted(Long UserId, String FileId, UploadStatus Status, boolean Deleted){
         Optional<TFileMaster> CurrentFile;
 
@@ -86,6 +87,40 @@ public class FileService {
             return dto;
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+    // UTIL :: END
+
+
+
+    // BUSINESS :: START
+    public ApiResponseDto<FileInformationEntity> DoGetFileInfoByFileGuid(String FileGuid) {
+        try {
+            if (FileGuid == null || FileGuid.isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
+            JwtUser user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
+            }
+
+            Optional<TFileMaster> FileMaster = fileMasterRepository.findByFileIdAndUserIdAndDeletedAndStatus(
+                    FileGuid,
+                    user.userId(),
+                    false,
+                    UploadStatus.COMPLETED
+            );
+
+            if (FileMaster.isEmpty()) {
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "The file you're trying to access is an invalid file.");
+            }
+
+            return ApiResponseDto.Success("File information has been fetched successfully.", GetFileInformationDto(FileMaster.get()));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to fetch file information.");
         }
     }
 
@@ -188,4 +223,5 @@ public class FileService {
             return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to delete this file.", false);
         }
     }
+    // BUSINESS :: END
 }

@@ -16,6 +16,17 @@ public class FileController {
 
     private final FileService fileService;
 
+    @GetMapping("/get/{FileGuid}")
+    public ApiResponseDto<FileInformationEntity> Get(@PathVariable String FileGuid) {
+        try {
+            return fileService.DoGetFileInfoByFileGuid(FileGuid);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An internal error was occurred.");
+        }
+    }
+
     @GetMapping("/get-all/{FolderId}")
     public ApiResponseDto<FileDetailsEntity> GetAll(@PathVariable String FolderId) {
         try {

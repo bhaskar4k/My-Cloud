@@ -11,6 +11,10 @@ import { FileDeleteInputEntity, FileRenameInputEntity, FolderInfoEntity } from '
 export class FileService {
   constructor(private http: HttpClient) { }
 
+  GetFileInformationByFileGuid(FileGuid: string): Observable<ApiResponseDto> {
+    return this.http.get<ApiResponseDto>(GetBaseURL() + Endpoints.File.Get + "/" + FileGuid);
+  }
+
   RenameFile(Payload: FileRenameInputEntity): Observable<ApiResponseDto> {
     return this.http.post<ApiResponseDto>(GetBaseURL() + Endpoints.File.Rename, Payload);
   }

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, firstValueFrom } from 'rxjs';
 import { ApiResponseDto } from '../models/dto.model';
 import { Endpoints, GetBaseURL } from '../endpoints/endpoint';
+import { FileService } from './file.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,10 @@ export class UploadService {
   private uploadStartTime = 0;
   private totalFileSize = 0;
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private fileService: FileService
+  ) { }
 
   private InitiateUpload(payload: { fileName: string; fileSize: number; contentType: string }): Observable<ApiResponseDto> {
     return this.http.post<ApiResponseDto>(GetBaseURL() + Endpoints.Upload.Initiate, payload);
@@ -96,12 +100,20 @@ export class UploadService {
         }
       }
 
+      const UploadedFileMetaData = await firstValueFrom(this.fileService.GetFileInformationByFileGuid(fileId));
+
+      if (UploadedFileMetaData.success !== true || UploadedFileMetaData.statusCode !== 200) {
+        throw new Error(UploadedFileMetaData.message || "Failed to get uploaded file information.");
+      }
+
       // Success Reset
       this.IsUploading$.next(false);
       this.UploadProgress$.next(100);
       this.ActiveFileName$.next('');
       this.UploadSpeed$.next('0 KB/s');
       this.UploadEta$.next('');
+
+      return UploadedFileMetaData.data;
     }
     catch (error) {
       this.IsUploading$.next(false);
