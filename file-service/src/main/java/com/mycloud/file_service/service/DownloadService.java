@@ -57,7 +57,12 @@ public class DownloadService {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
 
-            TFileMaster CurrentFile = fileService.GetCurrentFileInfoFromFileIdAndUploadStatus(user.userId(), fileId, UploadStatus.COMPLETED);
+            TFileMaster CurrentFile = fileService.GetCurrentFileInfoFromFileIdAndUploadStatusAndDeleted(
+                    user.userId(),
+                    fileId,
+                    UploadStatus.COMPLETED,
+                    false
+            );
 
             FileSystemResource resource = new FileSystemResource(this.FINAL_UPLOAD_DIR + "/" + CurrentFile.getFileId() + ".file");
 

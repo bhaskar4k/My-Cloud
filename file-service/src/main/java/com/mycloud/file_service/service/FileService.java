@@ -37,7 +37,7 @@ public class FileService {
     }
 
 
-    public TFileMaster GetCurrentFileInfoFromFileIdAndUploadStatus(Long UserId, String FileId, UploadStatus Status){
+    public TFileMaster GetCurrentFileInfoFromFileIdAndUploadStatusAndDeleted(Long UserId, String FileId, UploadStatus Status, boolean Deleted){
         Optional<TFileMaster> CurrentFile;
 
         try {
@@ -53,7 +53,7 @@ public class FileService {
             throw new IllegalArgumentException("The file you're trying to access is an invalid file.");
         }
 
-        CurrentFile = fileMasterRepository.findByIdAndUserIdAndDeletedFalseAndStatus(ActualFolderId, UserId, Status);
+        CurrentFile = fileMasterRepository.findByIdAndUserIdAndDeletedAndStatus(ActualFolderId, UserId, Deleted, Status);
 
         if (CurrentFile.isEmpty()) {
             throw new IllegalArgumentException("The file you're trying to access is an invalid file.");
@@ -135,11 +135,11 @@ public class FileService {
                 return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
             }
 
-            TFileMaster CurrentFile = GetCurrentFileInfoFromFileIdAndUploadStatus(user.userId(), File.getFileId(), UploadStatus.COMPLETED);
+            TFileMaster CurrentFile = GetCurrentFileInfoFromFileIdAndUploadStatusAndDeleted(user.userId(), File.getFileId(), UploadStatus.COMPLETED, false);
             CurrentFile.setOriginalName(File.getUpdatedFileName());
             fileMasterRepository.save(CurrentFile);
 
-            CurrentFile = GetCurrentFileInfoFromFileIdAndUploadStatus(user.userId(), File.getFileId(), UploadStatus.COMPLETED);
+            CurrentFile = GetCurrentFileInfoFromFileIdAndUploadStatusAndDeleted(user.userId(), File.getFileId(), UploadStatus.COMPLETED, false);
 
             return ApiResponseDto.Success("File has been renamed successfully.", GetFileInformationDto(CurrentFile));
         } catch (Exception ex) {
