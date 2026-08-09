@@ -51,10 +51,7 @@ public class UploadService {
 
 
     @Transactional
-    public void UpdateStatusOfFileUploadProcess(String fileId, UploadStatus status) {
-        TFileMaster fileMaster = fileMasterRepository.findByFileId(fileId)
-                .orElseThrow(() -> new RuntimeException("File not found: " + fileId));
-
+    private void UpdateStatusOfFileUploadProcess(TFileMaster fileMaster, UploadStatus status) {
         fileMaster.setStatus(status);
 
         fileMasterRepository.save(fileMaster);
@@ -66,9 +63,16 @@ public class UploadService {
         Path chunkDirPath = null;
 
         try {
+            if (request == null || request.getFileName() == null || request.getFileName().isEmpty() ||
+                    request.getFileSize() == null || request.getFileSize() == 0 ||
+                    request.getContentType() == null || request.getContentType().isEmpty() ||
+                    request.getFolderId() == null || request.getFolderId().isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
             JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
-                return ApiResponseDto.Error(500, "Access denied. Please login again.");
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
             }
 
             // Generate a secure unique ID for this upload session
@@ -137,9 +141,28 @@ public class UploadService {
 
 
     public ApiResponseDto<Boolean> DoSaveChunk(InputStream inputStream, String uploadId, int chunkIndex, int totalChunks) throws IOException {
+        JwtUser user = new JwtUser(false, null, null);
+        TFileMaster fileMaster = new TFileMaster();
+
         try {
+            user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
+            }
+
+            fileMaster = fileMasterRepository.findByFileIdAndUserIdAndDeleted(uploadId, user.userId(), false)
+                    .orElseThrow(() -> new RuntimeException("The file you're trying to access is an invalid file."));
+
             if (chunkIndex == 0) {
-                UpdateStatusOfFileUploadProcess(uploadId, UploadStatus.UPLOADING);
+                if (fileMaster.getStatus() != UploadStatus.INITIATED){
+                    throw new RuntimeException("The file you're trying to access is an invalid file.");
+                }
+
+                UpdateStatusOfFileUploadProcess(fileMaster, UploadStatus.UPLOADING);
+            } else {
+                if (fileMaster.getStatus() != UploadStatus.UPLOADING){
+                    throw new RuntimeException("The file you're trying to access is an invalid file.");
+                }
             }
 
             Path chunkFile = Paths.get(BASE_TEMP_DIR, uploadId, "chunk_" + chunkIndex);
@@ -148,7 +171,7 @@ public class UploadService {
 
             Boolean MergingDone = false;
             if (chunkIndex == totalChunks - 1) {
-                MergingDone = MergeChunks(uploadId, totalChunks);
+                MergingDone = MergeChunks(uploadId, totalChunks, user, fileMaster);
             }
 
             if (MergingDone) {
@@ -157,16 +180,19 @@ public class UploadService {
 
             return ApiResponseDto.Error(HttpStatus.UNPROCESSABLE_CONTENT.value(), "All chunks have been uploaded successfully<br>but server failed to process and merge them.");
         } catch (Exception ex) {
+            if (user.IsAuthenticated()){
+                UpdateStatusOfFileUploadProcess(fileMaster, UploadStatus.FAILED);
+            }
+
             ex.printStackTrace();
-            UpdateStatusOfFileUploadProcess(uploadId, UploadStatus.FAILED);
             return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to upload chunk - " + chunkIndex + ".");
         }
     }
 
 
-    private Boolean MergeChunks(String UploadId, int TotalChunks) throws IOException {
+    private Boolean MergeChunks(String UploadId, int TotalChunks, JwtUser user, TFileMaster fileMaster) throws IOException {
         try {
-            UpdateStatusOfFileUploadProcess(UploadId, UploadStatus.PROCESSING);
+            UpdateStatusOfFileUploadProcess(fileMaster, UploadStatus.PROCESSING);
 
             Path tempDirPath = Paths.get(BASE_TEMP_DIR, UploadId);
             Path finalDirPath = Paths.get(FINAL_UPLOAD_DIR);
@@ -202,11 +228,11 @@ public class UploadService {
                         });
             }
 
-            UpdateStatusOfFileUploadProcess(UploadId, UploadStatus.COMPLETED);
+            UpdateStatusOfFileUploadProcess(fileMaster, UploadStatus.COMPLETED);
             return true;
         } catch (Exception ex) {
             ex.printStackTrace();
-            UpdateStatusOfFileUploadProcess(UploadId, UploadStatus.FAILED);
+            UpdateStatusOfFileUploadProcess(fileMaster, UploadStatus.FAILED);
             return false;
         }
     }

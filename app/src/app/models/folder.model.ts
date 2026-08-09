@@ -27,3 +27,8 @@ export interface FileInfoEntity {
     UploadedAgo: string;
     ModifiedAt: string;
 }
+
+export interface FileRenameInputEntity {
+    FileId: string;
+    UpdatedFileName: string;
+}

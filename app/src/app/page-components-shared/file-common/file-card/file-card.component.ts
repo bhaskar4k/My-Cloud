@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FileDetailsEntity, FileInfoEntity } from '../../../models/folder.model';
 import { FilePropertiesComponent } from '../file-properties/file-properties.component';
 import { Subscription } from 'rxjs';
@@ -38,6 +38,8 @@ export class FileCardComponent implements OnInit, OnDestroy {
     ModifiedAt: ''
   };
 
+  @Output() UpdatedFile = new EventEmitter<FileInfoEntity>();
+
   ShowMore: boolean = false;
   private sub: Subscription;
 
@@ -63,6 +65,12 @@ export class FileCardComponent implements OnInit, OnDestroy {
   ViewMoreInFile(event: MouseEvent): void {
     event.stopPropagation();
     this.menuState.toggle(this.fileId);
+  }
+
+  OnUpdateAnyFile(File: FileInfoEntity) {
+    this.File = File;
+    this.FileInfo = File;
+    this.UpdatedFile.emit(this.File);
   }
 
   ngOnDestroy() {

@@ -48,12 +48,21 @@ public class DownloadService {
 
     public ResponseEntity<ResourceRegion> DownloadFile(String fileId, HttpHeaders headers) {
         try {
+            if (fileId == null || fileId.isEmpty() || headers == null || headers.isEmpty()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+
             JwtUser user = jwtUtil.GetCurrentUser();
             if (!user.IsAuthenticated()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
 
-            TFileMaster CurrentFile = fileService.GetCurrentFileInfoFromFileIdAndUploadStatus(user.userId(), fileId, UploadStatus.COMPLETED);
+            TFileMaster CurrentFile = fileService.GetCurrentFileInfoFromFileIdAndUploadStatusAndDeleted(
+                    user.userId(),
+                    fileId,
+                    UploadStatus.COMPLETED,
+                    false
+            );
 
             FileSystemResource resource = new FileSystemResource(this.FINAL_UPLOAD_DIR + "/" + CurrentFile.getFileId() + ".file");
 
@@ -66,7 +75,7 @@ public class DownloadService {
                         .contentType(MediaType.parseMediaType(CurrentFile.getContentType()))
                         .header(HttpHeaders.ACCEPT_RANGES, "bytes")
                         .header(HttpHeaders.CONTENT_DISPOSITION,
-                                "attachment; filename=\"" + CurrentFile.getOriginalName() + "\"")
+                                "attachment; filename=\"" + CurrentFile.getOriginalName() + "." + CurrentFile.getFileExtension() + "\"")
                         .contentLength(length)
                         .body(region);
             }

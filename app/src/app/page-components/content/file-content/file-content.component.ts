@@ -20,4 +20,11 @@ export class FileContentComponent {
   ngOnInit(): void {
     this.AllFile = this.AllFileDetails;
   }
+
+  OnUpdateAnyFile(File: FileInfoEntity) {
+    const index = this.AllFile.FilesList.findIndex(f => f.FileId === File.FileId);
+    if (index !== -1) {
+      this.AllFile.FilesList[index] = File;
+    }
+  }
 }

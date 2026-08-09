@@ -63,7 +63,7 @@ public class FileGatewayController {
             String baseUrl = gatewayConfig.getFile();
 
             if (baseUrl == null) {
-                response.setStatus(500);
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.getWriter().write("File service not configured");
                 return;
             }

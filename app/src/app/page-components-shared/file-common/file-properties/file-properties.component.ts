@@ -1,10 +1,15 @@
-import { Component, ElementRef, HostListener, Input } from '@angular/core';
-import { FileInfoEntity } from '../../../models/folder.model';
+import { Component, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { FileInfoEntity, FileRenameInputEntity } from '../../../models/folder.model';
 import { DownloadService } from '../../../services/download.service';
 import { FileMenuStateService } from '../../../services/file-menu-state.service';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { FileDetailsComponent } from '../file-details/file-details.component';
+import { RenameFileComponent } from '../rename-file/rename-file.component';
+import { FileService } from '../../../services/file.service';
+import { ApiResponseDto } from '../../../models/dto.model';
+import { CustomAlertComponent } from '../../custom-alert/custom-alert.component';
+import { ResponseTypeColor } from '../../../constants/commonConsts';
 
 @Component({
   selector: 'app-file-properties',
@@ -51,11 +56,16 @@ export class FilePropertiesComponent {
     ModifiedAt: ''
   };
 
+  @Output() UpdatedFile = new EventEmitter<FileInfoEntity>();
+
+  MatProgressBar: boolean = false;
+
   constructor(
     private downloadService: DownloadService,
     private elementRef: ElementRef,
     private menuState: FileMenuStateService,
     private dialog: MatDialog,
+    private fileService: FileService,
   ) { }
 
   ngOnInit(): void {
@@ -82,7 +92,23 @@ export class FilePropertiesComponent {
 
   FavouriteFile() { }
 
-  RenameFile() { }
+  RenameFile() {
+    const dialogRef = this.dialog.open(RenameFileComponent, {
+      data: this.File,
+      width: '30rem',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((UpdatedFile: FileInfoEntity) => {
+      if (UpdatedFile) {
+        this.FileInfo = UpdatedFile;
+        this.File = UpdatedFile;
+        this.UpdatedFile.emit(UpdatedFile);
+      }
+
+      this.menuState.close();
+    });
+  }
 
   DeleteFile() { }
 }
