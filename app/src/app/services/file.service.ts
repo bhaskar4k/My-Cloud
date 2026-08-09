@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Endpoints, GetBaseURL } from '../endpoints/endpoint';
 import { Observable } from 'rxjs';
 import { ApiResponseDto } from '../models/dto.model';
-import { FileDeleteInputEntity, FileRenameInputEntity, FolderInfoEntity } from '../models/folder.model';
+import { FileDeleteInputEntity, FileFavouriteInputEntity, FileRenameInputEntity } from '../models/file.model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,5 +21,9 @@ export class FileService {
 
   DeleteFile(Payload: FileDeleteInputEntity): Observable<ApiResponseDto> {
     return this.http.delete<ApiResponseDto>(GetBaseURL() + Endpoints.File.Delete, { body: Payload });
+  }
+
+  FavouriteFile(Payload: FileFavouriteInputEntity): Observable<ApiResponseDto> {
+    return this.http.post<ApiResponseDto>(GetBaseURL() + Endpoints.File.UpdateFavourite, { body: Payload });
   }
 }

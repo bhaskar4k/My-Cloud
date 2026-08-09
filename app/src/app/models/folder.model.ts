@@ -31,12 +31,3 @@ export interface FileInfoEntity {
     DeletedAt: string | null;
     AutoDeletingAt: string | null;
 }
-
-export interface FileRenameInputEntity {
-    FileId: string;
-    UpdatedFileName: string;
-}
-
-export interface FileDeleteInputEntity {
-    FileId: string;
-}

@@ -1,5 +1,6 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
-import { FileDeleteInputEntity, FileInfoEntity } from '../../../models/folder.model';
+import { FileInfoEntity } from '../../../models/folder.model';
+import { FileDeleteInputEntity, FileFavouriteInputEntity } from '../../../models/file.model';
 import { DownloadService } from '../../../services/download.service';
 import { FileMenuStateService } from '../../../services/file-menu-state.service';
 import { trigger, transition, style, animate } from '@angular/animations';
@@ -10,7 +11,7 @@ import { FileService } from '../../../services/file.service';
 import { ApiResponseDto } from '../../../models/dto.model';
 import { CustomAlertComponent } from '../../custom-alert/custom-alert.component';
 import { ResponseTypeColor } from '../../../constants/commonConsts';
-import { FileDeleteEmitEntity } from '../../../models/file.model';
+import { FileDeleteEmitEntity, FileFavouriteEmitEntity } from '../../../models/file.model';
 
 @Component({
   selector: 'app-file-properties',
@@ -67,6 +68,7 @@ export class FilePropertiesComponent {
 
   @Output() UpdatedFile = new EventEmitter<FileInfoEntity>();
   @Output() DeletedFile = new EventEmitter<FileDeleteEmitEntity>();
+  @Output() FavouritedFile = new EventEmitter<FileFavouriteEmitEntity>();
 
   MatProgressBar: boolean = false;
 
@@ -100,7 +102,41 @@ export class FilePropertiesComponent {
     this.downloadService.DownloadSingleFile(this.File.FileId);
   }
 
-  FavouriteFile() { }
+  FavouriteFile() {
+    let FavouriteFilePayload: FileFavouriteInputEntity = {
+      FileId: this.File.FileId,
+    }
+
+    this.MatProgressBar = true;
+
+    const FileFavouriteEmitEntity: FileFavouriteEmitEntity = {
+      Favourite: false,
+      FileId: this.File.FileId
+    };
+
+    this.fileService.FavouriteFile(FavouriteFilePayload).subscribe({
+      next: (response: ApiResponseDto) => {
+        this.MatProgressBar = false;
+
+        if (response.success === true && response.statusCode === 200) {
+          this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.SUCCESS } });
+          FileFavouriteEmitEntity.Favourite = true;
+          this.FavouritedFile.emit(FileFavouriteEmitEntity);
+        } else {
+          this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
+          this.FavouritedFile.emit(FileFavouriteEmitEntity);
+        }
+
+        this.menuState.close();
+      },
+      error: (err: any) => {
+        this.dialog.open(CustomAlertComponent, { data: { text: "Failed to update favourite status of this file.", type: ResponseTypeColor.ERROR } });
+        this.MatProgressBar = false;
+        this.FavouritedFile.emit(FileFavouriteEmitEntity);
+        this.menuState.close();
+      }
+    });
+  }
 
   RenameFile() {
     const dialogRef = this.dialog.open(RenameFileComponent, {
