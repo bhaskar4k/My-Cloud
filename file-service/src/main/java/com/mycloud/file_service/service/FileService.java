@@ -136,6 +136,11 @@ public class FileService {
             }
 
             TFileMaster CurrentFile = GetCurrentFileInfoFromFileIdAndUploadStatusAndDeleted(user.userId(), File.getFileId(), UploadStatus.COMPLETED, false);
+
+            if (CurrentFile.getOriginalName().equals(File.getUpdatedFileName())){
+                return ApiResponseDto.Success("New file name is same as existing file name.<br>Skipping...", GetFileInformationDto(CurrentFile));
+            }
+
             CurrentFile.setOriginalName(File.getUpdatedFileName());
             fileMasterRepository.save(CurrentFile);
 
