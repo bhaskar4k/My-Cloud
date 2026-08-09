@@ -1,6 +1,7 @@
 package com.mycloud.file_service.service;
 
 import com.mycloud.common_config.model.JwtConfig;
+import com.mycloud.common_config.model.StorageConfig;
 import com.mycloud.common_models.common_constants.CommonConstants;
 import com.mycloud.common_models.common_entities.*;
 import com.mycloud.common_models.database_entities.TFileMaster;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -28,15 +31,18 @@ public class FileService {
     private final TFileMasterRepository fileMasterRepository;
     private final FolderService folderService;
     private final EncryptionUtil encryptionUtil;
+    private final Long AutoDeleteTimeInDays;
 
-    public FileService(JwtConfig jwtConfig, TFileMasterRepository fileMasterRepository, FolderService folderService) throws IOException {
+    public FileService(JwtConfig jwtConfig, StorageConfig storageConfig, TFileMasterRepository fileMasterRepository, FolderService folderService) throws IOException {
         this.jwtUtil = new JwtUtil(jwtConfig.getSecret(), jwtConfig.getExpiration());
         this.fileMasterRepository = fileMasterRepository;
         this.folderService = folderService;
         this.encryptionUtil = new EncryptionUtil(jwtConfig.getSecret());
+        this.AutoDeleteTimeInDays = storageConfig.getAutoDeleteTimeInDays();
     }
 
 
+    // UTIL :: START
     public TFileMaster GetCurrentFileInfoFromFileIdAndUploadStatusAndDeleted(Long UserId, String FileId, UploadStatus Status, boolean Deleted){
         Optional<TFileMaster> CurrentFile;
 
@@ -83,6 +89,40 @@ public class FileService {
             throw new RuntimeException(e);
         }
     }
+    // UTIL :: END
+
+
+
+    // BUSINESS :: START
+    public ApiResponseDto<FileInformationEntity> DoGetFileInfoByFileGuid(String FileGuid) {
+        try {
+            if (FileGuid == null || FileGuid.isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
+            JwtUser user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
+            }
+
+            Optional<TFileMaster> FileMaster = fileMasterRepository.findByFileIdAndUserIdAndDeletedAndStatus(
+                    FileGuid,
+                    user.userId(),
+                    false,
+                    UploadStatus.COMPLETED
+            );
+
+            if (FileMaster.isEmpty()) {
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "The file you're trying to access is an invalid file.");
+            }
+
+            return ApiResponseDto.Success("File information has been fetched successfully.", GetFileInformationDto(FileMaster.get()));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to fetch file information.");
+        }
+    }
 
 
     public ApiResponseDto<FileDetailsEntity> DoGetAllFileListByUserId(String FolderId) {
@@ -98,7 +138,7 @@ public class FileService {
 
             TFolderMaster CurrentFolder = folderService.GetCurrentFolderInfoFromFolderId(user.userId(), FolderId);
 
-            List<TFileMaster> files = fileMasterRepository.findByUserIdAndParentFolderIdAndDeletedAndStatusOrderByCreatedAtDesc(
+            List<TFileMaster> files = fileMasterRepository.findByUserIdAndParentFolderIdAndDeletedAndStatus(
                     user.userId(),
                     CurrentFolder.getId(),
                     false,
@@ -156,7 +196,7 @@ public class FileService {
 
 
     @Transactional
-    public ApiResponseDto<FileInformationEntity> DoDelete(FileDeleteInputEntity File) {
+    public ApiResponseDto<Boolean> DoDelete(FileDeleteInputEntity File) {
         try {
             if (File == null || File.getFileId() == null || File.getFileId().isEmpty()){
                 return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
@@ -167,17 +207,21 @@ public class FileService {
                 return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
             }
 
-//            TFileMaster CurrentFile = GetCurrentFileInfoFromFileIdAndUploadStatus(user.userId(), File.getFileId(), UploadStatus.COMPLETED);
-//            CurrentFile.setOriginalName(File.getUpdatedFileName());
-//            fileMasterRepository.save(CurrentFile);
-//
-//            CurrentFile = GetCurrentFileInfoFromFileIdAndUploadStatus(user.userId(), File.getFileId(), UploadStatus.COMPLETED);
+            TFileMaster CurrentFile = GetCurrentFileInfoFromFileIdAndUploadStatusAndDeleted(user.userId(), File.getFileId(), UploadStatus.COMPLETED, false);
 
-            return ApiResponseDto.Success("File has been renamed successfully.", null);
+            long AutoDeleteTime = Instant.now().getEpochSecond() + this.AutoDeleteTimeInDays * 86400L;
+
+            CurrentFile.setDeleted(true);
+            CurrentFile.setDeletedAt(LocalDateTime.now());
+            CurrentFile.setAutoDeleteAt(AutoDeleteTime);
+            fileMasterRepository.save(CurrentFile);
+
+            return ApiResponseDto.Success("File has been successfully moved into recycle bin.<br>It will be auto deleted from recycle bin after 30 days.", true);
         } catch (Exception ex) {
             ex.printStackTrace();
 
-            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to rename this file.");
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to delete this file.", false);
         }
     }
+    // BUSINESS :: END
 }

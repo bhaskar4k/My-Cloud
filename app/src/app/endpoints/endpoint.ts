@@ -31,7 +31,9 @@ export const Endpoints = {
         GetAll: "file/folder/get-all"
     },
     File: {
+        Get: "file/file/get",
         GetAll: "file/file/get-all",
-        Rename: "file/file/rename"
+        Rename: "file/file/rename",
+        Delete: "file/file/delete",
     }
 }

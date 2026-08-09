@@ -6,7 +6,7 @@ import { ResponseTypeColor } from '../../../constants/commonConsts';
 import { FolderService } from '../../../services/folder.service';
 import { ApiResponseDto } from '../../../models/dto.model';
 import { catchError, map, Observable, of } from 'rxjs';
-import { FileDetailsEntity, FolderDetailsEntity, FolderInfoEntity } from '../../../models/folder.model';
+import { FileDetailsEntity, FileInfoEntity, FolderDetailsEntity, FolderInfoEntity } from '../../../models/folder.model';
 import { CommonModule } from '@angular/common';
 import { CreateFolderComponent } from '../../../page-components-shared/folder-common/create-folder/create-folder.component';
 import { UploadComponent } from '../../../page-components-shared/file-common/upload/upload.component';
@@ -179,6 +179,16 @@ export class ContentBaseComponent {
     const dialogRef = this.dialog.open(UploadComponent, {
       data: { FolderId: this.CurrentFolderId },
       disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((NewFile: FileInfoEntity) => {
+      if (NewFile) {
+        this.AllFile.FileCount += 1;
+        this.AllFile.HasFile = true;
+        this.AllFile.FilesList.reverse();
+        this.AllFile.FilesList.push(NewFile as FileInfoEntity);
+        this.AllFile.FilesList.reverse();
+      }
     });
   }
 

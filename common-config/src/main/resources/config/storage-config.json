@@ -2,5 +2,6 @@
   "rootDirectory": "E:/Project/MyCloudStorage/",
   "tempDirectory": "Temp/",
   "finalDirectory": "Final/",
-  "maxFileSize": 104857600
+  "maxFileSize": 104857600,
+  "autoDeleteTimeInDays": 30
 }
