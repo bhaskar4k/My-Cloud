@@ -18,4 +18,6 @@ public class StorageConfig {
     private String finalDirectory;
 
     private long maxFileSize;
+
+    private long autoDeleteTimeInDays;
 }

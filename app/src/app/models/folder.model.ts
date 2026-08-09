@@ -32,3 +32,7 @@ export interface FileRenameInputEntity {
     FileId: string;
     UpdatedFileName: string;
 }
+
+export interface FileDeleteInputEntity {
+    FileId: string;
+}

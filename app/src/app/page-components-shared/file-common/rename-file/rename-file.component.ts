@@ -53,14 +53,14 @@ export class RenameFileComponent implements OnInit {
   save() {
     const trimmed = this.File.OriginalName.trim();
     if (trimmed) {
-      let CreateFolderPayload: FileRenameInputEntity = {
+      let RenameFilePayload: FileRenameInputEntity = {
         FileId: this.File.FileId,
         UpdatedFileName: trimmed
       }
 
       this.MatProgressBar = true;
 
-      this.fileService.RenameFile(CreateFolderPayload).subscribe({
+      this.fileService.RenameFile(RenameFilePayload).subscribe({
         next: (response: ApiResponseDto) => {
           this.MatProgressBar = false;
 

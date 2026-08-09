@@ -39,13 +39,13 @@ public class FileController {
     }
 
     @DeleteMapping("/delete")
-    public ApiResponseDto<FileInformationEntity> Delete(@RequestBody FileDeleteInputEntity File) {
+    public ApiResponseDto<Boolean> Delete(@RequestBody FileDeleteInputEntity File) {
         try {
             return fileService.DoDelete(File);
         } catch (Exception ex) {
             ex.printStackTrace();
 
-            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An internal error was occurred.");
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An internal error was occurred.", false);
         }
     }
 }

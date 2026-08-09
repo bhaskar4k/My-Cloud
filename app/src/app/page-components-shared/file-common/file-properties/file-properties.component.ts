@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
-import { FileInfoEntity, FileRenameInputEntity } from '../../../models/folder.model';
+import { FileDeleteInputEntity, FileInfoEntity } from '../../../models/folder.model';
 import { DownloadService } from '../../../services/download.service';
 import { FileMenuStateService } from '../../../services/file-menu-state.service';
 import { trigger, transition, style, animate } from '@angular/animations';
@@ -57,6 +57,7 @@ export class FilePropertiesComponent {
   };
 
   @Output() UpdatedFile = new EventEmitter<FileInfoEntity>();
+  @Output() DeletedFile = new EventEmitter<boolean>();
 
   MatProgressBar: boolean = false;
 
@@ -110,5 +111,33 @@ export class FilePropertiesComponent {
     });
   }
 
-  DeleteFile() { }
+  DeleteFile() {
+    let DeleteFilePayload: FileDeleteInputEntity = {
+      FileId: this.File.FileId,
+    }
+
+    this.MatProgressBar = true;
+
+    this.fileService.DeleteFile(DeleteFilePayload).subscribe({
+      next: (response: ApiResponseDto) => {
+        this.MatProgressBar = false;
+
+        if (response.success === true && response.statusCode === 200) {
+          this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.SUCCESS } });
+          this.DeletedFile.emit(true);
+        } else {
+          this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
+          this.DeletedFile.emit(false);
+        }
+
+        this.menuState.close();
+      },
+      error: (err: any) => {
+        this.dialog.open(CustomAlertComponent, { data: { text: "Failed to delete this file.", type: ResponseTypeColor.ERROR } });
+        this.MatProgressBar = false;
+        this.DeletedFile.emit(false);
+        this.menuState.close();
+      }
+    });
+  }
 }
