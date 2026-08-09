@@ -2,7 +2,6 @@ package com.mycloud.file_service.service;
 
 import com.mycloud.common_config.model.JwtConfig;
 import com.mycloud.common_config.model.StorageConfig;
-import com.mycloud.common_models.common_constants.CommonConstants;
 import com.mycloud.common_models.common_entities.*;
 import com.mycloud.common_models.database_entities.TFileMaster;
 import com.mycloud.common_models.database_entities.TFolderMaster;
@@ -13,14 +12,12 @@ import com.mycloud.common_models.utils.JwtUtil;
 import com.mycloud.common_models.utils.DatetimeUtil;
 import com.mycloud.data_access_layer.repositories.TFileMasterRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,6 +40,7 @@ public class FileService {
 
 
     // UTIL :: START
+    // ===========================
     public TFileMaster GetCurrentFileInfoFromFileIdAndUploadStatusAndDeleted(Long UserId, String FileId, UploadStatus Status, boolean Deleted){
         Optional<TFileMaster> CurrentFile;
 
@@ -89,11 +87,13 @@ public class FileService {
             throw new RuntimeException(e);
         }
     }
+    // ===========================
     // UTIL :: END
 
 
 
     // BUSINESS :: START
+    // ===========================
     public ApiResponseDto<FileInformationEntity> DoGetFileInfoByFileGuid(String FileGuid) {
         try {
             if (FileGuid == null || FileGuid.isEmpty()){
@@ -162,6 +162,8 @@ public class FileService {
     }
 
 
+    // CRUD OPERATIONS :: START
+    // ===========================
     @Transactional
     public ApiResponseDto<FileInformationEntity> DoRenameFile(FileRenameInputEntity File) {
         try {
@@ -223,5 +225,9 @@ public class FileService {
             return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to delete this file.", false);
         }
     }
+    // ===========================
+    // CRUD OPERATIONS :: END
+
+    // ===========================
     // BUSINESS :: END
 }
