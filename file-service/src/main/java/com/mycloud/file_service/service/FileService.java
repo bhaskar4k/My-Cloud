@@ -103,7 +103,7 @@ public class FileService {
 
             TFolderMaster CurrentFolder = folderService.GetCurrentFolderInfoFromFolderId(user.userId(), FolderId);
 
-            List<TFileMaster> files = fileMasterRepository.findByUserIdAndParentFolderIdAndDeletedAndStatusOrderByCreatedAtDesc(
+            List<TFileMaster> files = fileMasterRepository.findByUserIdAndParentFolderIdAndDeletedAndStatus(
                     user.userId(),
                     CurrentFolder.getId(),
                     false,
