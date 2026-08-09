@@ -9,6 +9,7 @@ export interface FileDeleteInputEntity {
 
 export interface FileFavouriteInputEntity {
     FileId: string;
+    Favourite: boolean;
 }
 
 export interface FileDeleteEmitEntity {

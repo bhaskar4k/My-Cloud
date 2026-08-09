@@ -24,6 +24,6 @@ export class FileService {
   }
 
   FavouriteFile(Payload: FileFavouriteInputEntity): Observable<ApiResponseDto> {
-    return this.http.post<ApiResponseDto>(GetBaseURL() + Endpoints.File.UpdateFavourite, { body: Payload });
+    return this.http.post<ApiResponseDto>(GetBaseURL() + Endpoints.File.UpdateFavourite, Payload);
   }
 }

@@ -103,8 +103,11 @@ export class FilePropertiesComponent {
   }
 
   FavouriteFile() {
+    this.File.Favourite = !this.File.Favourite;
+    
     let FavouriteFilePayload: FileFavouriteInputEntity = {
       FileId: this.File.FileId,
+      Favourite: this.File.Favourite
     }
 
     this.MatProgressBar = true;

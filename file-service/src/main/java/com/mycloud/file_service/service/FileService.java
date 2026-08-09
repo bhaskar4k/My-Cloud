@@ -240,6 +240,39 @@ public class FileService {
             return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to delete this file.", false);
         }
     }
+
+
+    @Transactional
+    public ApiResponseDto<FileInformationEntity> DoUpdateFavourite(FileFavouriteInputEntity File) {
+        try {
+            if (File == null || File.getFileId() == null || File.getFileId().isEmpty() || File.getFavourite() == null){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
+            JwtUser user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
+            }
+
+            TFileMaster CurrentFile = GetCurrentFileInfoFromFileIdAndUploadStatusAndDeleted(user.userId(), File.getFileId(), UploadStatus.COMPLETED, false);
+
+            CurrentFile.setFavourite(File.getFavourite());
+            fileMasterRepository.save(CurrentFile);
+
+            CurrentFile = GetCurrentFileInfoFromFileIdAndUploadStatusAndDeleted(user.userId(), File.getFileId(), UploadStatus.COMPLETED, false);
+
+            String ReturnMessage = "File has been successfully marked as favourite.";
+            if (!File.getFavourite()) {
+                ReturnMessage = "File has been successfully un-marked from favourite.";
+            }
+
+            return ApiResponseDto.Success(ReturnMessage, GetFileInformationDto(CurrentFile));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to update favourite status of this file.");
+        }
+    }
     // ===========================
     // CRUD OPERATIONS :: END
 
