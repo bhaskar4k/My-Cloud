@@ -14,6 +14,7 @@ import { ProfileComponent } from './page-components/profile/profile.component';
 import { LogoutComponent } from './page-components/auth-components/logout/logout.component';
 import { AuthGuard } from './middleware/AuthGuard';
 import { ContentBaseComponent } from './page-components/content/content-base/content-base.component';
+import { RecycleBinComponent } from './page-components/recycle-bin/recycle-bin.component';
 
 export const routes: Routes = [
   {
@@ -39,6 +40,8 @@ export const routes: Routes = [
           { path: 'library', component: LibraryComponent },
 
           { path: 'favourite', component: FavouriteComponent },
+
+          { path: 'recycle-bin', component: RecycleBinComponent },
 
           { path: 'settings/profile-settings', component: ProfileSettingsComponent },
           { path: 'settings/basic-settings', component: BasicSettingsComponent },
