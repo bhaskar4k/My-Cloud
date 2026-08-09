@@ -10,6 +10,7 @@ import { FileService } from '../../../services/file.service';
 import { ApiResponseDto } from '../../../models/dto.model';
 import { CustomAlertComponent } from '../../custom-alert/custom-alert.component';
 import { ResponseTypeColor } from '../../../constants/commonConsts';
+import { FileDeleteEmitEntity } from '../../../models/file.model';
 
 @Component({
   selector: 'app-file-properties',
@@ -57,7 +58,7 @@ export class FilePropertiesComponent {
   };
 
   @Output() UpdatedFile = new EventEmitter<FileInfoEntity>();
-  @Output() DeletedFile = new EventEmitter<boolean>();
+  @Output() DeletedFile = new EventEmitter<FileDeleteEmitEntity>();
 
   MatProgressBar: boolean = false;
 
@@ -118,16 +119,22 @@ export class FilePropertiesComponent {
 
     this.MatProgressBar = true;
 
+    const FileDeleteEmitEntity: FileDeleteEmitEntity = {
+      Deleted: false,
+      FileId: this.File.FileId
+    };
+
     this.fileService.DeleteFile(DeleteFilePayload).subscribe({
       next: (response: ApiResponseDto) => {
         this.MatProgressBar = false;
 
         if (response.success === true && response.statusCode === 200) {
           this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.SUCCESS } });
-          this.DeletedFile.emit(true);
+          FileDeleteEmitEntity.Deleted = true;
+          this.DeletedFile.emit(FileDeleteEmitEntity);
         } else {
           this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
-          this.DeletedFile.emit(false);
+          this.DeletedFile.emit(FileDeleteEmitEntity);
         }
 
         this.menuState.close();
@@ -135,7 +142,7 @@ export class FilePropertiesComponent {
       error: (err: any) => {
         this.dialog.open(CustomAlertComponent, { data: { text: "Failed to delete this file.", type: ResponseTypeColor.ERROR } });
         this.MatProgressBar = false;
-        this.DeletedFile.emit(false);
+        this.DeletedFile.emit(FileDeleteEmitEntity);
         this.menuState.close();
       }
     });

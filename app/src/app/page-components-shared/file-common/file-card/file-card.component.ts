@@ -5,6 +5,7 @@ import { FilePropertiesComponent } from '../file-properties/file-properties.comp
 import { Subscription } from 'rxjs';
 import { FileMenuStateService } from '../../../services/file-menu-state.service';
 import { GetFileIcon, GetFileType } from '../../../common/FileUtil';
+import { FileDeleteEmitEntity } from '../../../models/file.model';
 
 @Component({
   selector: 'app-file-card',
@@ -39,6 +40,7 @@ export class FileCardComponent implements OnInit, OnDestroy {
   };
 
   @Output() UpdatedFile = new EventEmitter<FileInfoEntity>();
+  @Output() DeletedFile = new EventEmitter<FileDeleteEmitEntity>();
 
   ShowMore: boolean = false;
   private sub: Subscription;
@@ -71,6 +73,10 @@ export class FileCardComponent implements OnInit, OnDestroy {
     this.File = File;
     this.FileInfo = File;
     this.UpdatedFile.emit(this.File);
+  }
+
+  OnDeleteAnyFile(Deleted: FileDeleteEmitEntity) {
+    this.DeletedFile.emit(Deleted);
   }
 
   ngOnDestroy() {

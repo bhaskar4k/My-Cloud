@@ -13,6 +13,7 @@
 <div *ngIf="AllFile.HasFile" class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-4 g-3">
 
     <div class="col" *ngFor="let file of AllFile.FilesList">
-        <app-file-card [FileInfo]="file" (UpdatedFile)="OnUpdateAnyFile($event)"></app-file-card>
+        <app-file-card [FileInfo]="file" (UpdatedFile)="OnUpdateAnyFile($event)"
+            (DeletedFile)="OnDeleteAnyFile($event)"></app-file-card>
     </div>
 </div>
