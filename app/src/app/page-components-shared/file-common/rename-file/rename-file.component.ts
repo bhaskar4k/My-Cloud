@@ -26,9 +26,13 @@ export class RenameFileComponent implements OnInit {
     FileExtension: '',
     ContentType: '',
     FileSize: 0,
+    Favourite: false,
     CreatedAt: '',
     UploadedAgo: '',
-    ModifiedAt: ''
+    ModifiedAt: '',
+    Deleted: false,
+    DeletedAt: '',
+    AutoDeletingAt: ''
   };
 
   MatProgressBar: boolean = false;

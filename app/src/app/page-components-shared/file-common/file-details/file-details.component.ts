@@ -16,9 +16,13 @@ export class FileDetailsComponent implements OnInit {
     FileExtension: '',
     ContentType: '',
     FileSize: 0,
+    Favourite: false,
     CreatedAt: '',
     UploadedAgo: '',
-    ModifiedAt: ''
+    ModifiedAt: '',
+    Deleted: false,
+    DeletedAt: '',
+    AutoDeletingAt: ''
   };
 
   GetReadableFileSize = GetReadableFileSize;

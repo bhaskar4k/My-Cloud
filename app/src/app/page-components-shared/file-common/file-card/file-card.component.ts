@@ -23,9 +23,13 @@ export class FileCardComponent implements OnInit, OnDestroy {
     FileExtension: '',
     ContentType: '',
     FileSize: 0,
+    Favourite: false,
     CreatedAt: '',
     UploadedAgo: '',
-    ModifiedAt: ''
+    ModifiedAt: '',
+    Deleted: false,
+    DeletedAt: '',
+    AutoDeletingAt: ''
   };
 
   File: FileInfoEntity = {
@@ -34,9 +38,13 @@ export class FileCardComponent implements OnInit, OnDestroy {
     FileExtension: '',
     ContentType: '',
     FileSize: 0,
+    Favourite: false,
     CreatedAt: '',
     UploadedAgo: '',
-    ModifiedAt: ''
+    ModifiedAt: '',
+    Deleted: false,
+    DeletedAt: '',
+    AutoDeletingAt: ''
   };
 
   @Output() UpdatedFile = new EventEmitter<FileInfoEntity>();

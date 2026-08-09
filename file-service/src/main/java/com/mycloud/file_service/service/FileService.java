@@ -75,11 +75,26 @@ public class FileService {
             dto.setFileExtension(File.getFileExtension());
             dto.setContentType(File.getContentType());
             dto.setFileSize(File.getFileSize());
+            dto.setFavourite(File.getFavourite());
+            dto.setDeleted(File.getDeleted());
 
             if (File.getCreatedAt() != null) {
                 dto.setCreatedAt(File.getCreatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
                 dto.setUploadedAgo(DatetimeUtil.GetUploadedAgo(File.getCreatedAt()));
+            }
+
+            if (File.getUpdatedAt() != null) {
                 dto.setModifiedAt(File.getUpdatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
+            }
+
+            if (File.getDeleted()) {
+                if (File.getDeletedAt() != null) {
+                    dto.setDeletedAt(File.getDeletedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
+                }
+
+                if (File.getAutoDeleteAt() != null) {
+                    dto.setAutoDeletingAt(DatetimeUtil.GetAutoDeletionText(File.getAutoDeleteAt()));
+                }
             }
 
             return dto;

@@ -13,7 +13,11 @@ public class FileInformationEntity {
     private String FileExtension;
     private String ContentType;
     private Long FileSize;
+    private Boolean Favourite;
     private String CreatedAt;
     private String UploadedAgo;
     private String ModifiedAt;
+    private Boolean Deleted;
+    private String DeletedAt;
+    private String AutoDeletingAt;
 }

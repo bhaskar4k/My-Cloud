@@ -1,5 +1,6 @@
 package com.mycloud.common_models.utils;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -36,6 +37,48 @@ public class DatetimeUtil {
 
         long years = months / 12;
         return years + (years == 1 ? " year ago" : " years ago");
+    }
+
+    public static String GetAutoDeletionText(Long autoDeleteAt) {
+
+        if (autoDeleteAt == null) {
+            return "Never";
+        }
+
+        Instant now = Instant.now();
+        Instant deletionTime = Instant.ofEpochSecond(autoDeleteAt);
+
+        Duration duration = Duration.between(now, deletionTime);
+
+        if (duration.isNegative() || duration.isZero()) {
+            return "Deleted";
+        }
+
+        long seconds = duration.getSeconds();
+
+        long days = seconds / 86_400;
+        long hours = (seconds % 86_400) / 3_600;
+        long minutes = (seconds % 3_600) / 60;
+
+        if (days > 0) {
+            return days == 1
+                    ? "Deleting in 1 day"
+                    : "Deleting in " + days + " days";
+        }
+
+        if (hours > 0) {
+            return hours == 1
+                    ? "Deleting in 1 hour"
+                    : "Deleting in " + hours + " hours";
+        }
+
+        if (minutes > 0) {
+            return minutes == 1
+                    ? "Deleting in 1 minute"
+                    : "Deleting in " + minutes + " minutes";
+        }
+
+        return "Deleting in less than a minute";
     }
 
     public static DateTimeFormatter DateTimeShortMonthFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");

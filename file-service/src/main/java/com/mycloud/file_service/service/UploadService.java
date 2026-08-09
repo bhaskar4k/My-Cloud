@@ -104,6 +104,7 @@ public class UploadService {
                     .userId(user.userId())
                     .status(UploadStatus.INITIATED)
                     .deleted(false)
+                    .favourite(false)
                     .build();
 
             // Save metadata entry to the database
