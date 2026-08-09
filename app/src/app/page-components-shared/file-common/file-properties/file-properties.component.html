@@ -10,8 +10,8 @@
         <span>Download</span>
     </button>
 
-    <button class="menu-item" (click)="FavouriteFile()">
-        <i class="bi bi-star-fill"></i>
+    <button class="menu-item" (click)="FavouriteFile()" [ngClass]="File.Favourite ? 'favourite_icon_color' : ''">
+        <i class="bi bi-star-fill" [ngClass]="File.Favourite ? 'favourite_icon_color' : ''"></i>
         <span>Favourite</span>
     </button>
 

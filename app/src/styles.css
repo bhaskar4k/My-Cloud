@@ -177,3 +177,7 @@ hr {
 .page-loader mat-spinner {
     --mdc-circular-progress-active-indicator-color: #ffffff;
 }
+
+.favourite_icon_color {
+    color: #00b7ff !important;
+}

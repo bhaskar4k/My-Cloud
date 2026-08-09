@@ -12,10 +12,13 @@ import { ApiResponseDto } from '../../../models/dto.model';
 import { CustomAlertComponent } from '../../custom-alert/custom-alert.component';
 import { ResponseTypeColor } from '../../../constants/commonConsts';
 import { FileDeleteEmitEntity, FileFavouriteEmitEntity } from '../../../models/file.model';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-file-properties',
-  imports: [],
+  imports: [
+    CommonModule
+  ],
   templateUrl: './file-properties.component.html',
   styleUrl: './file-properties.component.css',
   host: {
@@ -104,7 +107,7 @@ export class FilePropertiesComponent {
 
   FavouriteFile() {
     this.File.Favourite = !this.File.Favourite;
-    
+
     let FavouriteFilePayload: FileFavouriteInputEntity = {
       FileId: this.File.FileId,
       Favourite: this.File.Favourite
