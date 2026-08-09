@@ -51,10 +51,7 @@ public class UploadService {
 
 
     @Transactional
-    private void UpdateStatusOfFileUploadProcess(String fileId, Long userId, UploadStatus status) {
-        TFileMaster fileMaster = fileMasterRepository.findByFileIdAndUserIdAndDeleted(fileId, userId, false)
-                .orElseThrow(() -> new RuntimeException("File not found: " + fileId));
-
+    private void UpdateStatusOfFileUploadProcess(TFileMaster fileMaster, UploadStatus status) {
         fileMaster.setStatus(status);
 
         fileMasterRepository.save(fileMaster);
@@ -145,6 +142,7 @@ public class UploadService {
 
     public ApiResponseDto<Boolean> DoSaveChunk(InputStream inputStream, String uploadId, int chunkIndex, int totalChunks) throws IOException {
         JwtUser user = new JwtUser(false, null, null);
+        TFileMaster fileMaster = new TFileMaster();
 
         try {
             user = jwtUtil.GetCurrentUser();
@@ -152,8 +150,19 @@ public class UploadService {
                 return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
             }
 
+            fileMaster = fileMasterRepository.findByFileIdAndUserIdAndDeleted(uploadId, user.userId(), false)
+                    .orElseThrow(() -> new RuntimeException("The file you're trying to access is an invalid file."));
+
             if (chunkIndex == 0) {
-                UpdateStatusOfFileUploadProcess(uploadId, user.userId(), UploadStatus.UPLOADING);
+                if (fileMaster.getStatus() != UploadStatus.INITIATED){
+                    throw new RuntimeException("The file you're trying to access is an invalid file.");
+                }
+
+                UpdateStatusOfFileUploadProcess(fileMaster, UploadStatus.UPLOADING);
+            } else {
+                if (fileMaster.getStatus() != UploadStatus.UPLOADING){
+                    throw new RuntimeException("The file you're trying to access is an invalid file.");
+                }
             }
 
             Path chunkFile = Paths.get(BASE_TEMP_DIR, uploadId, "chunk_" + chunkIndex);
@@ -162,7 +171,7 @@ public class UploadService {
 
             Boolean MergingDone = false;
             if (chunkIndex == totalChunks - 1) {
-                MergingDone = MergeChunks(uploadId, totalChunks, user);
+                MergingDone = MergeChunks(uploadId, totalChunks, user, fileMaster);
             }
 
             if (MergingDone) {
@@ -172,7 +181,7 @@ public class UploadService {
             return ApiResponseDto.Error(HttpStatus.UNPROCESSABLE_CONTENT.value(), "All chunks have been uploaded successfully<br>but server failed to process and merge them.");
         } catch (Exception ex) {
             if (user.IsAuthenticated()){
-                UpdateStatusOfFileUploadProcess(uploadId, user.userId(), UploadStatus.FAILED);
+                UpdateStatusOfFileUploadProcess(fileMaster, UploadStatus.FAILED);
             }
 
             ex.printStackTrace();
@@ -181,9 +190,9 @@ public class UploadService {
     }
 
 
-    private Boolean MergeChunks(String UploadId, int TotalChunks, JwtUser user) throws IOException {
+    private Boolean MergeChunks(String UploadId, int TotalChunks, JwtUser user, TFileMaster fileMaster) throws IOException {
         try {
-            UpdateStatusOfFileUploadProcess(UploadId, user.userId(), UploadStatus.PROCESSING);
+            UpdateStatusOfFileUploadProcess(fileMaster, UploadStatus.PROCESSING);
 
             Path tempDirPath = Paths.get(BASE_TEMP_DIR, UploadId);
             Path finalDirPath = Paths.get(FINAL_UPLOAD_DIR);
@@ -219,11 +228,11 @@ public class UploadService {
                         });
             }
 
-            UpdateStatusOfFileUploadProcess(UploadId, user.userId(), UploadStatus.COMPLETED);
+            UpdateStatusOfFileUploadProcess(fileMaster, UploadStatus.COMPLETED);
             return true;
         } catch (Exception ex) {
             ex.printStackTrace();
-            UpdateStatusOfFileUploadProcess(UploadId, user.userId(), UploadStatus.FAILED);
+            UpdateStatusOfFileUploadProcess(fileMaster, UploadStatus.FAILED);
             return false;
         }
     }
