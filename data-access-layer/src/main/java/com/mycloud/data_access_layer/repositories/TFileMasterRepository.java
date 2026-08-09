@@ -27,6 +27,7 @@ public interface TFileMasterRepository extends JpaRepository<TFileMaster, Long> 
             UploadStatus status
     );
 
+
     Optional<TFileMaster> findByIdAndUserIdAndDeletedAndStatus(
             Long id,
             Long userId,
