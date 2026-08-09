@@ -5,9 +5,28 @@ import com.mycloud.common_models.enums.UploadStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "t_file_master", indexes = {
-        @Index(name = "idx_file_id", columnList = "file_id", unique = true)
+        // Globally unique file identifier
+        @Index(
+                name = "idx_file_id",
+                columnList = "file_id",
+                unique = true
+        ),
+
+        // File/folder listing
+        @Index(
+                name = "idx_user_id_parent_folder_id_deleted_status_created_at",
+                columnList = "user_id, parent_folder_id, deleted, status, created_at"
+        ),
+
+        // Recycle-bin automatic cleanup
+        @Index(
+                name = "idx_auto_delete_at",
+                columnList = "auto_delete_at"
+        )
 })
 @Getter
 @Setter
@@ -45,4 +64,10 @@ public class TFileMaster extends BaseEntity {
 
     @Column(name = "deleted", nullable = false)
     private Boolean deleted = false;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    @Column(name = "auto_delete_at")
+    private Long autoDeleteAt;
 }
