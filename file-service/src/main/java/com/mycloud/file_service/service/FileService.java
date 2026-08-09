@@ -137,6 +137,8 @@ public class FileService {
             CurrentFile.setOriginalName(File.getUpdatedFileName());
             fileMasterRepository.save(CurrentFile);
 
+            CurrentFile = GetCurrentFileInfoFromFileIdAndUploadStatus(user.userId(), File.getFileId(), UploadStatus.COMPLETED);
+
             return ApiResponseDto.Success("File has been renamed successfully.", GetFileInformationDto(CurrentFile));
         } catch (Exception ex) {
             ex.printStackTrace();
