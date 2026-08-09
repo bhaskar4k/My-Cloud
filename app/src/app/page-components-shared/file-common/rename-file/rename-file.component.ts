@@ -1,7 +1,8 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
-import { FileInfoEntity, FileRenameInputEntity } from '../../../models/folder.model';
+import { FileInfoEntity } from '../../../models/folder.model';
+import { FileRenameInputEntity } from '../../../models/file.model';
 import { FileService } from '../../../services/file.service';
 import { CustomAlertComponent } from '../../custom-alert/custom-alert.component';
 import { ApiResponseDto } from '../../../models/dto.model';
@@ -26,9 +27,13 @@ export class RenameFileComponent implements OnInit {
     FileExtension: '',
     ContentType: '',
     FileSize: 0,
+    Favourite: false,
     CreatedAt: '',
     UploadedAgo: '',
-    ModifiedAt: ''
+    ModifiedAt: '',
+    Deleted: false,
+    DeletedAt: '',
+    AutoDeletingAt: ''
   };
 
   MatProgressBar: boolean = false;

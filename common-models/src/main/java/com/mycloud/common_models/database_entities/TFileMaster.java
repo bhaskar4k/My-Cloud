@@ -58,6 +58,9 @@ public class TFileMaster extends BaseEntity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    @Column(name = "favourite", nullable = false)
+    private Boolean favourite = false;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private UploadStatus status;

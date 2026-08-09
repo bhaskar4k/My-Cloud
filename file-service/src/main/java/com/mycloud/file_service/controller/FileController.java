@@ -59,4 +59,15 @@ public class FileController {
             return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An internal error was occurred.", false);
         }
     }
+
+    @PostMapping("/update-favourite")
+    public ApiResponseDto<FileInformationEntity> UpdateFavourite(@RequestBody FileFavouriteInputEntity File) {
+        try {
+            return fileService.DoUpdateFavourite(File);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An internal error was occurred.");
+        }
+    }
 }

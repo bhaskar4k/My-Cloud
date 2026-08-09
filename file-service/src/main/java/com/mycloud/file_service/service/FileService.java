@@ -2,7 +2,6 @@ package com.mycloud.file_service.service;
 
 import com.mycloud.common_config.model.JwtConfig;
 import com.mycloud.common_config.model.StorageConfig;
-import com.mycloud.common_models.common_constants.CommonConstants;
 import com.mycloud.common_models.common_entities.*;
 import com.mycloud.common_models.database_entities.TFileMaster;
 import com.mycloud.common_models.database_entities.TFolderMaster;
@@ -13,14 +12,12 @@ import com.mycloud.common_models.utils.JwtUtil;
 import com.mycloud.common_models.utils.DatetimeUtil;
 import com.mycloud.data_access_layer.repositories.TFileMasterRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,6 +40,7 @@ public class FileService {
 
 
     // UTIL :: START
+    // ===========================
     public TFileMaster GetCurrentFileInfoFromFileIdAndUploadStatusAndDeleted(Long UserId, String FileId, UploadStatus Status, boolean Deleted){
         Optional<TFileMaster> CurrentFile;
 
@@ -77,11 +75,26 @@ public class FileService {
             dto.setFileExtension(File.getFileExtension());
             dto.setContentType(File.getContentType());
             dto.setFileSize(File.getFileSize());
+            dto.setFavourite(File.getFavourite());
+            dto.setDeleted(File.getDeleted());
 
             if (File.getCreatedAt() != null) {
                 dto.setCreatedAt(File.getCreatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
                 dto.setUploadedAgo(DatetimeUtil.GetUploadedAgo(File.getCreatedAt()));
+            }
+
+            if (File.getUpdatedAt() != null) {
                 dto.setModifiedAt(File.getUpdatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
+            }
+
+            if (File.getDeleted()) {
+                if (File.getDeletedAt() != null) {
+                    dto.setDeletedAt(File.getDeletedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
+                }
+
+                if (File.getAutoDeleteAt() != null) {
+                    dto.setAutoDeletingAt(DatetimeUtil.GetAutoDeletionText(File.getAutoDeleteAt()));
+                }
             }
 
             return dto;
@@ -89,11 +102,13 @@ public class FileService {
             throw new RuntimeException(e);
         }
     }
+    // ===========================
     // UTIL :: END
 
 
 
     // BUSINESS :: START
+    // ===========================
     public ApiResponseDto<FileInformationEntity> DoGetFileInfoByFileGuid(String FileGuid) {
         try {
             if (FileGuid == null || FileGuid.isEmpty()){
@@ -162,6 +177,8 @@ public class FileService {
     }
 
 
+    // CRUD OPERATIONS :: START
+    // ===========================
     @Transactional
     public ApiResponseDto<FileInformationEntity> DoRenameFile(FileRenameInputEntity File) {
         try {
@@ -223,5 +240,42 @@ public class FileService {
             return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to delete this file.", false);
         }
     }
+
+
+    @Transactional
+    public ApiResponseDto<FileInformationEntity> DoUpdateFavourite(FileFavouriteInputEntity File) {
+        try {
+            if (File == null || File.getFileId() == null || File.getFileId().isEmpty() || File.getFavourite() == null){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
+            JwtUser user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
+            }
+
+            TFileMaster CurrentFile = GetCurrentFileInfoFromFileIdAndUploadStatusAndDeleted(user.userId(), File.getFileId(), UploadStatus.COMPLETED, false);
+
+            CurrentFile.setFavourite(File.getFavourite());
+            fileMasterRepository.save(CurrentFile);
+
+            CurrentFile = GetCurrentFileInfoFromFileIdAndUploadStatusAndDeleted(user.userId(), File.getFileId(), UploadStatus.COMPLETED, false);
+
+            String ReturnMessage = "File has been successfully marked as favourite.";
+            if (!File.getFavourite()) {
+                ReturnMessage = "File has been successfully un-marked from favourite.";
+            }
+
+            return ApiResponseDto.Success(ReturnMessage, GetFileInformationDto(CurrentFile));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to update favourite status of this file.");
+        }
+    }
+    // ===========================
+    // CRUD OPERATIONS :: END
+
+    // ===========================
     // BUSINESS :: END
 }

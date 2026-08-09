@@ -125,10 +125,19 @@ public class DatabaseSeeder implements CommandLineRunner {
 
                 TMenuMaster.builder()
                         .parentId(null)
+                        .label("Recycle Bin")
+                        .icon("bi bi-trash")
+                        .route("/recycle-bin")
+                        .displayOrder(5)
+                        .active(true)
+                        .build(),
+
+                TMenuMaster.builder()
+                        .parentId(null)
                         .label("Settings")
                         .icon("bi bi-gear")
                         .route(null)
-                        .displayOrder(5)
+                        .displayOrder(6)
                         .active(true)
                         .build(),
 
@@ -137,7 +146,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .label("Profile")
                         .icon("bi bi-person-circle")
                         .route("/profile")
-                        .displayOrder(6)
+                        .displayOrder(7)
                         .active(true)
                         .build(),
 
@@ -146,7 +155,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .label("Login")
                         .icon("bi bi-box-arrow-in-right")
                         .route("/login")
-                        .displayOrder(7)
+                        .displayOrder(8)
                         .active(true)
                         .build(),
 
@@ -155,7 +164,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .label("Register")
                         .icon("bi bi-person-add")
                         .route("/register")
-                        .displayOrder(8)
+                        .displayOrder(9)
                         .active(true)
                         .build(),
 
@@ -164,13 +173,13 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .label("Logout")
                         .icon("bi bi-box-arrow-left")
                         .route("/logout")
-                        .displayOrder(9)
+                        .displayOrder(10)
                         .active(true)
                         .build(),
 
                 // SETTINGS CHILD MENUS (parentId = Settings = 5)
                 TMenuMaster.builder()
-                        .parentId(5)
+                        .parentId(6)
                         .label("Profile Settings")
                         .icon("bi bi-person-gear")
                         .route("/settings/profile-settings")
@@ -179,7 +188,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .build(),
 
                 TMenuMaster.builder()
-                        .parentId(5)
+                        .parentId(6)
                         .label("Basic Settings")
                         .icon("bi bi-sliders2")
                         .route("/settings/basic-settings")
@@ -188,7 +197,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .build(),
 
                 TMenuMaster.builder()
-                        .parentId(5)
+                        .parentId(6)
                         .label("Delete Account")
                         .icon("bi bi-person-slash")
                         .route("/settings/delete-account")
@@ -213,17 +222,17 @@ public class DatabaseSeeder implements CommandLineRunner {
         List<TRoleMenuMapping> mappings = List.of(
                 // Unauthorized
                 TRoleMenuMapping.builder()
-                        .menuMasterId(1L)
+                        .menuMasterId(1L)   // Dashboard
                         .roleMasterId(1L)
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(7L)   // Login
+                        .menuMasterId(8L)   // Login
                         .roleMasterId(1L)
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(8L)   // Register
+                        .menuMasterId(9L)   // Register
                         .roleMasterId(1L)
                         .build(),
 
@@ -249,37 +258,37 @@ public class DatabaseSeeder implements CommandLineRunner {
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(5L)   // Settings
+                        .menuMasterId(5L)   // Recycle Bin
                         .roleMasterId(2L)
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(6L)   // Profile
+                        .menuMasterId(6L)   // Settings
                         .roleMasterId(2L)
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(9L)   // Logout
+                        .menuMasterId(7L)   // Profile
                         .roleMasterId(2L)
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(10L)  // Profile Settings
+                        .menuMasterId(10L)   // Logout
                         .roleMasterId(2L)
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(11L)  // Basic Settings
+                        .menuMasterId(11L)  // Profile Settings
                         .roleMasterId(2L)
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(11L)  // Basic Settings (duplicate preserved)
+                        .menuMasterId(12L)  // Basic Settings
                         .roleMasterId(2L)
                         .build(),
 
                 TRoleMenuMapping.builder()
-                        .menuMasterId(12L)  // Delete Account
+                        .menuMasterId(13L)  // Delete Account
                         .roleMasterId(2L)
                         .build()
         );

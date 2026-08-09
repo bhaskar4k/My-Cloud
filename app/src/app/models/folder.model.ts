@@ -23,16 +23,11 @@ export interface FileInfoEntity {
     FileExtension: string;
     ContentType: string;
     FileSize: number;
+    Favourite: boolean;
     CreatedAt: string;
     UploadedAgo: string;
-    ModifiedAt: string;
-}
-
-export interface FileRenameInputEntity {
-    FileId: string;
-    UpdatedFileName: string;
-}
-
-export interface FileDeleteInputEntity {
-    FileId: string;
+    ModifiedAt: string | null;
+    Deleted: boolean;
+    DeletedAt: string | null;
+    AutoDeletingAt: string | null;
 }
