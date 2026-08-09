@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, Input } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { FileInfoEntity, FileRenameInputEntity } from '../../../models/folder.model';
 import { DownloadService } from '../../../services/download.service';
 import { FileMenuStateService } from '../../../services/file-menu-state.service';
@@ -56,6 +56,8 @@ export class FilePropertiesComponent {
     ModifiedAt: ''
   };
 
+  @Output() UpdatedFile = new EventEmitter<FileInfoEntity>();
+
   MatProgressBar: boolean = false;
 
   constructor(
@@ -99,8 +101,12 @@ export class FilePropertiesComponent {
 
     dialogRef.afterClosed().subscribe((UpdatedFile: FileInfoEntity) => {
       if (UpdatedFile) {
+        this.FileInfo = UpdatedFile;
         this.File = UpdatedFile;
+        this.UpdatedFile.emit(UpdatedFile);
       }
+
+      this.menuState.close();
     });
   }
 
