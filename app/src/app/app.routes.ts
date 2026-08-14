@@ -5,7 +5,6 @@ import { ErrorComponent } from './page-components/error/error.component';
 import { RegisterComponent } from './page-components/auth-components/register/register.component';
 import { LoginComponent } from './page-components/auth-components/login/login.component';
 import { DashboardComponent } from './page-components/dashboard/dashboard.component';
-import { LibraryComponent } from './page-components/library/library.component';
 import { FavouriteComponent } from './page-components/favourite/favourite.component';
 import { ProfileSettingsComponent } from './page-components/settings/profile-settings/profile-settings.component';
 import { BasicSettingsComponent } from './page-components/settings/basic-settings/basic-settings.component';
@@ -36,8 +35,6 @@ export const routes: Routes = [
         children: [
           { path: 'content', redirectTo: 'content/root', pathMatch: 'full' },
           { path: 'content/:folder', component: ContentBaseComponent },
-
-          { path: 'library', component: LibraryComponent },
 
           { path: 'favourite', redirectTo: 'favourite/root', pathMatch: 'full' },
           { path: 'favourite/:folder', component: FavouriteComponent },
