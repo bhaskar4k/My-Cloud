@@ -51,8 +51,8 @@
 
     <hr>
 
-    <app-folder-content *ngIf="RenderFolderList" [AllFolderDetails]="AllFolder"
-        [MatExpansionState]="true"></app-folder-content>
+    <app-folder-content *ngIf="RenderFolderList" [AllFolderDetails]="AllFolder" [MatExpansionState]="true"
+        [FolderRoutingPageName]="FolderRoutingPage.Content"></app-folder-content>
 
     <app-file-content *ngIf="RenderFileList" [AllFileDetails]="AllFile" [MatExpansionState]="false"></app-file-content>
 </div>

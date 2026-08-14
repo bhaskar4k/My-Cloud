@@ -16,6 +16,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FileService } from '../../../services/file.service';
 import { AddEditFolderComponent } from '../../../page-components-shared/folder-common/add-edit-folder/add-edit-folder.component';
 import { FolderOperationType } from '../../../enums/folder-operation-type.enum';
+import { FolderRoutingPage } from '../../../enums/common.enum';
 
 @Component({
   selector: 'app-content-base',
@@ -40,6 +41,7 @@ export class ContentBaseComponent {
 
   MatProgressBar = false;
   MatProgressBar1 = false;
+  FolderRoutingPage = FolderRoutingPage;
 
   constructor(
     private route: ActivatedRoute,
@@ -200,7 +202,7 @@ export class ContentBaseComponent {
   }
 
   NavigateToFolder(Folder: FolderInfoEntity) {
-    window.location.href = "/content/" + Folder.FolderId;
+    window.location.href = "/" + this.FolderRoutingPage.Content + "/" + Folder.FolderId;
   }
 
   IsMatProgressBarVisible(): boolean {

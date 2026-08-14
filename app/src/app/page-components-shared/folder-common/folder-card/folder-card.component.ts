@@ -3,6 +3,7 @@ import { FolderDeleteEmitEntity, FolderInfoEntity } from '../../../models/folder
 import { FolderPropertiesComponent } from '../folder-properties/folder-properties.component';
 import { FolderMenuStateService } from '../../../services/folder-menu-state.service';
 import { Subscription } from 'rxjs';
+import { FolderRoutingPage } from '../../../enums/common.enum';
 
 @Component({
   selector: 'app-folder-card',
@@ -13,6 +14,8 @@ import { Subscription } from 'rxjs';
   styleUrl: './folder-card.component.css'
 })
 export class FolderCardComponent implements OnInit {
+  @Input() FolderRoutingPageName: FolderRoutingPage = FolderRoutingPage.Content;
+
   @Input() FolderInfo: FolderInfoEntity = {
     FolderId: '',
     FolderName: '',
@@ -68,7 +71,7 @@ export class FolderCardComponent implements OnInit {
   }
 
   NavigateToFolder() {
-    window.location.href = "/content/" + this.Folder.FolderId;
+    window.location.href = "/" + this.FolderRoutingPageName + "/" + this.Folder.FolderId;
   }
 
   ViewMoreInFolder(event: MouseEvent) {

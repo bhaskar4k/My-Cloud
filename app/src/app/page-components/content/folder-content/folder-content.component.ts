@@ -3,6 +3,7 @@ import { FolderDeleteEmitEntity, FolderDetailsEntity, FolderInfoEntity } from '.
 import { CommonModule } from '@angular/common';
 import { FolderCardComponent } from '../../../page-components-shared/folder-common/folder-card/folder-card.component';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { FolderRoutingPage } from '../../../enums/common.enum';
 
 @Component({
   selector: 'app-folder-content',
@@ -17,6 +18,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 export class FolderContentComponent implements OnInit {
   @Input() AllFolderDetails: FolderDetailsEntity = { HasFolder: false, FolderCount: 0, FoldersList: [] };
   @Input() MatExpansionState: boolean = false;
+  @Input() FolderRoutingPageName: FolderRoutingPage = FolderRoutingPage.Content;
 
   AllFolder: FolderDetailsEntity = { HasFolder: false, FolderCount: 0, FoldersList: [] };
 

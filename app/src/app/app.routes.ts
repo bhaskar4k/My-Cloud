@@ -39,7 +39,8 @@ export const routes: Routes = [
 
           { path: 'library', component: LibraryComponent },
 
-          { path: 'favourite', component: FavouriteComponent },
+          { path: 'favourite', redirectTo: 'favourite/root', pathMatch: 'full' },
+          { path: 'favourite/:folder', component: FavouriteComponent },
 
           { path: 'recycle-bin', component: RecycleBinComponent },
 
