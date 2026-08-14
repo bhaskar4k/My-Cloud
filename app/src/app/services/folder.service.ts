@@ -23,6 +23,10 @@ export class FolderService {
     return this.http.get<ApiResponseDto>(GetBaseURL() + Endpoints.Folder.GetAll + `/${FolderId}`);
   }
 
+  GetAllFavouriteChildFoldersByFolderId(FolderId: string): Observable<ApiResponseDto> {
+    return this.http.get<ApiResponseDto>(GetBaseURL() + Endpoints.Folder.GetAllFavourite + `/${FolderId}`);
+  }
+
   GetSubfolderAndFileCount(FolderId: string): Observable<ApiResponseDto> {
     return this.http.get<ApiResponseDto>(GetBaseURL() + Endpoints.Folder.GetSubfolderAndFileCount + `/${FolderId}`);
   }

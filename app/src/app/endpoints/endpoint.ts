@@ -29,6 +29,7 @@ export const Endpoints = {
         ValidateFolderAccess: "file/folder/validate-folder-access",
         Create: "file/folder/create",
         GetAll: "file/folder/get-all",
+        GetAllFavourite: "file/folder/get-all-favourite",
         GetSubfolderAndFileCount: "file/folder/get-sub-folder-and-file-count",
         Rename: "file/folder/rename",
         Delete: "file/folder/delete",

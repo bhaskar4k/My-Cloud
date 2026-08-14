@@ -48,6 +48,17 @@ public class FolderController {
         }
     }
 
+    @GetMapping("/get-all-favourite/{FolderId}")
+    public ApiResponseDto<FolderDetailsEntity> GetAllFavourite(@PathVariable String FolderId) {
+        try {
+            return folderService.DoGetAllFavouriteFolders(FolderId);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An internal error was occurred.");
+        }
+    }
+
     @GetMapping("/get-sub-folder-and-file-count/{FolderId}")
     public ApiResponseDto<SubfolderAndFileCountOutputEntity> GetSubFolderAndFileCount(@PathVariable String FolderId) {
         try {

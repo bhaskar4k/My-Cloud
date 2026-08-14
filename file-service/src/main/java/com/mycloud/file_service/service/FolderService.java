@@ -204,6 +204,42 @@ public class FolderService {
     }
 
 
+    public ApiResponseDto<FolderDetailsEntity> DoGetAllFavouriteFolders(String FolderId) {
+        try {
+            if (FolderId == null || FolderId.isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
+            JwtUser user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
+            }
+
+            TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderId, false);
+
+            List<TFolderMaster> ChildFolders = folderRepository.findByParentFolderIdAndUserIdAndDeletedAndFavourite(CurrentFolder.getId(), user.userId(), false, true);
+
+            FolderDetailsEntity Output = new FolderDetailsEntity();
+            Output.HasFolder = !ChildFolders.isEmpty();
+            Output.FolderCount = ChildFolders.size();
+
+            Output.FoldersList = ChildFolders.stream()
+                    .map(this::GetFolderInformationDto)
+                    .toList();
+
+            return ApiResponseDto.Success("Folder list has been fetched successfully.", Output);
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to fetch all folders list.");
+        }
+    }
+
+
     public ApiResponseDto<SubfolderAndFileCountOutputEntity> DoGetSubfolderAndFileCount(String FolderId) {
         try {
             if (FolderId == null || FolderId.isEmpty()){

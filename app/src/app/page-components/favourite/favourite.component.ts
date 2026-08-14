@@ -102,7 +102,7 @@ export class FavouriteComponent {
     this.RenderFolderList = false;
     this.MatProgressBar = true;
 
-    this.folderService.GetAllChildFoldersByFolderId(this.CurrentFolderId).subscribe({
+    this.folderService.GetAllFavouriteChildFoldersByFolderId(this.CurrentFolderId).subscribe({
       next: (response: ApiResponseDto) => {
         this.MatProgressBar = false;
 
