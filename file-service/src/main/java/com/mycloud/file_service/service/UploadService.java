@@ -91,7 +91,7 @@ public class UploadService {
             // 3. Compute total chunks based on your 10MB math boundary
             int totalChunks = (int) Math.ceil((double) request.getFileSize() / CHUNK_SIZE);
 
-            TFolderMaster ParentFolderInfo = folderService.GetCurrentFolderInfoFromFolderId(user.userId(), request.getFolderId());
+            TFolderMaster ParentFolderInfo = folderService.GetCurrentFolderInfoFromFolderId(user.userId(), request.getFolderId(), false);
 
             fileMetadata = TFileMaster.builder()
                     .parentFolderId(ParentFolderInfo.getId())
