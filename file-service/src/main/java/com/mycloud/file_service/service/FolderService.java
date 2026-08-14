@@ -228,7 +228,7 @@ public class FolderService {
             Optional<TFolderMaster> OutputFolder = folderRepository.findByIdAndUserIdAndDeleted(CreatedFolder.getId(), user.userId(), false);
 
             if (OutputFolder.isEmpty()) {
-                return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to create folder.");
+                return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Folder is created but failed to fetch folder information.");
             }
 
             return ApiResponseDto.Success("Folder has been created successfully.", GetFolderInformationDto(OutputFolder.get()));
