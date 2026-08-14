@@ -25,10 +25,10 @@ export class FileContentComponent {
     this.AllFile = this.AllFileDetails;
   }
 
-  OnUpdateAnyFile(File: FileInfoEntity) {
-    const index = this.AllFile.FilesList.findIndex(f => f.FileId === File.FileId);
+  OnUpdateAnyFile(UpdatedFile: FileInfoEntity) {
+    const index = this.AllFile.FilesList.findIndex(f => f.FileId === UpdatedFile.FileId);
     if (index !== -1) {
-      this.AllFile.FilesList[index] = File;
+      this.AllFile.FilesList[index] = UpdatedFile;
     }
   }
 
