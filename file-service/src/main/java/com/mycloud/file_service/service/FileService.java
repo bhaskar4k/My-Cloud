@@ -151,7 +151,7 @@ public class FileService {
                 return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
             }
 
-            TFolderMaster CurrentFolder = folderService.GetCurrentFolderInfoFromFolderId(user.userId(), FolderId);
+            TFolderMaster CurrentFolder = folderService.GetCurrentFolderInfoFromFolderId(user.userId(), FolderId, false);
 
             List<TFileMaster> files = fileMasterRepository.findByUserIdAndParentFolderIdAndDeletedAndStatus(
                     user.userId(),
@@ -233,7 +233,8 @@ public class FileService {
             CurrentFile.setAutoDeleteAt(AutoDeleteTime);
             fileMasterRepository.save(CurrentFile);
 
-            return ApiResponseDto.Success("File has been successfully moved into recycle bin.<br>It will be auto deleted from recycle bin after 30 days.", true);
+            return ApiResponseDto.Success("File has been successfully moved into recycle bin.<br>It will be auto deleted from recycle bin after "
+                    + this.AutoDeleteTimeInDays + " days.", true);
         } catch (Exception ex) {
             ex.printStackTrace();
 
@@ -261,9 +262,9 @@ public class FileService {
 
             CurrentFile = GetCurrentFileInfoFromFileIdAndUploadStatusAndDeleted(user.userId(), File.getFileId(), UploadStatus.COMPLETED, false);
 
-            String ReturnMessage = "File has been successfully marked as favourite.";
+            String ReturnMessage = "File has been successfully marked as your favourite.";
             if (!File.getFavourite()) {
-                ReturnMessage = "File has been successfully un-marked from favourite.";
+                ReturnMessage = "File has been removed from your favourite list.";
             }
 
             return ApiResponseDto.Success(ReturnMessage, GetFileInformationDto(CurrentFile));

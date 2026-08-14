@@ -9,12 +9,13 @@ import { catchError, map, Observable, of } from 'rxjs';
 import { FolderCreateInputEntity, FolderDetailsEntity, FolderInfoEntity } from '../../../models/folder.model';
 import { FileDetailsEntity, FileInfoEntity } from '../../../models/file.model';
 import { CommonModule } from '@angular/common';
-import { CreateFolderComponent } from '../../../page-components-shared/folder-common/create-folder/create-folder.component';
 import { UploadComponent } from '../../../page-components-shared/file-common/upload/upload.component';
 import { FolderContentComponent } from '../folder-content/folder-content.component';
 import { FileContentComponent } from '../file-content/file-content.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FileService } from '../../../services/file.service';
+import { AddEditFolderComponent } from '../../../page-components-shared/folder-common/add-edit-folder/add-edit-folder.component';
+import { FolderOperationType } from '../../../enums/folder-operation-type.enum';
 
 @Component({
   selector: 'app-content-base',
@@ -94,7 +95,10 @@ export class ContentBaseComponent {
   }
 
   CreateFolder() {
-    const dialogRef = this.dialog.open(CreateFolderComponent, {
+    const dialogRef = this.dialog.open(AddEditFolderComponent, {
+      data: {
+        OperationType: FolderOperationType.CREATE
+      },
       width: '30rem',
       disableClose: true
     });

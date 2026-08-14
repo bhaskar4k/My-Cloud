@@ -144,6 +144,8 @@ export class FilePropertiesComponent {
 
         if (response.success === true && response.statusCode === 200) {
           this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.SUCCESS } });
+          this.FileInfo = response.data as FileInfoEntity;
+          this.File = response.data as FileInfoEntity;
           this.UpdatedFile.emit(response.data as FileInfoEntity);
         } else {
           this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });

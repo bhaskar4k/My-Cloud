@@ -1,13 +1,13 @@
 package com.mycloud.file_service.service;
 
 import com.mycloud.common_config.model.JwtConfig;
+import com.mycloud.common_config.model.StorageConfig;
 import com.mycloud.common_models.common_constants.CommonConstants;
-import com.mycloud.common_models.common_entities.FileInformationEntity;
-import com.mycloud.common_models.common_entities.FolderDetailsEntity;
-import com.mycloud.common_models.common_entities.FolderInfoEntity;
-import com.mycloud.common_models.common_entities.JwtUser;
+import com.mycloud.common_models.common_entities.*;
+import com.mycloud.common_models.database_entities.TFileMaster;
 import com.mycloud.common_models.database_entities.TFolderMaster;
 import com.mycloud.common_models.dto.ApiResponseDto;
+import com.mycloud.common_models.enums.UploadStatus;
 import com.mycloud.common_models.utils.DatetimeUtil;
 import com.mycloud.common_models.utils.EncryptionUtil;
 import com.mycloud.common_models.utils.JwtUtil;
@@ -17,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -26,21 +28,23 @@ public class FolderService {
     private final JwtUtil jwtUtil;
     private final TFolderMasterRepository folderRepository;
     private final EncryptionUtil encryptionUtil;
+    private final Long AutoDeleteTimeInDays;
 
-    public FolderService(JwtConfig jwtConfig, TFolderMasterRepository folderRepository) {
+    public FolderService(JwtConfig jwtConfig, StorageConfig storageConfig, TFolderMasterRepository folderRepository) {
         this.jwtUtil = new JwtUtil(jwtConfig.getSecret(), jwtConfig.getExpiration());
         this.folderRepository = folderRepository;
         this.encryptionUtil = new EncryptionUtil(jwtConfig.getSecret());
+        this.AutoDeleteTimeInDays = storageConfig.getAutoDeleteTimeInDays();
     }
 
 
     // UTIL :: START
     // ===========================
-    public TFolderMaster GetCurrentFolderInfoFromFolderId(Long UserId, String FolderId){
+    public TFolderMaster GetCurrentFolderInfoFromFolderId(Long UserId, String FolderId, boolean Deleted){
         Optional<TFolderMaster> CurrentFolder;
 
         if (FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)) {
-            CurrentFolder = folderRepository.findByUserIdAndDeletedAndDepth(UserId, false, 1);
+            CurrentFolder = folderRepository.findByUserIdAndDeletedAndDepth(UserId, Deleted, 1);
         } else {
             try {
                 FolderId = encryptionUtil.DecryptHexEncoding(FolderId);
@@ -55,7 +59,7 @@ public class FolderService {
                 throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
             }
 
-            CurrentFolder = folderRepository.findByIdAndUserIdAndDeleted(ActualFolderId, UserId, false);
+            CurrentFolder = folderRepository.findByIdAndUserIdAndDeleted(ActualFolderId, UserId, Deleted);
         }
 
         if (CurrentFolder.isEmpty()) {
@@ -121,7 +125,7 @@ public class FolderService {
                         new FolderInfoEntity[] { new FolderInfoEntity(CommonConstants.UserRootFolderName.toLowerCase(), CommonConstants.UserRootFolderName) });
             }
 
-            TFolderMaster ExistedFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderId);
+            TFolderMaster ExistedFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderId, false);
 
             String[] FolderPathIds = ExistedFolder.getPath().split(",");
             FolderInfoEntity[] FolderPathFullInfo = new FolderInfoEntity[FolderPathIds.length];
@@ -165,7 +169,7 @@ public class FolderService {
                 return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
             }
 
-            TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderId);
+            TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderId, false);
 
             List<TFolderMaster> ChildFolders = folderRepository.findByParentFolderIdAndUserIdAndDeleted(CurrentFolder.getId(), user.userId(), false);
 
@@ -205,7 +209,7 @@ public class FolderService {
                 return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
             }
 
-            TFolderMaster CurrentFetchedFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderInfo.getFolderId());
+            TFolderMaster CurrentFetchedFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderInfo.getFolderId(), false);
 
             TFolderMaster NewFolder = new TFolderMaster();
             NewFolder.setDepth(CurrentFetchedFolder.getDepth() + 1);
@@ -219,18 +223,15 @@ public class FolderService {
             TFolderMaster CreatedFolder = folderRepository.save(NewFolder);
 
             CreatedFolder.setPath(CreatedFolder.getPath() + "," + CreatedFolder.getId().toString());
-            folderRepository.save(CreatedFolder);
+            CreatedFolder = folderRepository.save(CreatedFolder);
 
-            FolderInfoEntity Output = new FolderInfoEntity();
-            Output.setFolderId(encryptionUtil.EncryptHexEncoding(CreatedFolder.getId().toString()));
-            Output.setFolderName(CreatedFolder.getName());
-            Output.setDepth(CreatedFolder.getDepth());
+            Optional<TFolderMaster> OutputFolder = folderRepository.findByIdAndUserIdAndDeleted(CreatedFolder.getId(), user.userId(), false);
 
-            if (CreatedFolder.getCreatedAt() != null) {
-                Output.setCreatedAt(CreatedFolder.getCreatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
+            if (OutputFolder.isEmpty()) {
+                return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Folder is created but failed to fetch folder information.");
             }
 
-            return ApiResponseDto.Success("Folder has been created successfully.", Output);
+            return ApiResponseDto.Success("Folder has been created successfully.", GetFolderInformationDto(OutputFolder.get()));
         } catch (IllegalArgumentException ex) {
             ex.printStackTrace();
 
@@ -239,6 +240,103 @@ public class FolderService {
             ex.printStackTrace();
 
             return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to create folder.");
+        }
+    }
+
+
+    @Transactional
+    public ApiResponseDto<FolderInfoEntity> DoRenameFolder(FolderRenameInputEntity Folder) {
+        try {
+            if (Folder == null || Folder.getFolderId() == null || Folder.getFolderId().isEmpty() ||
+                    Folder.getUpdatedFolderName() == null || Folder.getUpdatedFolderName().isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
+            JwtUser user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
+            }
+
+            TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), Folder.getFolderId(), false);
+
+            if (CurrentFolder.getName().equals(Folder.getUpdatedFolderName())){
+                return ApiResponseDto.Success("New folder name is same as existing folder name.<br>Skipping...", GetFolderInformationDto(CurrentFolder));
+            }
+
+            CurrentFolder.setName(Folder.getUpdatedFolderName());
+            folderRepository.save(CurrentFolder);
+
+            CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), Folder.getFolderId(), false);
+
+            return ApiResponseDto.Success("Folder has been renamed successfully.", GetFolderInformationDto(CurrentFolder));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to rename this folder.");
+        }
+    }
+
+
+    @Transactional
+    public ApiResponseDto<Boolean> DoDelete(FolderDeleteInputEntity Folder) {
+        try {
+            if (Folder == null || Folder.getFolderId() == null || Folder.getFolderId().isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
+            JwtUser user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
+            }
+
+            TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), Folder.getFolderId(), false);
+
+            long AutoDeleteTime = Instant.now().getEpochSecond() + this.AutoDeleteTimeInDays * 86400L;
+
+            CurrentFolder.setDeleted(true);
+            CurrentFolder.setDeletedAt(LocalDateTime.now());
+            CurrentFolder.setAutoDeleteAt(AutoDeleteTime);
+            folderRepository.save(CurrentFolder);
+
+            return ApiResponseDto.Success("Folder has been successfully moved into recycle bin.<br>It will be auto deleted from recycle bin after "
+                    + this.AutoDeleteTimeInDays + " days.", true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to delete this folder.", false);
+        }
+    }
+
+
+    @Transactional
+    public ApiResponseDto<FolderInfoEntity> DoUpdateFavourite(FolderFavouriteInputEntity Folder) {
+        try {
+            if (Folder == null || Folder.getFolderId() == null || Folder.getFolderId().isEmpty() || Folder.getFavourite() == null){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
+            JwtUser user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
+            }
+
+            TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), Folder.getFolderId(), false);
+
+            CurrentFolder.setFavourite(Folder.getFavourite());
+            folderRepository.save(CurrentFolder);
+
+            CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), Folder.getFolderId(), false);
+
+            String ReturnMessage = "Folder has been successfully marked as your favourite.";
+            if (!Folder.getFavourite()) {
+                ReturnMessage = "Folder has been removed from your favourite list.";
+            }
+
+            return ApiResponseDto.Success(ReturnMessage, GetFolderInformationDto(CurrentFolder));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to update favourite status of this folder.");
         }
     }
     // ===========================
