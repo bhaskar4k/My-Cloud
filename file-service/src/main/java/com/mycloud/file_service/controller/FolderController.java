@@ -48,6 +48,17 @@ public class FolderController {
         }
     }
 
+    @GetMapping("/get-sub-folder-and-file-count/{FolderId}")
+    public ApiResponseDto<SubfolderAndFileCountOutputEntity> GetSubFolderAndFileCount(@PathVariable String FolderId) {
+        try {
+            return folderService.DoGetSubfolderAndFileCount(FolderId);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An internal error was occurred.");
+        }
+    }
+
     @PostMapping("/rename")
     public ApiResponseDto<FolderInfoEntity> Rename(@RequestBody FolderRenameInputEntity Folder) {
         try {
