@@ -225,16 +225,13 @@ public class FolderService {
             CreatedFolder.setPath(CreatedFolder.getPath() + "," + CreatedFolder.getId().toString());
             folderRepository.save(CreatedFolder);
 
-            FolderInfoEntity Output = new FolderInfoEntity();
-            Output.setFolderId(encryptionUtil.EncryptHexEncoding(CreatedFolder.getId().toString()));
-            Output.setFolderName(CreatedFolder.getName());
-            Output.setDepth(CreatedFolder.getDepth());
+            Optional<TFolderMaster> OutputFolder = folderRepository.findByIdAndUserIdAndDeleted(CreatedFolder.getId(), user.userId(), false);
 
-            if (CreatedFolder.getCreatedAt() != null) {
-                Output.setCreatedAt(CreatedFolder.getCreatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
+            if (OutputFolder.isEmpty()) {
+                return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to create folder.");
             }
 
-            return ApiResponseDto.Success("Folder has been created successfully.", Output);
+            return ApiResponseDto.Success("Folder has been created successfully.", GetFolderInformationDto(OutputFolder.get()));
         } catch (IllegalArgumentException ex) {
             ex.printStackTrace();
 
