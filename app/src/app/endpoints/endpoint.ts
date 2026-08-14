@@ -38,6 +38,7 @@ export const Endpoints = {
     File: {
         Get: "file/file/get",
         GetAll: "file/file/get-all",
+        GetAllFavourite: "file/file/get-all-favourite",
         Rename: "file/file/rename",
         Delete: "file/file/delete",
         UpdateFavourite: "file/file/update-favourite",

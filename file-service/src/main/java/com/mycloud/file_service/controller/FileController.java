@@ -38,6 +38,17 @@ public class FileController {
         }
     }
 
+    @GetMapping("/get-all-favourite/{FolderId}")
+    public ApiResponseDto<FileDetailsEntity> GetAllFavourite(@PathVariable String FolderId) {
+        try {
+            return fileService.DoGetAllFavouriteFileListByUserId(FolderId);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An internal error was occurred.");
+        }
+    }
+
     @PostMapping("/rename")
     public ApiResponseDto<FileInformationEntity> Rename(@RequestBody FileRenameInputEntity File) {
         try {

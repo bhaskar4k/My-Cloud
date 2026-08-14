@@ -125,7 +125,7 @@ export class FavouriteComponent {
     this.RenderFileList = false;
     this.MatProgressBar1 = true;
 
-    this.fileService.GetAllChildFilesByFolderId(this.CurrentFolderId).subscribe({
+    this.fileService.GetAllFavouriteChildFilesByFolderId(this.CurrentFolderId).subscribe({
       next: (response: ApiResponseDto) => {
         this.MatProgressBar1 = false;
 
