@@ -14,6 +14,7 @@ import { UploadComponent } from '../../../page-components-shared/file-common/upl
 import { FolderContentComponent } from '../folder-content/folder-content.component';
 import { FileContentComponent } from '../file-content/file-content.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FileService } from '../../../services/file.service';
 
 @Component({
   selector: 'app-content-base',
@@ -43,7 +44,8 @@ export class ContentBaseComponent {
     private route: ActivatedRoute,
     private dialog: MatDialog,
     private router: Router,
-    private folderService: FolderService
+    private folderService: FolderService,
+    private fileService: FileService
   ) { }
 
   ngOnInit() {
@@ -157,7 +159,7 @@ export class ContentBaseComponent {
     this.RenderFileList = false;
     this.MatProgressBar1 = true;
 
-    this.folderService.GetAllChildFilesByFolderId(this.CurrentFolderId).subscribe({
+    this.fileService.GetAllChildFilesByFolderId(this.CurrentFolderId).subscribe({
       next: (response: ApiResponseDto) => {
         this.MatProgressBar1 = false;
 
