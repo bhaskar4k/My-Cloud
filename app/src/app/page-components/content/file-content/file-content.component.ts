@@ -3,11 +3,13 @@ import { FileDetailsEntity, FileInfoEntity } from '../../../models/folder.model'
 import { CommonModule } from '@angular/common';
 import { FileCardComponent } from '../../../page-components-shared/file-common/file-card/file-card.component';
 import { FileDeleteEmitEntity } from '../../../models/file.model';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @Component({
   selector: 'app-file-content',
   imports: [
     CommonModule,
+    MatExpansionModule,
     FileCardComponent
   ],
   templateUrl: './file-content.component.html',
