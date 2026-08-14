@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
-import { FolderDeleteEmitEntity, FolderInfoEntity } from '../../../models/folder.model';
+import { FolderDeleteEmitEntity, FolderDeleteInputEntity, FolderFavouriteInputEntity, FolderInfoEntity } from '../../../models/folder.model';
 import { DownloadService } from '../../../services/download.service';
 import { FolderMenuStateService } from '../../../services/folder-menu-state.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -8,6 +8,9 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common';
 import { AnimationEvent } from '@angular/animations';
 import { FolderDetailsComponent } from '../folder-details/folder-details.component';
+import { ApiResponseDto } from '../../../models/dto.model';
+import { CustomAlertComponent } from '../../custom-alert/custom-alert.component';
+import { ResponseTypeColor } from '../../../constants/commonConsts';
 
 @Component({
   selector: 'app-folder-properties',
@@ -124,14 +127,86 @@ export class FolderPropertiesComponent {
   }
 
   FavouriteFile() {
+    this.Folder.Favourite = !this.Folder.Favourite;
 
+    let FavouriteFilePayload: FolderFavouriteInputEntity = {
+      FolderId: this.Folder.FolderId,
+      Favourite: this.Folder.Favourite
+    }
+
+    this.MatProgressBar = true;
+
+
+    this.folderService.FavouriteFolder(FavouriteFilePayload).subscribe({
+      next: (response: ApiResponseDto) => {
+        this.MatProgressBar = false;
+
+        if (response.success === true && response.statusCode === 200) {
+          this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.SUCCESS } });
+          this.UpdatedFolder.emit(response.data as FolderInfoEntity);
+        } else {
+          this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
+        }
+
+        this.menuState.close();
+      },
+      error: (err: any) => {
+        this.dialog.open(CustomAlertComponent, { data: { text: "Failed to update favourite status of this file.", type: ResponseTypeColor.ERROR } });
+        this.MatProgressBar = false;
+        this.menuState.close();
+      }
+    });
   }
 
   RenameFile() {
+    // const dialogRef = this.dialog.open(RenameFileComponent, {
+    //   data: this.File,
+    //   width: '30rem',
+    //   disableClose: true
+    // });
 
+    // dialogRef.afterClosed().subscribe((UpdatedFile: FileInfoEntity) => {
+    //   if (UpdatedFile) {
+    //     this.FileInfo = UpdatedFile;
+    //     this.File = UpdatedFile;
+    //     this.UpdatedFile.emit(UpdatedFile);
+    //   }
+
+    //   this.menuState.close();
+    // });
   }
 
   DeleteFile() {
+    let DeleteFilePayload: FolderDeleteInputEntity = {
+      FolderId: this.Folder.FolderId,
+    }
 
+    this.MatProgressBar = true;
+
+    const FolderDeleteEmitEntity: FolderDeleteEmitEntity = {
+      Deleted: false,
+      FolderId: this.Folder.FolderId
+    };
+
+    this.folderService.DeleteFolder(DeleteFilePayload).subscribe({
+      next: (response: ApiResponseDto) => {
+        this.MatProgressBar = false;
+
+        if (response.success === true && response.statusCode === 200) {
+          this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.SUCCESS } });
+          FolderDeleteEmitEntity.Deleted = true;
+          this.DeletedFolder.emit(FolderDeleteEmitEntity);
+        } else {
+          this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
+        }
+
+        this.menuState.close();
+      },
+      error: (err: any) => {
+        this.dialog.open(CustomAlertComponent, { data: { text: "Failed to delete this folder.", type: ResponseTypeColor.ERROR } });
+        this.MatProgressBar = false;
+        this.menuState.close();
+      }
+    });
   }
 }
