@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
-import { FileInfoEntity } from '../../../models/folder.model';
+import { FileInfoEntity } from '../../../models/file.model';
 import { FileRenameInputEntity } from '../../../models/file.model';
 import { FileService } from '../../../services/file.service';
 import { CustomAlertComponent } from '../../custom-alert/custom-alert.component';

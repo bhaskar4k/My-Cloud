@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
-import { FileInfoEntity } from '../../../models/folder.model';
+import { FileInfoEntity } from '../../../models/file.model';
 import { FileDeleteInputEntity, FileFavouriteInputEntity } from '../../../models/file.model';
 import { DownloadService } from '../../../services/download.service';
 import { FileMenuStateService } from '../../../services/file-menu-state.service';

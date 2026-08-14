@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FileInfoEntity } from '../../../models/folder.model';
+import { FileInfoEntity } from '../../../models/file.model';
 import { GetFileIcon, GetFileType, GetReadableFileSize } from '../../../common/FileUtil';
 
 @Component({

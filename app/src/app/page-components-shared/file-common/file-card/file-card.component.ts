@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FileInfoEntity } from '../../../models/folder.model';
+import { FileInfoEntity } from '../../../models/file.model';
 import { FilePropertiesComponent } from '../file-properties/file-properties.component';
 import { Subscription } from 'rxjs';
 import { FileMenuStateService } from '../../../services/file-menu-state.service';

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FileDetailsEntity, FileInfoEntity } from '../../../models/folder.model';
+import { FileDetailsEntity, FileInfoEntity } from '../../../models/file.model';
 import { CommonModule } from '@angular/common';
 import { FileCardComponent } from '../../../page-components-shared/file-common/file-card/file-card.component';
 import { FileDeleteEmitEntity } from '../../../models/file.model';
