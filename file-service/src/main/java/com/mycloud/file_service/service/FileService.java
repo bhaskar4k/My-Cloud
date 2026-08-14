@@ -169,6 +169,10 @@ public class FileService {
                     .toList();
 
             return ApiResponseDto.Success("File list has been fetched successfully.", Output);
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
         } catch (Exception ex) {
             ex.printStackTrace();
 
@@ -204,6 +208,10 @@ public class FileService {
             CurrentFile = GetCurrentFileInfoFromFileIdAndUploadStatusAndDeleted(user.userId(), File.getFileId(), UploadStatus.COMPLETED, false);
 
             return ApiResponseDto.Success("File has been renamed successfully.", GetFileInformationDto(CurrentFile));
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
         } catch (Exception ex) {
             ex.printStackTrace();
 
@@ -235,6 +243,10 @@ public class FileService {
 
             return ApiResponseDto.Success("File has been successfully moved into recycle bin.<br>It will be auto deleted from recycle bin after "
                     + this.AutoDeleteTimeInDays + " days.", true);
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
         } catch (Exception ex) {
             ex.printStackTrace();
 
@@ -268,6 +280,10 @@ public class FileService {
             }
 
             return ApiResponseDto.Success(ReturnMessage, GetFileInformationDto(CurrentFile));
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
         } catch (Exception ex) {
             ex.printStackTrace();
 

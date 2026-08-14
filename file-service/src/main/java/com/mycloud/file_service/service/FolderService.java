@@ -11,6 +11,7 @@ import com.mycloud.common_models.enums.UploadStatus;
 import com.mycloud.common_models.utils.DatetimeUtil;
 import com.mycloud.common_models.utils.EncryptionUtil;
 import com.mycloud.common_models.utils.JwtUtil;
+import com.mycloud.data_access_layer.repositories.TFileMasterRepository;
 import com.mycloud.data_access_layer.repositories.TFolderMasterRepository;
 
 import org.springframework.http.HttpStatus;
@@ -27,12 +28,14 @@ import java.util.Optional;
 public class FolderService {
     private final JwtUtil jwtUtil;
     private final TFolderMasterRepository folderRepository;
+    private final TFileMasterRepository fileMasterRepository;
     private final EncryptionUtil encryptionUtil;
     private final Long AutoDeleteTimeInDays;
 
-    public FolderService(JwtConfig jwtConfig, StorageConfig storageConfig, TFolderMasterRepository folderRepository) {
+    public FolderService(JwtConfig jwtConfig, StorageConfig storageConfig, TFolderMasterRepository folderRepository, TFileMasterRepository fileMasterRepository) {
         this.jwtUtil = new JwtUtil(jwtConfig.getSecret(), jwtConfig.getExpiration());
         this.folderRepository = folderRepository;
+        this.fileMasterRepository = fileMasterRepository;
         this.encryptionUtil = new EncryptionUtil(jwtConfig.getSecret());
         this.AutoDeleteTimeInDays = storageConfig.getAutoDeleteTimeInDays();
     }
@@ -75,8 +78,8 @@ public class FolderService {
         dto.setFolderId(encryptionUtil.EncryptHexEncoding(Folder.getId().toString()));
         dto.setFolderName(Folder.getName());
         dto.setDepth(Folder.getDepth() - 1); // Treating ROOT as 0 Depth
-        dto.setSubFolderCount(0);
-        dto.setFilesCount(0);
+        dto.setSubFolderCount(0L);
+        dto.setFilesCount(0L);
         dto.setTotalSize(0L);
         dto.setFavourite(Folder.getFavourite());
         dto.setDeleted(Folder.getDeleted());
@@ -194,6 +197,37 @@ public class FolderService {
     }
 
 
+    public ApiResponseDto<SubfolderAndFileCountOutputEntity> DoGetSubfolderAndFileCount(String FolderId) {
+        try {
+            if (FolderId == null || FolderId.isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
+            JwtUser user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
+            }
+
+            TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderId, false);
+
+            SubfolderAndFileCountOutputEntity Output = new SubfolderAndFileCountOutputEntity();
+
+            Output.TotalSubFolderCount = folderRepository.countByParentFolderIdAndUserId(CurrentFolder.getId(), user.userId());
+            Output.TotalFileCount = fileMasterRepository.countByParentFolderIdAndUserId(CurrentFolder.getId(), user.userId());
+
+            return ApiResponseDto.Success("Sub folder & file count has been fetched successfully.", Output);
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to fetch sub folder & file count.");
+        }
+    }
+
+
     // CRUD OPERATIONS :: START
     // ===========================
     @Transactional
@@ -269,6 +303,10 @@ public class FolderService {
             CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), Folder.getFolderId(), false);
 
             return ApiResponseDto.Success("Folder has been renamed successfully.", GetFolderInformationDto(CurrentFolder));
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
         } catch (Exception ex) {
             ex.printStackTrace();
 
@@ -300,6 +338,10 @@ public class FolderService {
 
             return ApiResponseDto.Success("Folder has been successfully moved into recycle bin.<br>It will be auto deleted from recycle bin after "
                     + this.AutoDeleteTimeInDays + " days.", true);
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
         } catch (Exception ex) {
             ex.printStackTrace();
 
@@ -333,6 +375,10 @@ public class FolderService {
             }
 
             return ApiResponseDto.Success(ReturnMessage, GetFolderInformationDto(CurrentFolder));
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
         } catch (Exception ex) {
             ex.printStackTrace();
 

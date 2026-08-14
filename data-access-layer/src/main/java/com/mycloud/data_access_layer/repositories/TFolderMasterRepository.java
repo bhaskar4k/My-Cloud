@@ -16,4 +16,6 @@ public interface TFolderMasterRepository extends JpaRepository<TFolderMaster, Lo
     Optional<TFolderMaster> findByUserIdAndDeletedAndDepth(Long userId, Boolean deleted, Integer depth);
 
     List<TFolderMaster> findByParentFolderIdAndUserIdAndDeleted(Long parentFolderId, Long userId, Boolean deleted);
+
+    long countByParentFolderIdAndUserId(Long parentFolderId, Long userId);
 }
