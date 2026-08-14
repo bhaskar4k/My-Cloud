@@ -34,6 +34,8 @@ public class FolderService {
     }
 
 
+    // UTIL :: START
+    // ===========================
     public TFolderMaster GetCurrentFolderInfoFromFolderId(Long UserId, String FolderId){
         Optional<TFolderMaster> CurrentFolder;
 
@@ -64,6 +66,44 @@ public class FolderService {
     }
 
 
+    private FolderInfoEntity GetFolderInformationDto(TFolderMaster Folder){
+        FolderInfoEntity dto = new FolderInfoEntity();
+        dto.setFolderId(encryptionUtil.EncryptHexEncoding(Folder.getId().toString()));
+        dto.setFolderName(Folder.getName());
+        dto.setDepth(Folder.getDepth());
+        dto.setSubFolderCount(0);
+        dto.setFilesCount(0);
+        dto.setFavourite(Folder.getFavourite());
+        dto.setDeleted(Folder.getDeleted());
+
+        if (Folder.getCreatedAt() != null) {
+            dto.setCreatedAt(Folder.getCreatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
+            dto.setCreatedAgo(DatetimeUtil.GetUploadedAgo(Folder.getCreatedAt()));
+        }
+
+        if (Folder.getUpdatedAt() != null) {
+            dto.setModifiedAt(Folder.getUpdatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
+        }
+
+        if (Folder.getDeleted()) {
+            if (Folder.getDeletedAt() != null) {
+                dto.setDeletedAt(Folder.getDeletedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
+            }
+
+            if (Folder.getAutoDeleteAt() != null) {
+                dto.setAutoDeletingAt(DatetimeUtil.GetAutoDeletionText(Folder.getAutoDeleteAt()));
+            }
+        }
+
+        return dto;
+    }
+    // ===========================
+    // UTIL :: END
+
+
+
+    // BUSINESS :: START
+    // ===========================
     public ApiResponseDto<FolderInfoEntity[]> DoValidateFolderAccess(String FolderId) {
         try {
             if (FolderId == null || FolderId.isEmpty()){
@@ -113,6 +153,44 @@ public class FolderService {
     }
 
 
+    public ApiResponseDto<FolderDetailsEntity> DoGetAllFolders(String FolderId) {
+        try {
+            if (FolderId == null || FolderId.isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
+            JwtUser user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
+            }
+
+            TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderId);
+
+            List<TFolderMaster> ChildFolders = folderRepository.findByParentFolderIdAndUserIdAndDeleted(CurrentFolder.getId(), user.userId(), false);
+
+            FolderDetailsEntity Output = new FolderDetailsEntity();
+            Output.HasFolder = !ChildFolders.isEmpty();
+            Output.FolderCount = ChildFolders.size();
+
+            Output.FoldersList = ChildFolders.stream()
+                    .map(this::GetFolderInformationDto)
+                    .toList();
+
+            return ApiResponseDto.Success("Folder list has been fetched successfully.", Output);
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to fetch all folders list.");
+        }
+    }
+
+
+    // CRUD OPERATIONS :: START
+    // ===========================
     @Transactional
     public ApiResponseDto<FolderInfoEntity> DoCreateFolder(FolderInfoEntity FolderInfo) {
         try {
@@ -162,51 +240,9 @@ public class FolderService {
             return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to create folder.");
         }
     }
+    // ===========================
+    // CRUD OPERATIONS :: END
 
-
-    public ApiResponseDto<FolderDetailsEntity> DoGetAllFolders(String FolderId) {
-        try {
-            if (FolderId == null || FolderId.isEmpty()){
-                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
-            }
-
-            JwtUser user = jwtUtil.GetCurrentUser();
-            if (!user.IsAuthenticated()) {
-                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
-            }
-
-            TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderId);
-
-            List<TFolderMaster> ChildFolders = folderRepository.findByParentFolderIdAndUserIdAndDeleted(CurrentFolder.getId(), user.userId(), false);
-
-            FolderDetailsEntity Output = new FolderDetailsEntity();
-            Output.HasFolder = !ChildFolders.isEmpty();
-            Output.FolderCount = ChildFolders.size();
-
-            Output.FoldersList = ChildFolders.stream()
-                    .map(folder -> {
-                        FolderInfoEntity dto = new FolderInfoEntity();
-                        dto.setFolderId(encryptionUtil.EncryptHexEncoding(folder.getId().toString()));
-                        dto.setFolderName(folder.getName());
-                        dto.setDepth(folder.getDepth());
-
-                        if (folder.getCreatedAt() != null) {
-                            dto.setCreatedAt(folder.getCreatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
-                        }
-
-                        return dto;
-                    })
-                    .toList();
-
-            return ApiResponseDto.Success("Folder list has been fetched successfully.", Output);
-        } catch (IllegalArgumentException ex) {
-            ex.printStackTrace();
-
-            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-
-            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to fetch all folders list.");
-        }
-    }
+    // ===========================
+    // BUSINESS :: END
 }

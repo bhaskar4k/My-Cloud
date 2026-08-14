@@ -7,6 +7,7 @@ import { FolderService } from '../../../services/folder.service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { AnimationEvent } from '@angular/animations';
+import { FolderDetailsComponent } from '../folder-details/folder-details.component';
 
 @Component({
   selector: 'app-folder-properties',
@@ -47,17 +48,31 @@ export class FolderPropertiesComponent {
   @Input() FolderInfo: FolderInfoEntity = {
     FolderId: '',
     FolderName: '',
-    CreatedAt: '',
     Depth: 0,
-    Favourite: false
+    SubFolderCount: 0,
+    FilesCount: 0,
+    Favourite: false,
+    CreatedAt: '',
+    CreatedAgo: '',
+    ModifiedAt: '',
+    Deleted: false,
+    DeletedAt: '',
+    AutoDeletingAt: ''
   };
 
   Folder: FolderInfoEntity = {
     FolderId: '',
     FolderName: '',
-    CreatedAt: '',
     Depth: 0,
-    Favourite: false
+    SubFolderCount: 0,
+    FilesCount: 0,
+    Favourite: false,
+    CreatedAt: '',
+    CreatedAgo: '',
+    ModifiedAt: '',
+    Deleted: false,
+    DeletedAt: '',
+    AutoDeletingAt: ''
   };
 
   @Output() UpdatedFolder = new EventEmitter<FolderInfoEntity>();
@@ -96,7 +111,10 @@ export class FolderPropertiesComponent {
   }
 
   ViewDetails() {
-
+    this.dialog.open(FolderDetailsComponent, {
+      width: '60rem',
+      data: this.Folder
+    });
   }
 
   DownloadFile() {

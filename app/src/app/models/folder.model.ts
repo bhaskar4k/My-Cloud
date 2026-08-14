@@ -7,9 +7,16 @@ export interface FolderDetailsEntity {
 export interface FolderInfoEntity {
     FolderId: string;
     FolderName: string;
-    CreatedAt: string;
     Depth: number;
+    SubFolderCount: number;
+    FilesCount: number;
     Favourite: boolean;
+    CreatedAt: string;
+    CreatedAgo: string;
+    ModifiedAt: string | null;
+    Deleted: boolean;
+    DeletedAt: string | null;
+    AutoDeletingAt: string | null;
 }
 
 export interface FolderCreateInputEntity {
