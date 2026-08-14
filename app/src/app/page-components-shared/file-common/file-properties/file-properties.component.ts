@@ -13,6 +13,7 @@ import { CustomAlertComponent } from '../../custom-alert/custom-alert.component'
 import { ResponseTypeColor } from '../../../constants/commonConsts';
 import { FileDeleteEmitEntity, FileFavouriteEmitEntity } from '../../../models/file.model';
 import { CommonModule } from '@angular/common';
+import { AnimationEvent } from '@angular/animations';
 
 @Component({
   selector: 'app-file-properties',
@@ -21,9 +22,6 @@ import { CommonModule } from '@angular/common';
   ],
   templateUrl: './file-properties.component.html',
   styleUrl: './file-properties.component.css',
-  host: {
-    '[@popMenu]': ''
-  },
   animations: [
     trigger('popMenu', [
 
@@ -88,6 +86,7 @@ export class FilePropertiesComponent {
   @Output() FavouritedFile = new EventEmitter<FileFavouriteEmitEntity>();
 
   MatProgressBar: boolean = false;
+  IsFullyClosed = true;
 
   constructor(
     private downloadService: DownloadService,
@@ -106,6 +105,16 @@ export class FilePropertiesComponent {
     if (!this.elementRef.nativeElement.contains(event.target)) {
       this.menuState.close();
     }
+  }
+
+  OnAnimStart(event: AnimationEvent) {
+    // As soon as any transition begins, make sure the element is visible/animatable
+    this.IsFullyClosed = false;
+  }
+
+  OnAnimDone(event: AnimationEvent) {
+    // Only hide it from layout once it has fully finished closing
+    this.IsFullyClosed = event.toState === 'closed';
   }
 
   ViewDetails() {
