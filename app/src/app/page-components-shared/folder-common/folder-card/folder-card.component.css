@@ -24,22 +24,6 @@
     background: transparent !important;
 }
 
-/* Left Accent */
-.folder-card-accent {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 4px;
-    height: 100%;
-    background: linear-gradient(to bottom, #d8b4fe, #8b5cf6);
-    opacity: 0;
-    transition: opacity .22s ease;
-}
-
-.dark-folder-card:hover .folder-card-accent {
-    opacity: 1;
-}
-
 /* Folder Icon */
 .icon-wrapper {
     width: 48px;

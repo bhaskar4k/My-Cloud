@@ -19,7 +19,8 @@
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-4 g-3">
         <div class="col" *ngFor="let folder of AllFolder.FoldersList">
-            <app-folder-card [FolderInfo]="folder"></app-folder-card>
+            <app-folder-card [FolderInfo]="folder" (UpdatedFolder)="OnUpdateAnyFolder($event)"
+                (DeletedFolder)="OnDeleteAnyFolder($event)"></app-folder-card>
         </div>
     </div>
 

@@ -22,8 +22,4 @@ export class FolderService {
   GetAllChildFoldersByFolderId(FolderId: string): Observable<ApiResponseDto> {
     return this.http.get<ApiResponseDto>(GetBaseURL() + Endpoints.Folder.GetAll + `/${FolderId}`);
   }
-
-  GetAllChildFilesByFolderId(FolderId: string): Observable<ApiResponseDto> {
-    return this.http.get<ApiResponseDto>(GetBaseURL() + Endpoints.File.GetAll + `/${FolderId}`);
-  }
 }

@@ -11,6 +11,10 @@ import { FileDeleteInputEntity, FileFavouriteInputEntity, FileRenameInputEntity 
 export class FileService {
   constructor(private http: HttpClient) { }
 
+  GetAllChildFilesByFolderId(FolderId: string): Observable<ApiResponseDto> {
+    return this.http.get<ApiResponseDto>(GetBaseURL() + Endpoints.File.GetAll + `/${FolderId}`);
+  }
+
   GetFileInformationByFileGuid(FileGuid: string): Observable<ApiResponseDto> {
     return this.http.get<ApiResponseDto>(GetBaseURL() + Endpoints.File.Get + "/" + FileGuid);
   }

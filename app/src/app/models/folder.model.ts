@@ -30,8 +30,3 @@ export interface FolderDeleteEmitEntity {
     Deleted: boolean;
     FolderId: string;
 }
-
-export interface FolderFavouriteEmitEntity {
-    Favourite: boolean;
-    FolderId: string;
-}

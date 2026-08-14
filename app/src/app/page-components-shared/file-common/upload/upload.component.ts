@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
-import { UploadService } from '../../../services/upload.service';
+import { FileUploadService } from '../../../services/file-upload.service';
 import { CustomAlertComponent } from '../../../page-components-shared/custom-alert/custom-alert.component';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ResponseTypeColor } from '../../../constants/commonConsts';
@@ -20,7 +20,7 @@ export class UploadComponent implements OnInit {
   constructor(
     private dialogRef: MatDialogRef<UploadComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    public uploadService: UploadService,
+    public fileUploadService: FileUploadService,
     private dialog: MatDialog
   ) {
     this.FolderId = data.FolderId;
@@ -46,7 +46,7 @@ export class UploadComponent implements OnInit {
     this.SelectedFile = null;
 
     try {
-      let UploadedFileInformation = await this.uploadService.StartBackgroundUpload(fileToUpload, this.FolderId);
+      let UploadedFileInformation = await this.fileUploadService.StartBackgroundUpload(fileToUpload, this.FolderId);
 
       this.dialog.open(CustomAlertComponent, {
         data: { text: "File has been uploaded successfully.", type: ResponseTypeColor.SUCCESS }

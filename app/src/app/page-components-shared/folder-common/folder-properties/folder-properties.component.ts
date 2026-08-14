@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
-import { FolderDeleteEmitEntity, FolderFavouriteEmitEntity, FolderInfoEntity } from '../../../models/folder.model';
+import { FolderDeleteEmitEntity, FolderInfoEntity } from '../../../models/folder.model';
 import { DownloadService } from '../../../services/download.service';
 import { FolderMenuStateService } from '../../../services/folder-menu-state.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -62,7 +62,6 @@ export class FolderPropertiesComponent {
 
   @Output() UpdatedFolder = new EventEmitter<FolderInfoEntity>();
   @Output() DeletedFolder = new EventEmitter<FolderDeleteEmitEntity>();
-  @Output() FavouritedFolder = new EventEmitter<FolderFavouriteEmitEntity>();
 
   MatProgressBar: boolean = false;
   IsFullyClosed = true;
@@ -72,7 +71,7 @@ export class FolderPropertiesComponent {
     private elementRef: ElementRef,
     private menuState: FolderMenuStateService,
     private dialog: MatDialog,
-    private fileService: FolderService,
+    private folderService: FolderService,
   ) { }
 
   @HostListener('document:click', ['$event'])
