@@ -1,4 +1,4 @@
-<div class="file-properties-menu" [@popMenu]>
+<div class="file-properties-menu" [@popMenu]="ShowMore ? 'open' : 'closed'">
 
     <button class="menu-item" (click)="ViewDetails()">
         <i class="bi bi-info-circle"></i>

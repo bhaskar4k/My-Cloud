@@ -3,7 +3,7 @@ import { FileInfoEntity } from '../../../models/folder.model';
 import { FileDeleteInputEntity, FileFavouriteInputEntity } from '../../../models/file.model';
 import { DownloadService } from '../../../services/download.service';
 import { FileMenuStateService } from '../../../services/file-menu-state.service';
-import { trigger, transition, style, animate } from '@angular/animations';
+import { trigger, transition, style, animate, state } from '@angular/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { FileDetailsComponent } from '../file-details/file-details.component';
 import { RenameFileComponent } from '../rename-file/rename-file.component';
@@ -26,19 +26,33 @@ import { CommonModule } from '@angular/common';
   },
   animations: [
     trigger('popMenu', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'scale(0.92) translateY(-6px)' }),
-        animate('260ms cubic-bezier(0.2, 0.9, 0.3, 1.2)',
-          style({ opacity: 1, transform: 'scale(1) translateY(0)' }))
+
+      state('open', style({
+        opacity: 1,
+        transform: 'scale(1) translateY(0)',
+        visibility: 'visible'
+      })),
+
+      state('closed', style({
+        opacity: 0,
+        transform: 'scale(0.92) translateY(-6px)',
+        visibility: 'hidden'
+      })),
+
+      transition('closed => open', [
+        animate('260ms cubic-bezier(0.2, 0.9, 0.3, 1.2)')
       ]),
-      transition(':leave', [
-        animate('220ms cubic-bezier(0.4, 0, 0.2, 1)',
-          style({ opacity: 0, transform: 'scale(0.92) translateY(-6px)' }))
+
+      transition('open => closed', [
+        animate('220ms cubic-bezier(0.4, 0, 0.2, 1)')
       ])
+
     ])
   ]
 })
 export class FilePropertiesComponent {
+  @Input() ShowMore = false;
+
   @Input() FileInfo: FileInfoEntity = {
     FileId: '',
     OriginalName: '',

@@ -15,8 +15,8 @@
             <i class="bi bi-three-dots-vertical fs-6 file-view-more cursor_pointer" (click)="ViewMoreInFile($event)">
             </i>
 
-            <app-file-properties [hidden]="!ShowMore" [FileInfo]="File" (UpdatedFile)="OnUpdateAnyFile($event)"
-                (DeletedFile)="OnDeleteAnyFile($event)">
+            <app-file-properties [hidden]="!ShowMore" [ShowMore]="ShowMore" [FileInfo]="File"
+                (UpdatedFile)="OnUpdateAnyFile($event)" (DeletedFile)="OnDeleteAnyFile($event)">
             </app-file-properties>
         </div>
     </div>
