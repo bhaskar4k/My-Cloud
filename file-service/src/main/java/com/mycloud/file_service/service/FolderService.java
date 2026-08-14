@@ -1,6 +1,7 @@
 package com.mycloud.file_service.service;
 
 import com.mycloud.common_config.model.JwtConfig;
+import com.mycloud.common_config.model.StorageConfig;
 import com.mycloud.common_models.common_constants.CommonConstants;
 import com.mycloud.common_models.common_entities.*;
 import com.mycloud.common_models.database_entities.TFileMaster;
@@ -16,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -25,11 +28,13 @@ public class FolderService {
     private final JwtUtil jwtUtil;
     private final TFolderMasterRepository folderRepository;
     private final EncryptionUtil encryptionUtil;
+    private final Long AutoDeleteTimeInDays;
 
-    public FolderService(JwtConfig jwtConfig, TFolderMasterRepository folderRepository) {
+    public FolderService(JwtConfig jwtConfig, StorageConfig storageConfig, TFolderMasterRepository folderRepository) {
         this.jwtUtil = new JwtUtil(jwtConfig.getSecret(), jwtConfig.getExpiration());
         this.folderRepository = folderRepository;
         this.encryptionUtil = new EncryptionUtil(jwtConfig.getSecret());
+        this.AutoDeleteTimeInDays = storageConfig.getAutoDeleteTimeInDays();
     }
 
 
@@ -271,6 +276,70 @@ public class FolderService {
             ex.printStackTrace();
 
             return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to rename this folder.");
+        }
+    }
+
+
+    @Transactional
+    public ApiResponseDto<Boolean> DoDelete(FolderDeleteInputEntity Folder) {
+        try {
+            if (Folder == null || Folder.getFolderId() == null || Folder.getFolderId().isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
+            JwtUser user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
+            }
+
+            TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), Folder.getFolderId(), false);
+
+            long AutoDeleteTime = Instant.now().getEpochSecond() + this.AutoDeleteTimeInDays * 86400L;
+
+            CurrentFolder.setDeleted(true);
+            CurrentFolder.setDeletedAt(LocalDateTime.now());
+            CurrentFolder.setAutoDeleteAt(AutoDeleteTime);
+            folderRepository.save(CurrentFolder);
+
+            return ApiResponseDto.Success("Folder has been successfully moved into recycle bin.<br>It will be auto deleted from recycle bin after "
+                    + this.AutoDeleteTimeInDays + " days.", true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to delete this folder.", false);
+        }
+    }
+
+
+    @Transactional
+    public ApiResponseDto<FolderInfoEntity> DoUpdateFavourite(FolderFavouriteInputEntity Folder) {
+        try {
+            if (Folder == null || Folder.getFolderId() == null || Folder.getFolderId().isEmpty() || Folder.getFavourite() == null){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
+            JwtUser user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
+            }
+
+            TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), Folder.getFolderId(), false);
+
+            CurrentFolder.setFavourite(Folder.getFavourite());
+            folderRepository.save(CurrentFolder);
+
+            CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), Folder.getFolderId(), false);
+
+            String ReturnMessage = "Folder has been successfully marked as your favourite.";
+            if (!Folder.getFavourite()) {
+                ReturnMessage = "Folder has been removed from your favourite list.";
+            }
+
+            return ApiResponseDto.Success(ReturnMessage, GetFolderInformationDto(CurrentFolder));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to update favourite status of this folder.");
         }
     }
     // ===========================
