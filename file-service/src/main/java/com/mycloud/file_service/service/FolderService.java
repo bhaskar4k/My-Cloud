@@ -223,7 +223,7 @@ public class FolderService {
             TFolderMaster CreatedFolder = folderRepository.save(NewFolder);
 
             CreatedFolder.setPath(CreatedFolder.getPath() + "," + CreatedFolder.getId().toString());
-            folderRepository.save(CreatedFolder);
+            CreatedFolder = folderRepository.save(CreatedFolder);
 
             Optional<TFolderMaster> OutputFolder = folderRepository.findByIdAndUserIdAndDeleted(CreatedFolder.getId(), user.userId(), false);
 
