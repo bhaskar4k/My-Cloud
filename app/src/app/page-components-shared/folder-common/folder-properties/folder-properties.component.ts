@@ -124,11 +124,11 @@ export class FolderPropertiesComponent {
     });
   }
 
-  DownloadFile() {
+  DownloadFolder() {
 
   }
 
-  FavouriteFile() {
+  FavouriteFolder() {
     this.Folder.Favourite = !this.Folder.Favourite;
 
     let FavouriteFilePayload: FolderFavouriteInputEntity = {
@@ -160,7 +160,7 @@ export class FolderPropertiesComponent {
     });
   }
 
-  RenameFile() {
+  RenameFolder() {
     const dialogRef = this.dialog.open(AddEditFolderComponent, {
       data: {
         FolderInfo: this.Folder,
@@ -201,7 +201,11 @@ export class FolderPropertiesComponent {
     });
   }
 
-  DeleteFile() {
+  MoveFolder() {
+
+  }
+
+  DeleteFolder() {
     let DeleteFilePayload: FolderDeleteInputEntity = {
       FolderId: this.Folder.FolderId,
     }
