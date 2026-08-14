@@ -43,3 +43,8 @@ export interface FolderDeleteEmitEntity {
     Deleted: boolean;
     FolderId: string;
 }
+
+export interface SubfolderAndFileCountOutputEntity {
+    TotalSubFolderCount: number;
+    TotalFileCount: number;
+}

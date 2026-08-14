@@ -14,8 +14,8 @@ public class FolderInfoEntity {
     public String FolderId;
     public String FolderName;
     private Integer Depth;
-    private Integer SubFolderCount;
-    private Integer FilesCount;
+    private Long SubFolderCount;
+    private Long FilesCount;
     private Long TotalSize;
     private Boolean Favourite;
     private String CreatedAt;

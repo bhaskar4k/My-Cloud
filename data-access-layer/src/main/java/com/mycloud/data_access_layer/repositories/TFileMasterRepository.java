@@ -42,4 +42,6 @@ public interface TFileMasterRepository extends JpaRepository<TFileMaster, Long> 
             Boolean deleted,
             UploadStatus status
     );
+
+    long countByParentFolderIdAndUserId(Long parentFolderId, Long userId);
 }
