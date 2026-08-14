@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FolderDeleteEmitEntity, FolderFavouriteEmitEntity, FolderInfoEntity } from '../../../models/folder.model';
+import { FolderDeleteEmitEntity, FolderInfoEntity } from '../../../models/folder.model';
 import { FolderPropertiesComponent } from '../folder-properties/folder-properties.component';
 import { FolderMenuStateService } from '../../../services/folder-menu-state.service';
 import { Subscription } from 'rxjs';
