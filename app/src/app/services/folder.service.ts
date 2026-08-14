@@ -19,8 +19,8 @@ export class FolderService {
     return this.http.post<ApiResponseDto>(GetBaseURL() + Endpoints.Folder.Create, Payload);
   }
 
-  GetAllChildFoldersByFolderId(FolderId: string, Favourite: number, Deleted: number): Observable<ApiResponseDto> {
-    return this.http.get<ApiResponseDto>(GetBaseURL() + Endpoints.Folder.GetAll + `/${FolderId}/${Favourite}/${Deleted}`);
+  GetAllChildFoldersByFolderId(FolderId: string): Observable<ApiResponseDto> {
+    return this.http.get<ApiResponseDto>(GetBaseURL() + Endpoints.Folder.GetAll + `/${FolderId}`);
   }
 
   GetSubfolderAndFileCount(FolderId: string): Observable<ApiResponseDto> {

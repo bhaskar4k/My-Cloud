@@ -80,25 +80,6 @@ public class FolderService {
     }
 
 
-    public TFolderMaster GetCurrentFolderInfoFromFolderIdDeletedAndFavourite(Long UserId, String FolderId, boolean Deleted, boolean Favourite) {
-        Optional<TFolderMaster> CurrentFolder;
-
-        if (FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)) {
-            CurrentFolder = folderRepository.findByUserIdAndDeletedAndDepth(UserId, Deleted, 1);
-        } else {
-            long ActualFolderId = GetActualFolderIdFromEncryptedFolderId(FolderId);
-
-            CurrentFolder = folderRepository.findByIdAndUserIdAndDeletedAndFavourite(ActualFolderId, UserId, Deleted, Favourite);
-        }
-
-        if (CurrentFolder.isEmpty()) {
-            throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
-        }
-
-        return CurrentFolder.get();
-    }
-
-
     private FolderInfoEntity GetFolderInformationDto(TFolderMaster Folder){
         FolderInfoEntity dto = new FolderInfoEntity();
         dto.setFolderId(encryptionUtil.EncryptHexEncoding(Folder.getId().toString()));
@@ -187,10 +168,9 @@ public class FolderService {
     }
 
 
-    public ApiResponseDto<FolderDetailsEntity> DoGetAllFolders(String FolderId, Integer Favourite, Integer Deleted) {
+    public ApiResponseDto<FolderDetailsEntity> DoGetAllFolders(String FolderId) {
         try {
-            if (FolderId == null || FolderId.isEmpty() || Favourite == null || Deleted == null ||
-                (Favourite != 0 && Favourite != 1) || (Deleted != 0 && Deleted != 1)){
+            if (FolderId == null || FolderId.isEmpty()){
                 return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
             }
 
@@ -199,10 +179,7 @@ public class FolderService {
                 return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
             }
 
-            boolean IsFavourite = (Favourite == 1);
-            boolean IsDeleted = (Deleted == 1);
-
-            TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderIdDeletedAndFavourite(user.userId(), FolderId, IsDeleted, IsFavourite);
+            TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderId, false);
 
             List<TFolderMaster> ChildFolders = folderRepository.findByParentFolderIdAndUserIdAndDeleted(CurrentFolder.getId(), user.userId(), false);
 

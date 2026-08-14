@@ -140,7 +140,7 @@ export class ContentBaseComponent {
     this.RenderFolderList = false;
     this.MatProgressBar = true;
 
-    this.folderService.GetAllChildFoldersByFolderId(this.CurrentFolderId, 0, 0).subscribe({
+    this.folderService.GetAllChildFoldersByFolderId(this.CurrentFolderId).subscribe({
       next: (response: ApiResponseDto) => {
         this.MatProgressBar = false;
 
