@@ -8,7 +8,7 @@ import { FileService } from './file.service';
 @Injectable({
   providedIn: 'root'
 })
-export class UploadService {
+export class FileUploadService {
   public IsUploading$ = new BehaviorSubject<boolean>(false);
   public UploadProgress$ = new BehaviorSubject<number>(0);
   public ActiveFileName$ = new BehaviorSubject<string>('');
