@@ -1,33 +1,37 @@
-export interface FolderInfoEntity {
-    FolderId: string;
-    FolderName: string;
-    CreatedAt?: string;
-    Depth?: number;
-}
-
 export interface FolderDetailsEntity {
     HasFolder: boolean;
     FolderCount: number;
     FoldersList: FolderInfoEntity[];
 }
 
-export interface FileDetailsEntity {
-    HasFile: boolean;
-    FileCount: number;
-    FilesList: FileInfoEntity[];
+export interface FolderInfoEntity {
+    FolderId: string;
+    FolderName: string;
+    CreatedAt?: string;
+    Depth?: number;
+    Favourite?: boolean;
 }
 
-export interface FileInfoEntity {
-    FileId: string;
-    OriginalName: string;
-    FileExtension: string;
-    ContentType: string;
-    FileSize: number;
+export interface FolderRenameInputEntity {
+    FolderId: string;
+    UpdatedFolderName: string;
+}
+
+export interface FolderDeleteInputEntity {
+    FolderId: string;
+}
+
+export interface FolderFavouriteInputEntity {
+    FolderId: string;
     Favourite: boolean;
-    CreatedAt: string;
-    UploadedAgo: string;
-    ModifiedAt: string | null;
+}
+
+export interface FolderDeleteEmitEntity {
     Deleted: boolean;
-    DeletedAt: string | null;
-    AutoDeletingAt: string | null;
+    FolderId: string;
+}
+
+export interface FolderFavouriteEmitEntity {
+    Favourite: boolean;
+    FolderId: string;
 }

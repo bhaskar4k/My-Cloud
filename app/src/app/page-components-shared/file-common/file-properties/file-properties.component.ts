@@ -1,9 +1,9 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
-import { FileInfoEntity } from '../../../models/folder.model';
+import { FileInfoEntity } from '../../../models/file.model';
 import { FileDeleteInputEntity, FileFavouriteInputEntity } from '../../../models/file.model';
 import { DownloadService } from '../../../services/download.service';
 import { FileMenuStateService } from '../../../services/file-menu-state.service';
-import { trigger, transition, style, animate } from '@angular/animations';
+import { trigger, transition, style, animate, state } from '@angular/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { FileDetailsComponent } from '../file-details/file-details.component';
 import { RenameFileComponent } from '../rename-file/rename-file.component';
@@ -11,8 +11,9 @@ import { FileService } from '../../../services/file.service';
 import { ApiResponseDto } from '../../../models/dto.model';
 import { CustomAlertComponent } from '../../custom-alert/custom-alert.component';
 import { ResponseTypeColor } from '../../../constants/commonConsts';
-import { FileDeleteEmitEntity, FileFavouriteEmitEntity } from '../../../models/file.model';
+import { FileDeleteEmitEntity } from '../../../models/file.model';
 import { CommonModule } from '@angular/common';
+import { AnimationEvent } from '@angular/animations';
 
 @Component({
   selector: 'app-file-properties',
@@ -21,24 +22,35 @@ import { CommonModule } from '@angular/common';
   ],
   templateUrl: './file-properties.component.html',
   styleUrl: './file-properties.component.css',
-  host: {
-    '[@popMenu]': ''
-  },
   animations: [
     trigger('popMenu', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'scale(0.92) translateY(-6px)' }),
-        animate('260ms cubic-bezier(0.2, 0.9, 0.3, 1.2)',
-          style({ opacity: 1, transform: 'scale(1) translateY(0)' }))
+
+      state('open', style({
+        opacity: 1,
+        transform: 'scale(1) translateY(0)',
+        visibility: 'visible'
+      })),
+
+      state('closed', style({
+        opacity: 0,
+        transform: 'scale(0.92) translateY(-6px)',
+        visibility: 'hidden'
+      })),
+
+      transition('closed => open', [
+        animate('260ms cubic-bezier(0.2, 0.9, 0.3, 1.2)')
       ]),
-      transition(':leave', [
-        animate('220ms cubic-bezier(0.4, 0, 0.2, 1)',
-          style({ opacity: 0, transform: 'scale(0.92) translateY(-6px)' }))
+
+      transition('open => closed', [
+        animate('220ms cubic-bezier(0.4, 0, 0.2, 1)')
       ])
+
     ])
   ]
 })
 export class FilePropertiesComponent {
+  @Input() ShowMore = false;
+
   @Input() FileInfo: FileInfoEntity = {
     FileId: '',
     OriginalName: '',
@@ -71,9 +83,9 @@ export class FilePropertiesComponent {
 
   @Output() UpdatedFile = new EventEmitter<FileInfoEntity>();
   @Output() DeletedFile = new EventEmitter<FileDeleteEmitEntity>();
-  @Output() FavouritedFile = new EventEmitter<FileFavouriteEmitEntity>();
 
   MatProgressBar: boolean = false;
+  IsFullyClosed = true;
 
   constructor(
     private downloadService: DownloadService,
@@ -92,6 +104,16 @@ export class FilePropertiesComponent {
     if (!this.elementRef.nativeElement.contains(event.target)) {
       this.menuState.close();
     }
+  }
+
+  OnAnimStart(event: AnimationEvent) {
+    // As soon as any transition begins, make sure the element is visible/animatable
+    this.IsFullyClosed = false;
+  }
+
+  OnAnimDone(event: AnimationEvent) {
+    // Only hide it from layout once it has fully finished closing
+    this.IsFullyClosed = event.toState === 'closed';
   }
 
   ViewDetails() {
@@ -115,10 +137,6 @@ export class FilePropertiesComponent {
 
     this.MatProgressBar = true;
 
-    const FileFavouriteEmitEntity: FileFavouriteEmitEntity = {
-      Favourite: false,
-      FileId: this.File.FileId
-    };
 
     this.fileService.FavouriteFile(FavouriteFilePayload).subscribe({
       next: (response: ApiResponseDto) => {
@@ -126,11 +144,9 @@ export class FilePropertiesComponent {
 
         if (response.success === true && response.statusCode === 200) {
           this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.SUCCESS } });
-          FileFavouriteEmitEntity.Favourite = true;
-          this.FavouritedFile.emit(FileFavouriteEmitEntity);
+          this.UpdatedFile.emit(response.data as FileInfoEntity);
         } else {
           this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
-          this.FavouritedFile.emit(FileFavouriteEmitEntity);
         }
 
         this.menuState.close();
@@ -138,7 +154,6 @@ export class FilePropertiesComponent {
       error: (err: any) => {
         this.dialog.open(CustomAlertComponent, { data: { text: "Failed to update favourite status of this file.", type: ResponseTypeColor.ERROR } });
         this.MatProgressBar = false;
-        this.FavouritedFile.emit(FileFavouriteEmitEntity);
         this.menuState.close();
       }
     });
@@ -184,7 +199,6 @@ export class FilePropertiesComponent {
           this.DeletedFile.emit(FileDeleteEmitEntity);
         } else {
           this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
-          this.DeletedFile.emit(FileDeleteEmitEntity);
         }
 
         this.menuState.close();
@@ -192,7 +206,6 @@ export class FilePropertiesComponent {
       error: (err: any) => {
         this.dialog.open(CustomAlertComponent, { data: { text: "Failed to delete this file.", type: ResponseTypeColor.ERROR } });
         this.MatProgressBar = false;
-        this.DeletedFile.emit(FileDeleteEmitEntity);
         this.menuState.close();
       }
     });

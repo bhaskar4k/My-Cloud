@@ -1,16 +1,18 @@
 /* Folder Card */
 .dark-folder-card {
+    position: relative;
+    /* establish a stacking context baseline */
+    z-index: 1;
     background-color: rgba(88, 60, 128, 0.18) !important;
     border: 2px solid rgba(167, 139, 250, 0.35) !important;
     border-radius: 12px;
-    transition: transform .22s ease,
-        box-shadow .22s ease,
-        border-color .22s ease,
-        background-color .22s ease;
+    transition: transform .22s ease, box-shadow .22s ease,
+        border-color .22s ease, background-color .22s ease;
 }
 
-/* Hover */
 .dark-folder-card:hover {
+    z-index: 5;
+    /* now this actually beats siblings */
     background-color: rgba(107, 70, 193, 0.28) !important;
     border-color: #c4b5fd !important;
     transform: translateY(-4px);
@@ -69,14 +71,14 @@
 }
 
 /* Three Dot Menu */
-.folder_view_more {
+.folder-view-more {
     border-radius: 50%;
     padding: 3px 7px;
     color: #b8bcc7;
     transition: all .2s ease;
 }
 
-.folder_view_more:hover {
+.folder-view-more:hover {
     background: rgba(255, 255, 255, .12);
     color: #d8b4fe;
 }
@@ -88,4 +90,9 @@
 
 .section_header {
     font-size: 1.01rem !important;
+}
+
+.dark-folder-card.menu-open {
+    z-index: 20;
+    /* highest, independent of hover */
 }

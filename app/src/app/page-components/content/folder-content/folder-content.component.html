@@ -8,11 +8,19 @@
 </div>
 
 <!-- Folder List -->
-<h5 *ngIf="AllFolder.HasFolder" class="text-muted my-3 section_header">Folders</h5>
+<mat-expansion-panel *ngIf="AllFolder.HasFolder" class="drive-panel" [expanded]="MatExpansionState">
 
-<div *ngIf="AllFolder.HasFolder" class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-4 g-3">
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            <i class="bi bi-folder me-2 fs-4"></i>
+            Folders ({{ AllFolder.FoldersList.length }})
+        </mat-panel-title>
+    </mat-expansion-panel-header>
 
-    <div class="col" *ngFor="let folder of AllFolder.FoldersList">
-        <app-folder-card [FolderInfo]="folder"></app-folder-card>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-4 g-3">
+        <div class="col" *ngFor="let folder of AllFolder.FoldersList">
+            <app-folder-card [FolderInfo]="folder"></app-folder-card>
+        </div>
     </div>
-</div>
+
+</mat-expansion-panel>

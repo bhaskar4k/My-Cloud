@@ -2,11 +2,13 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FolderDetailsEntity, FolderInfoEntity } from '../../../models/folder.model';
 import { CommonModule } from '@angular/common';
 import { FolderCardComponent } from '../../../page-components-shared/folder-common/folder-card/folder-card.component';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @Component({
   selector: 'app-folder-content',
   imports: [
     CommonModule,
+    MatExpansionModule,
     FolderCardComponent
   ],
   templateUrl: './folder-content.component.html',
@@ -14,7 +16,8 @@ import { FolderCardComponent } from '../../../page-components-shared/folder-comm
 })
 export class FolderContentComponent implements OnInit {
   @Input() AllFolderDetails: FolderDetailsEntity = { HasFolder: false, FolderCount: 0, FoldersList: [] };
-
+  @Input() MatExpansionState: boolean = false;
+  
   AllFolder: FolderDetailsEntity = { HasFolder: false, FolderCount: 0, FoldersList: [] };
 
   ngOnInit(): void {

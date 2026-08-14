@@ -47,9 +47,8 @@
 
     <hr>
 
-    <app-folder-content *ngIf="RenderFolderList" [AllFolderDetails]="AllFolder"></app-folder-content>
+    <app-folder-content *ngIf="RenderFolderList" [AllFolderDetails]="AllFolder"
+        [MatExpansionState]="true"></app-folder-content>
 
-    <hr>
-
-    <app-file-content *ngIf="RenderFileList" [AllFileDetails]="AllFile"></app-file-content>
+    <app-file-content *ngIf="RenderFileList" [AllFileDetails]="AllFile" [MatExpansionState]="false"></app-file-content>
 </div>
