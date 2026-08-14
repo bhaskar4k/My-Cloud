@@ -37,10 +37,10 @@ public class FolderController {
         }
     }
 
-    @GetMapping("/get-all/{FolderId}")
-    public ApiResponseDto<FolderDetailsEntity> GetAll(@PathVariable String FolderId) {
+    @GetMapping("/get-all/{FolderId}/{Favourite}/{Deleted}")
+    public ApiResponseDto<FolderDetailsEntity> GetAll(@PathVariable String FolderId, @PathVariable Integer Favourite, @PathVariable Integer Deleted) {
         try {
-            return folderService.DoGetAllFolders(FolderId);
+            return folderService.DoGetAllFolders(FolderId, Favourite, Deleted);
         } catch (Exception ex) {
             ex.printStackTrace();
 

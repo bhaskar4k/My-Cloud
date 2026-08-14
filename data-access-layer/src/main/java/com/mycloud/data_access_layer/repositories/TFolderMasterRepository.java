@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface TFolderMasterRepository extends JpaRepository<TFolderMaster, Long> {
-    boolean existsByIdAndUserId(Long id, Long userId);
+    Optional<TFolderMaster> findByIdAndUserIdAndDeletedAndFavourite(Long id, Long userId, Boolean deleted, Boolean favourite);
 
     Optional<TFolderMaster> findByIdAndUserIdAndDeleted(Long id, Long userId, Boolean deleted);
 

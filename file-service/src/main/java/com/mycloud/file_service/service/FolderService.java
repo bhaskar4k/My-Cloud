@@ -43,26 +43,52 @@ public class FolderService {
 
     // UTIL :: START
     // ===========================
-    public TFolderMaster GetCurrentFolderInfoFromFolderId(Long UserId, String FolderId, boolean Deleted){
+    private long GetActualFolderIdFromEncryptedFolderId(String FolderId) {
+        try {
+            FolderId = encryptionUtil.DecryptHexEncoding(FolderId);
+        } catch (RuntimeException ex) {
+            throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
+        }
+
+        long ActualFolderId = -1L;
+        try {
+            ActualFolderId = Long.parseLong(FolderId);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
+        }
+
+        return ActualFolderId;
+    }
+
+
+    public TFolderMaster GetCurrentFolderInfoFromFolderId(Long UserId, String FolderId, boolean Deleted) {
         Optional<TFolderMaster> CurrentFolder;
 
         if (FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)) {
             CurrentFolder = folderRepository.findByUserIdAndDeletedAndDepth(UserId, Deleted, 1);
         } else {
-            try {
-                FolderId = encryptionUtil.DecryptHexEncoding(FolderId);
-            } catch (RuntimeException ex) {
-                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
-            }
-
-            long ActualFolderId = -1L;
-            try {
-                ActualFolderId = Long.parseLong(FolderId);
-            } catch (NumberFormatException ex) {
-                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
-            }
+            long ActualFolderId = GetActualFolderIdFromEncryptedFolderId(FolderId);
 
             CurrentFolder = folderRepository.findByIdAndUserIdAndDeleted(ActualFolderId, UserId, Deleted);
+        }
+
+        if (CurrentFolder.isEmpty()) {
+            throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
+        }
+
+        return CurrentFolder.get();
+    }
+
+
+    public TFolderMaster GetCurrentFolderInfoFromFolderIdDeletedAndFavourite(Long UserId, String FolderId, boolean Deleted, boolean Favourite) {
+        Optional<TFolderMaster> CurrentFolder;
+
+        if (FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)) {
+            CurrentFolder = folderRepository.findByUserIdAndDeletedAndDepth(UserId, Deleted, 1);
+        } else {
+            long ActualFolderId = GetActualFolderIdFromEncryptedFolderId(FolderId);
+
+            CurrentFolder = folderRepository.findByIdAndUserIdAndDeletedAndFavourite(ActualFolderId, UserId, Deleted, Favourite);
         }
 
         if (CurrentFolder.isEmpty()) {
@@ -161,9 +187,10 @@ public class FolderService {
     }
 
 
-    public ApiResponseDto<FolderDetailsEntity> DoGetAllFolders(String FolderId) {
+    public ApiResponseDto<FolderDetailsEntity> DoGetAllFolders(String FolderId, Integer Favourite, Integer Deleted) {
         try {
-            if (FolderId == null || FolderId.isEmpty()){
+            if (FolderId == null || FolderId.isEmpty() || Favourite == null || Deleted == null ||
+                (Favourite != 0 && Favourite != 1) || (Deleted != 0 && Deleted != 1)){
                 return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
             }
 
@@ -172,7 +199,10 @@ public class FolderService {
                 return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
             }
 
-            TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderId, false);
+            boolean IsFavourite = (Favourite == 1);
+            boolean IsDeleted = (Deleted == 1);
+
+            TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderIdDeletedAndFavourite(user.userId(), FolderId, IsDeleted, IsFavourite);
 
             List<TFolderMaster> ChildFolders = folderRepository.findByParentFolderIdAndUserIdAndDeleted(CurrentFolder.getId(), user.userId(), false);
 
