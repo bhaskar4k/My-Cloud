@@ -70,9 +70,10 @@ public class FolderService {
         FolderInfoEntity dto = new FolderInfoEntity();
         dto.setFolderId(encryptionUtil.EncryptHexEncoding(Folder.getId().toString()));
         dto.setFolderName(Folder.getName());
-        dto.setDepth(Folder.getDepth());
+        dto.setDepth(Folder.getDepth() - 1); // Treating ROOT as 0 Depth
         dto.setSubFolderCount(0);
         dto.setFilesCount(0);
+        dto.setTotalSize(0L);
         dto.setFavourite(Folder.getFavourite());
         dto.setDeleted(Folder.getDeleted());
 

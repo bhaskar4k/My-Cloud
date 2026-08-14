@@ -13,9 +13,10 @@ import lombok.Setter;
 public class FolderInfoEntity {
     public String FolderId;
     public String FolderName;
-    public Integer Depth;
-    public Integer SubFolderCount;
-    public Integer FilesCount;
+    private Integer Depth;
+    private Integer SubFolderCount;
+    private Integer FilesCount;
+    private Long TotalSize;
     private Boolean Favourite;
     private String CreatedAt;
     private String CreatedAgo;

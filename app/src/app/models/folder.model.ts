@@ -10,6 +10,7 @@ export interface FolderInfoEntity {
     Depth: number;
     SubFolderCount: number;
     FilesCount: number;
+    TotalSize: number;
     Favourite: boolean;
     CreatedAt: string;
     CreatedAgo: string;
