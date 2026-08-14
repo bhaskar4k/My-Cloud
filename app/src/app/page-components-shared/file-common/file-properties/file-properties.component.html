@@ -1,5 +1,5 @@
-<div class="file-properties-menu" [@popMenu]="ShowMore ? 'open' : 'closed'" (@popMenu.start)="OnAnimStart($event)"
-    (@popMenu.done)="OnAnimDone($event)" [class.d-none]="IsFullyClosed">
+<div class="file-folder-properties-menu" [@popMenu]="ShowMore ? 'open' : 'closed'"
+    (@popMenu.start)="OnAnimStart($event)" (@popMenu.done)="OnAnimDone($event)" [class.d-none]="IsFullyClosed">
 
     <button class="menu-item" (click)="ViewDetails()">
         <i class="bi bi-info-circle"></i>

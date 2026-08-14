@@ -1,5 +1,5 @@
-<div class="card h-100 border-0 shadow-sm dark-folder-card position-relative overflow-hidden cursor_pointer"
-    (click)="NavigateToFolder()">
+<div class="card h-100 border-0 shadow-sm dark-folder-card position-relative cursor_pointer"
+    [class.menu-open]="ShowMore" (click)="NavigateToFolder()">
 
     <!-- Amber edge highlight bar on hover -->
     <div class="folder-card-accent"></div>
@@ -19,7 +19,14 @@
             <small class="text-muted">{{Folder.CreatedAt}}</small>
         </div>
 
-        <!-- Hover chevron indicator -->
-        <i class="bi bi-three-dots-vertical ms-2 fs-6 folder_view_more" (click)="ViewMoreInFolder()"></i>
+        <div class="position-relative">
+            <i class="bi bi-three-dots-vertical fs-6 folder-view-more cursor_pointer"
+                (click)="ViewMoreInFolder($event)">
+            </i>
+
+            <app-folder-properties [ShowMore]="ShowMore" [FolderInfo]="Folder"
+                (UpdatedFolder)="OnUpdateAnyFolder($event)" (DeletedFolder)="OnDeleteAnyFolder($event)">
+            </app-folder-properties>
+        </div>
     </div>
 </div>
