@@ -181,6 +181,48 @@ public class FileService {
     }
 
 
+    public ApiResponseDto<FileDetailsEntity> DoGetAllFavouriteFileListByUserId(String FolderId) {
+        try {
+            if (FolderId == null || FolderId.isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
+            JwtUser user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
+            }
+
+            TFolderMaster CurrentFolder = folderService.GetCurrentFolderInfoFromFolderId(user.userId(), FolderId, false);
+
+            List<TFileMaster> files = fileMasterRepository.findByUserIdAndParentFolderIdAndDeletedAndStatusAndFavourite(
+                    user.userId(),
+                    CurrentFolder.getId(),
+                    false,
+                    UploadStatus.COMPLETED,
+                    true
+            );
+
+            FileDetailsEntity Output = new FileDetailsEntity();
+            Output.HasFile = !files.isEmpty();
+            Output.FileCount = files.size();
+
+            Output.FilesList = files.stream()
+                    .map(this::GetFileInformationDto)
+                    .toList();
+
+            return ApiResponseDto.Success("File list has been fetched successfully.", Output);
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to fetch all files list.");
+        }
+    }
+
+
     // CRUD OPERATIONS :: START
     // ===========================
     @Transactional

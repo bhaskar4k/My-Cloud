@@ -9,13 +9,15 @@ import java.util.Optional;
 
 @Repository
 public interface TFolderMasterRepository extends JpaRepository<TFolderMaster, Long> {
-    boolean existsByIdAndUserId(Long id, Long userId);
+    Optional<TFolderMaster> findByIdAndUserIdAndDeletedAndFavourite(Long id, Long userId, Boolean deleted, Boolean favourite);
 
     Optional<TFolderMaster> findByIdAndUserIdAndDeleted(Long id, Long userId, Boolean deleted);
 
     Optional<TFolderMaster> findByUserIdAndDeletedAndDepth(Long userId, Boolean deleted, Integer depth);
 
     List<TFolderMaster> findByParentFolderIdAndUserIdAndDeleted(Long parentFolderId, Long userId, Boolean deleted);
+
+    List<TFolderMaster> findByParentFolderIdAndUserIdAndDeletedAndFavourite(Long parentFolderId, Long userId, Boolean deleted, Boolean favourite);
 
     long countByParentFolderIdAndUserId(Long parentFolderId, Long userId);
 }

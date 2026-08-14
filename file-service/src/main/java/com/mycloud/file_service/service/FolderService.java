@@ -43,24 +43,31 @@ public class FolderService {
 
     // UTIL :: START
     // ===========================
-    public TFolderMaster GetCurrentFolderInfoFromFolderId(Long UserId, String FolderId, boolean Deleted){
+    private long GetActualFolderIdFromEncryptedFolderId(String FolderId) {
+        try {
+            FolderId = encryptionUtil.DecryptHexEncoding(FolderId);
+        } catch (RuntimeException ex) {
+            throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
+        }
+
+        long ActualFolderId = -1L;
+        try {
+            ActualFolderId = Long.parseLong(FolderId);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
+        }
+
+        return ActualFolderId;
+    }
+
+
+    public TFolderMaster GetCurrentFolderInfoFromFolderId(Long UserId, String FolderId, boolean Deleted) {
         Optional<TFolderMaster> CurrentFolder;
 
         if (FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)) {
             CurrentFolder = folderRepository.findByUserIdAndDeletedAndDepth(UserId, Deleted, 1);
         } else {
-            try {
-                FolderId = encryptionUtil.DecryptHexEncoding(FolderId);
-            } catch (RuntimeException ex) {
-                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
-            }
-
-            long ActualFolderId = -1L;
-            try {
-                ActualFolderId = Long.parseLong(FolderId);
-            } catch (NumberFormatException ex) {
-                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
-            }
+            long ActualFolderId = GetActualFolderIdFromEncryptedFolderId(FolderId);
 
             CurrentFolder = folderRepository.findByIdAndUserIdAndDeleted(ActualFolderId, UserId, Deleted);
         }
@@ -175,6 +182,42 @@ public class FolderService {
             TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderId, false);
 
             List<TFolderMaster> ChildFolders = folderRepository.findByParentFolderIdAndUserIdAndDeleted(CurrentFolder.getId(), user.userId(), false);
+
+            FolderDetailsEntity Output = new FolderDetailsEntity();
+            Output.HasFolder = !ChildFolders.isEmpty();
+            Output.FolderCount = ChildFolders.size();
+
+            Output.FoldersList = ChildFolders.stream()
+                    .map(this::GetFolderInformationDto)
+                    .toList();
+
+            return ApiResponseDto.Success("Folder list has been fetched successfully.", Output);
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to fetch all folders list.");
+        }
+    }
+
+
+    public ApiResponseDto<FolderDetailsEntity> DoGetAllFavouriteFolders(String FolderId) {
+        try {
+            if (FolderId == null || FolderId.isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
+            }
+
+            JwtUser user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
+            }
+
+            TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderId, false);
+
+            List<TFolderMaster> ChildFolders = folderRepository.findByParentFolderIdAndUserIdAndDeletedAndFavourite(CurrentFolder.getId(), user.userId(), false, true);
 
             FolderDetailsEntity Output = new FolderDetailsEntity();
             Output.HasFolder = !ChildFolders.isEmpty();

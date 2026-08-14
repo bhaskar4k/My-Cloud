@@ -9,20 +9,24 @@
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="overflow-auto">
             <ol class="breadcrumb mb-0 flex-nowrap">
-                <li class="breadcrumb-item cursor_pointer" *ngFor="let folder of FullFolderPath; let last = last"
-                    [class.active]="last" [attr.aria-current]="last ? 'page' : null">
+                <div class="d-flex align-items-center">
+                    <h4 class="pt-1">Content&nbsp;&nbsp;&nbsp;</h4>
 
-                    <ng-container *ngIf="!last; else currentFolder">
-                        <a class="text-decoration-none text-primary" role="button" (click)="NavigateToFolder(folder)">
+                    <li class="breadcrumb-item cursor_pointer" *ngFor="let folder of FullFolderPath; let last = last"
+                        [class.active]="last" [attr.aria-current]="last ? 'page' : null">
+
+                        <ng-container *ngIf="!last; else currentFolder">
+                            <a class="text-decoration-none text-primary" role="button"
+                                (click)="NavigateToFolder(folder)">
+                                {{ folder.FolderName }}
+                            </a>
+                        </ng-container>
+
+                        <ng-template #currentFolder>
                             {{ folder.FolderName }}
-                        </a>
-                    </ng-container>
-
-                    <ng-template #currentFolder>
-                        {{ folder.FolderName }}
-                    </ng-template>
-
-                </li>
+                        </ng-template>
+                    </li>
+                </div>
             </ol>
         </nav>
 
@@ -47,8 +51,8 @@
 
     <hr>
 
-    <app-folder-content *ngIf="RenderFolderList" [AllFolderDetails]="AllFolder"
-        [MatExpansionState]="true"></app-folder-content>
+    <app-folder-content *ngIf="RenderFolderList" [AllFolderDetails]="AllFolder" [MatExpansionState]="true"
+        [FolderRoutingPageName]="FolderRoutingPage.Content"></app-folder-content>
 
     <app-file-content *ngIf="RenderFileList" [AllFileDetails]="AllFile" [MatExpansionState]="false"></app-file-content>
 </div>
