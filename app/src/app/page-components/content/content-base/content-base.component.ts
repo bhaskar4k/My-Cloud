@@ -6,7 +6,7 @@ import { ResponseTypeColor } from '../../../constants/commonConsts';
 import { FolderService } from '../../../services/folder.service';
 import { ApiResponseDto } from '../../../models/dto.model';
 import { catchError, map, Observable, of } from 'rxjs';
-import { FolderDetailsEntity, FolderInfoEntity } from '../../../models/folder.model';
+import { FolderCreateInputEntity, FolderDetailsEntity, FolderInfoEntity } from '../../../models/folder.model';
 import { FileDetailsEntity, FileInfoEntity } from '../../../models/file.model';
 import { CommonModule } from '@angular/common';
 import { CreateFolderComponent } from '../../../page-components-shared/folder-common/create-folder/create-folder.component';
@@ -101,7 +101,7 @@ export class ContentBaseComponent {
 
     dialogRef.afterClosed().subscribe(folderName => {
       if (folderName) {
-        let CreateFolderPayload: FolderInfoEntity = {
+        let CreateFolderPayload: FolderCreateInputEntity = {
           FolderId: this.CurrentFolderId,
           FolderName: folderName,
         }

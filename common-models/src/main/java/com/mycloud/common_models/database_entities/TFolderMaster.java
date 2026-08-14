@@ -36,9 +36,15 @@ public class TFolderMaster extends BaseEntity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "deleted", updatable = true)
+    @Column(name = "favourite", nullable = false)
+    private Boolean favourite = false;
+
+    @Column(name = "deleted", nullable = false)
     private Boolean deleted = false;
 
-    @Column(name = "deleted_at", nullable = true, updatable = true)
+    @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    @Column(name = "auto_delete_at")
+    private Long autoDeleteAt;
 }

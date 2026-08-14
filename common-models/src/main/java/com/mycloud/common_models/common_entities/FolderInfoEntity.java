@@ -13,8 +13,17 @@ import lombok.Setter;
 public class FolderInfoEntity {
     public String FolderId;
     public String FolderName;
-    public String CreatedAt;
-    public Integer Depth;
+    private Integer Depth;
+    private Integer SubFolderCount;
+    private Integer FilesCount;
+    private Long TotalSize;
+    private Boolean Favourite;
+    private String CreatedAt;
+    private String CreatedAgo;
+    private String ModifiedAt;
+    private Boolean Deleted;
+    private String DeletedAt;
+    private String AutoDeletingAt;
 
     public FolderInfoEntity(String FolderId, String FolderName){
         this.FolderId = FolderId;

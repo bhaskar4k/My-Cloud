@@ -16,15 +16,33 @@ export class FolderCardComponent implements OnInit {
   @Input() FolderInfo: FolderInfoEntity = {
     FolderId: '',
     FolderName: '',
+    Depth: 0,
+    SubFolderCount: 0,
+    FilesCount: 0,
+    TotalSize: 0,
+    Favourite: false,
     CreatedAt: '',
-    Depth: 0
+    CreatedAgo: '',
+    ModifiedAt: '',
+    Deleted: false,
+    DeletedAt: '',
+    AutoDeletingAt: ''
   };
 
   Folder: FolderInfoEntity = {
     FolderId: '',
     FolderName: '',
+    Depth: 0,
+    SubFolderCount: 0,
+    FilesCount: 0,
+    TotalSize: 0,
+    Favourite: false,
     CreatedAt: '',
-    Depth: 0
+    CreatedAgo: '',
+    ModifiedAt: '',
+    Deleted: false,
+    DeletedAt: '',
+    AutoDeletingAt: ''
   };
 
   @Output() UpdatedFolder = new EventEmitter<FolderInfoEntity>();

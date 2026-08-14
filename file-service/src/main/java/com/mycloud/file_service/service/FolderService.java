@@ -34,6 +34,77 @@ public class FolderService {
     }
 
 
+    // UTIL :: START
+    // ===========================
+    public TFolderMaster GetCurrentFolderInfoFromFolderId(Long UserId, String FolderId){
+        Optional<TFolderMaster> CurrentFolder;
+
+        if (FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)) {
+            CurrentFolder = folderRepository.findByUserIdAndDeletedAndDepth(UserId, false, 1);
+        } else {
+            try {
+                FolderId = encryptionUtil.DecryptHexEncoding(FolderId);
+            } catch (RuntimeException ex) {
+                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
+            }
+
+            long ActualFolderId = -1L;
+            try {
+                ActualFolderId = Long.parseLong(FolderId);
+            } catch (NumberFormatException ex) {
+                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
+            }
+
+            CurrentFolder = folderRepository.findByIdAndUserIdAndDeleted(ActualFolderId, UserId, false);
+        }
+
+        if (CurrentFolder.isEmpty()) {
+            throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
+        }
+
+        return CurrentFolder.get();
+    }
+
+
+    private FolderInfoEntity GetFolderInformationDto(TFolderMaster Folder){
+        FolderInfoEntity dto = new FolderInfoEntity();
+        dto.setFolderId(encryptionUtil.EncryptHexEncoding(Folder.getId().toString()));
+        dto.setFolderName(Folder.getName());
+        dto.setDepth(Folder.getDepth() - 1); // Treating ROOT as 0 Depth
+        dto.setSubFolderCount(0);
+        dto.setFilesCount(0);
+        dto.setTotalSize(0L);
+        dto.setFavourite(Folder.getFavourite());
+        dto.setDeleted(Folder.getDeleted());
+
+        if (Folder.getCreatedAt() != null) {
+            dto.setCreatedAt(Folder.getCreatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
+            dto.setCreatedAgo(DatetimeUtil.GetUploadedAgo(Folder.getCreatedAt()));
+        }
+
+        if (Folder.getUpdatedAt() != null) {
+            dto.setModifiedAt(Folder.getUpdatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
+        }
+
+        if (Folder.getDeleted()) {
+            if (Folder.getDeletedAt() != null) {
+                dto.setDeletedAt(Folder.getDeletedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
+            }
+
+            if (Folder.getAutoDeleteAt() != null) {
+                dto.setAutoDeletingAt(DatetimeUtil.GetAutoDeletionText(Folder.getAutoDeleteAt()));
+            }
+        }
+
+        return dto;
+    }
+    // ===========================
+    // UTIL :: END
+
+
+
+    // BUSINESS :: START
+    // ===========================
     public ApiResponseDto<FolderInfoEntity[]> DoValidateFolderAccess(String FolderId) {
         try {
             if (FolderId == null || FolderId.isEmpty()){
@@ -50,29 +121,7 @@ public class FolderService {
                         new FolderInfoEntity[] { new FolderInfoEntity(CommonConstants.UserRootFolderName.toLowerCase(), CommonConstants.UserRootFolderName) });
             }
 
-            String DecryptedFolderId = FolderId;
-            try {
-                DecryptedFolderId = encryptionUtil.DecryptHexEncoding(FolderId);
-            } catch (RuntimeException ex) {
-                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
-            }
-
-            long ActualFolderId = -1L;
-
-            try {
-                ActualFolderId = Long.parseLong(DecryptedFolderId);
-            } catch (NumberFormatException ex) {
-                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
-            }
-
-            Optional<TFolderMaster> UserFolder = folderRepository.findByIdAndUserIdAndDeletedFalse(ActualFolderId, user.userId());
-
-            TFolderMaster ExistedFolder = null;
-            if (UserFolder.isPresent()) {
-                ExistedFolder = UserFolder.get();
-            } else {
-                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
-            }
+            TFolderMaster ExistedFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderId);
 
             String[] FolderPathIds = ExistedFolder.getPath().split(",");
             FolderInfoEntity[] FolderPathFullInfo = new FolderInfoEntity[FolderPathIds.length];
@@ -105,36 +154,44 @@ public class FolderService {
     }
 
 
-    public TFolderMaster GetCurrentFolderInfoFromFolderId(Long UserId, String FolderId){
-        Optional<TFolderMaster> CurrentFolder;
-
-        if (FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)) {
-            CurrentFolder = folderRepository.findByUserIdAndDeletedAndDepth(UserId, false, 1);
-        } else {
-            try {
-                FolderId = encryptionUtil.DecryptHexEncoding(FolderId);
-            } catch (RuntimeException ex) {
-                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
+    public ApiResponseDto<FolderDetailsEntity> DoGetAllFolders(String FolderId) {
+        try {
+            if (FolderId == null || FolderId.isEmpty()){
+                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
             }
 
-            long ActualFolderId = -1L;
-            try {
-                ActualFolderId = Long.parseLong(FolderId);
-            } catch (NumberFormatException ex) {
-                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
+            JwtUser user = jwtUtil.GetCurrentUser();
+            if (!user.IsAuthenticated()) {
+                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
             }
 
-            CurrentFolder = folderRepository.findByIdAndUserIdAndDeletedFalse(ActualFolderId, UserId);
-        }
+            TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderId);
 
-        if (CurrentFolder.isEmpty()) {
-            throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
-        }
+            List<TFolderMaster> ChildFolders = folderRepository.findByParentFolderIdAndUserIdAndDeleted(CurrentFolder.getId(), user.userId(), false);
 
-        return CurrentFolder.get();
+            FolderDetailsEntity Output = new FolderDetailsEntity();
+            Output.HasFolder = !ChildFolders.isEmpty();
+            Output.FolderCount = ChildFolders.size();
+
+            Output.FoldersList = ChildFolders.stream()
+                    .map(this::GetFolderInformationDto)
+                    .toList();
+
+            return ApiResponseDto.Success("Folder list has been fetched successfully.", Output);
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to fetch all folders list.");
+        }
     }
 
 
+    // CRUD OPERATIONS :: START
+    // ===========================
     @Transactional
     public ApiResponseDto<FolderInfoEntity> DoCreateFolder(FolderInfoEntity FolderInfo) {
         try {
@@ -156,6 +213,8 @@ public class FolderService {
             NewFolder.setParentFolderId(CurrentFetchedFolder.getId());
             NewFolder.setUserId(user.userId());
             NewFolder.setPath(CurrentFetchedFolder.getPath());
+            NewFolder.setDeleted(false);
+            NewFolder.setFavourite(false);
 
             TFolderMaster CreatedFolder = folderRepository.save(NewFolder);
 
@@ -182,51 +241,9 @@ public class FolderService {
             return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to create folder.");
         }
     }
+    // ===========================
+    // CRUD OPERATIONS :: END
 
-
-    public ApiResponseDto<FolderDetailsEntity> DoGetAllFolders(String FolderId) {
-        try {
-            if (FolderId == null || FolderId.isEmpty()){
-                return ApiResponseDto.Error(HttpStatus.BAD_REQUEST.value(), "Invalid Payload.");
-            }
-
-            JwtUser user = jwtUtil.GetCurrentUser();
-            if (!user.IsAuthenticated()) {
-                return ApiResponseDto.Error(HttpStatus.UNAUTHORIZED.value(), "Access denied. Please login again.");
-            }
-
-            TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderId);
-
-            List<TFolderMaster> ChildFolders = folderRepository.findByParentFolderIdAndUserIdAndDeleted(CurrentFolder.getId(), user.userId(), false);
-
-            FolderDetailsEntity Output = new FolderDetailsEntity();
-            Output.HasFolder = !ChildFolders.isEmpty();
-            Output.FolderCount = ChildFolders.size();
-
-            Output.FoldersList = ChildFolders.stream()
-                    .map(folder -> {
-                        FolderInfoEntity dto = new FolderInfoEntity();
-                        dto.setFolderId(encryptionUtil.EncryptHexEncoding(folder.getId().toString()));
-                        dto.setFolderName(folder.getName());
-                        dto.setDepth(folder.getDepth());
-
-                        if (folder.getCreatedAt() != null) {
-                            dto.setCreatedAt(folder.getCreatedAt().format(DatetimeUtil.DateTimeShortMonthFormatter));
-                        }
-
-                        return dto;
-                    })
-                    .toList();
-
-            return ApiResponseDto.Success("Folder list has been fetched successfully.", Output);
-        } catch (IllegalArgumentException ex) {
-            ex.printStackTrace();
-
-            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-
-            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Failed to fetch all folders list.");
-        }
-    }
+    // ===========================
+    // BUSINESS :: END
 }
