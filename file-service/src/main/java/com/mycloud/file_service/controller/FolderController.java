@@ -38,7 +38,7 @@ public class FolderController {
     }
 
     @GetMapping("/get-all/{FolderId}")
-    public ApiResponseDto<FolderDetailsEntity> GetALl(@PathVariable String FolderId) {
+    public ApiResponseDto<FolderDetailsEntity> GetAll(@PathVariable String FolderId) {
         try {
             return folderService.DoGetAllFolders(FolderId);
         } catch (Exception ex) {

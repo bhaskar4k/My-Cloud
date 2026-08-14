@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
-import { FolderDeleteEmitEntity, FolderDeleteInputEntity, FolderFavouriteInputEntity, FolderInfoEntity } from '../../../models/folder.model';
+import { FolderDeleteEmitEntity, FolderDeleteInputEntity, FolderFavouriteInputEntity, FolderInfoEntity, FolderRenameInputEntity } from '../../../models/folder.model';
 import { DownloadService } from '../../../services/download.service';
 import { FolderMenuStateService } from '../../../services/folder-menu-state.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -11,6 +11,8 @@ import { FolderDetailsComponent } from '../folder-details/folder-details.compone
 import { ApiResponseDto } from '../../../models/dto.model';
 import { CustomAlertComponent } from '../../custom-alert/custom-alert.component';
 import { ResponseTypeColor } from '../../../constants/commonConsts';
+import { AddEditFolderComponent } from '../add-edit-folder/add-edit-folder.component';
+import { FolderOperationType } from '../../../enums/folder-operation-type.enum';
 
 @Component({
   selector: 'app-folder-properties',
@@ -159,21 +161,44 @@ export class FolderPropertiesComponent {
   }
 
   RenameFile() {
-    // const dialogRef = this.dialog.open(RenameFileComponent, {
-    //   data: this.File,
-    //   width: '30rem',
-    //   disableClose: true
-    // });
+    const dialogRef = this.dialog.open(AddEditFolderComponent, {
+      data: {
+        FolderInfo: this.Folder,
+        OperationType: FolderOperationType.RENAME
+      },
+      width: '30rem',
+      disableClose: true
+    });
 
-    // dialogRef.afterClosed().subscribe((UpdatedFile: FileInfoEntity) => {
-    //   if (UpdatedFile) {
-    //     this.FileInfo = UpdatedFile;
-    //     this.File = UpdatedFile;
-    //     this.UpdatedFile.emit(UpdatedFile);
-    //   }
+    dialogRef.afterClosed().subscribe(folderName => {
+      if (folderName) {
+        let RenameFolderPayload: FolderRenameInputEntity = {
+          FolderId: this.Folder.FolderId,
+          UpdatedFolderName: folderName
+        }
 
-    //   this.menuState.close();
-    // });
+        this.MatProgressBar = true;
+
+        this.folderService.RenameFolder(RenameFolderPayload).subscribe({
+          next: (response: ApiResponseDto) => {
+            this.MatProgressBar = false;
+
+            if (response.success === true && response.statusCode === 200) {
+              this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.SUCCESS } });
+              this.FolderInfo = response.data as FolderInfoEntity;
+              this.Folder = response.data as FolderInfoEntity;
+              this.UpdatedFolder.emit(response.data as FolderInfoEntity);
+            } else {
+              this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
+            }
+          },
+          error: (err: any) => {
+            this.dialog.open(CustomAlertComponent, { data: { text: "Failed to create folder.", type: ResponseTypeColor.ERROR } });
+            this.MatProgressBar = false;
+          }
+        });
+      }
+    });
   }
 
   DeleteFile() {
