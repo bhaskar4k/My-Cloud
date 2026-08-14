@@ -7,9 +7,14 @@ export interface FolderDetailsEntity {
 export interface FolderInfoEntity {
     FolderId: string;
     FolderName: string;
-    CreatedAt?: string;
-    Depth?: number;
-    Favourite?: boolean;
+    CreatedAt: string;
+    Depth: number;
+    Favourite: boolean;
+}
+
+export interface FolderCreateInputEntity {
+    FolderId: string;
+    FolderName: string;
 }
 
 export interface FolderRenameInputEntity {

@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface TFolderMasterRepository extends JpaRepository<TFolderMaster, Long> {
     boolean existsByIdAndUserId(Long id, Long userId);
 
-    Optional<TFolderMaster> findByIdAndUserIdAndDeletedFalse(Long id, Long userId);
+    Optional<TFolderMaster> findByIdAndUserIdAndDeleted(Long id, Long userId, Boolean deleted);
 
     Optional<TFolderMaster> findByUserIdAndDeletedAndDepth(Long userId, Boolean deleted, Integer depth);
 

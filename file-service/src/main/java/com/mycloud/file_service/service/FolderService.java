@@ -34,6 +34,36 @@ public class FolderService {
     }
 
 
+    public TFolderMaster GetCurrentFolderInfoFromFolderId(Long UserId, String FolderId){
+        Optional<TFolderMaster> CurrentFolder;
+
+        if (FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)) {
+            CurrentFolder = folderRepository.findByUserIdAndDeletedAndDepth(UserId, false, 1);
+        } else {
+            try {
+                FolderId = encryptionUtil.DecryptHexEncoding(FolderId);
+            } catch (RuntimeException ex) {
+                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
+            }
+
+            long ActualFolderId = -1L;
+            try {
+                ActualFolderId = Long.parseLong(FolderId);
+            } catch (NumberFormatException ex) {
+                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
+            }
+
+            CurrentFolder = folderRepository.findByIdAndUserIdAndDeleted(ActualFolderId, UserId, false);
+        }
+
+        if (CurrentFolder.isEmpty()) {
+            throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
+        }
+
+        return CurrentFolder.get();
+    }
+
+
     public ApiResponseDto<FolderInfoEntity[]> DoValidateFolderAccess(String FolderId) {
         try {
             if (FolderId == null || FolderId.isEmpty()){
@@ -50,29 +80,7 @@ public class FolderService {
                         new FolderInfoEntity[] { new FolderInfoEntity(CommonConstants.UserRootFolderName.toLowerCase(), CommonConstants.UserRootFolderName) });
             }
 
-            String DecryptedFolderId = FolderId;
-            try {
-                DecryptedFolderId = encryptionUtil.DecryptHexEncoding(FolderId);
-            } catch (RuntimeException ex) {
-                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
-            }
-
-            long ActualFolderId = -1L;
-
-            try {
-                ActualFolderId = Long.parseLong(DecryptedFolderId);
-            } catch (NumberFormatException ex) {
-                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
-            }
-
-            Optional<TFolderMaster> UserFolder = folderRepository.findByIdAndUserIdAndDeletedFalse(ActualFolderId, user.userId());
-
-            TFolderMaster ExistedFolder = null;
-            if (UserFolder.isPresent()) {
-                ExistedFolder = UserFolder.get();
-            } else {
-                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
-            }
+            TFolderMaster ExistedFolder = GetCurrentFolderInfoFromFolderId(user.userId(), FolderId);
 
             String[] FolderPathIds = ExistedFolder.getPath().split(",");
             FolderInfoEntity[] FolderPathFullInfo = new FolderInfoEntity[FolderPathIds.length];
@@ -105,36 +113,6 @@ public class FolderService {
     }
 
 
-    public TFolderMaster GetCurrentFolderInfoFromFolderId(Long UserId, String FolderId){
-        Optional<TFolderMaster> CurrentFolder;
-
-        if (FolderId.toUpperCase().equals(CommonConstants.UserRootFolderName)) {
-            CurrentFolder = folderRepository.findByUserIdAndDeletedAndDepth(UserId, false, 1);
-        } else {
-            try {
-                FolderId = encryptionUtil.DecryptHexEncoding(FolderId);
-            } catch (RuntimeException ex) {
-                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
-            }
-
-            long ActualFolderId = -1L;
-            try {
-                ActualFolderId = Long.parseLong(FolderId);
-            } catch (NumberFormatException ex) {
-                throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
-            }
-
-            CurrentFolder = folderRepository.findByIdAndUserIdAndDeletedFalse(ActualFolderId, UserId);
-        }
-
-        if (CurrentFolder.isEmpty()) {
-            throw new IllegalArgumentException("The folder you're trying to access is an invalid folder.");
-        }
-
-        return CurrentFolder.get();
-    }
-
-
     @Transactional
     public ApiResponseDto<FolderInfoEntity> DoCreateFolder(FolderInfoEntity FolderInfo) {
         try {
@@ -156,6 +134,8 @@ public class FolderService {
             NewFolder.setParentFolderId(CurrentFetchedFolder.getId());
             NewFolder.setUserId(user.userId());
             NewFolder.setPath(CurrentFetchedFolder.getPath());
+            NewFolder.setDeleted(false);
+            NewFolder.setFavourite(false);
 
             TFolderMaster CreatedFolder = folderRepository.save(NewFolder);
 
