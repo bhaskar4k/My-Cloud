@@ -8,10 +8,11 @@
 </div>
 
 <!-- File List -->
-<mat-expansion-panel *ngIf="AllFile.HasFile" [expanded]="true">
+<mat-expansion-panel *ngIf="AllFile.HasFile" class="drive-panel" [expanded]="true">
 
     <mat-expansion-panel-header>
         <mat-panel-title>
+            <i class="bi bi-file-earmark me-2"></i>
             Files ({{ AllFile.FilesList.length }})
         </mat-panel-title>
     </mat-expansion-panel-header>

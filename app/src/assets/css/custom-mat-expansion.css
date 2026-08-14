@@ -1,0 +1,85 @@
+/* Accordion container */
+mat-accordion {
+    display: block;
+    margin-top: 1rem;
+}
+
+/* Expansion panel */
+.mat-expansion-panel {
+    background: #1f2937 !important;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px !important;
+    box-shadow: none !important;
+    margin-bottom: 1rem !important;
+    overflow: hidden;
+}
+
+/* Remove Material's default divider */
+.mat-expansion-panel:not([class*='mat-elevation-z']) {
+    box-shadow: none !important;
+}
+
+/* Header */
+.mat-expansion-panel-header {
+    height: 64px !important;
+    padding: 0 24px !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+/* Expanded header */
+.mat-expansion-panel-header.mat-expanded {
+    height: 64px !important;
+}
+
+/* Header hover */
+.mat-expansion-panel-header:hover {
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Title */
+.mat-expansion-panel-header .mat-expansion-panel-header-title {
+    color: #f8fafc !important;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Content area */
+.mat-expansion-panel-body {
+    padding: 0 24px 24px !important;
+}
+
+/* Folder/file grid */
+.mat-expansion-panel-body .row {
+    margin-top: 0.5rem;
+}
+
+/* Tablet */
+@media (max-width: 992px) {
+    .mat-expansion-panel-header {
+        padding: 0 18px !important;
+    }
+
+    .mat-expansion-panel-body {
+        padding: 0 18px 18px !important;
+    }
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+    .mat-expansion-panel {
+        border-radius: 10px !important;
+    }
+
+    .mat-expansion-panel-header {
+        height: 56px !important;
+        padding: 0 14px !important;
+    }
+
+    .mat-expansion-panel-header-title {
+        font-size: 14px !important;
+    }
+
+    .mat-expansion-panel-body {
+        padding: 0 14px 14px !important;
+    }
+}
