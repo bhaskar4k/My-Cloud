@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { FolderOperationType } from '../../../enums/folder-operation-type.enum';
+import { IsNullOrEmptyOrUndefined } from '../../../common/CommonUtil';
 
 @Component({
   selector: 'app-add-edit-folder',
@@ -28,10 +29,15 @@ export class AddEditFolderComponent implements OnInit {
   }
 
   UpdateDefaultValues() {
-    this.FolderName = this.data.FolderInfo.FolderName;
+    if (this.data.OperationType === FolderOperationType.RENAME && this.data.FolderInfo !== null) {
+      this.FolderName = this.data.FolderInfo.FolderName;
+    }
+
     this.OperationType = this.data.OperationType;
 
-    if (this.OperationType === FolderOperationType.RENAME) {
+    if (this.OperationType === FolderOperationType.CREATE) {
+      this.OperationTypeText = "Create";
+    } else if (this.OperationType === FolderOperationType.RENAME) {
       this.OperationTypeText = "Rename";
     } else if (this.OperationType === FolderOperationType.DELETE) {
       this.OperationTypeText = "Delete";
