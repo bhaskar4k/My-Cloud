@@ -11,7 +11,7 @@ import { FileService } from '../../../services/file.service';
 import { ApiResponseDto } from '../../../models/dto.model';
 import { CustomAlertComponent } from '../../custom-alert/custom-alert.component';
 import { ResponseTypeColor } from '../../../constants/commonConsts';
-import { FileDeleteEmitEntity, FileFavouriteEmitEntity } from '../../../models/file.model';
+import { FileDeleteEmitEntity } from '../../../models/file.model';
 import { CommonModule } from '@angular/common';
 import { AnimationEvent } from '@angular/animations';
 
@@ -83,7 +83,6 @@ export class FilePropertiesComponent {
 
   @Output() UpdatedFile = new EventEmitter<FileInfoEntity>();
   @Output() DeletedFile = new EventEmitter<FileDeleteEmitEntity>();
-  @Output() FavouritedFile = new EventEmitter<FileFavouriteEmitEntity>();
 
   MatProgressBar: boolean = false;
   IsFullyClosed = true;
@@ -138,10 +137,6 @@ export class FilePropertiesComponent {
 
     this.MatProgressBar = true;
 
-    const FileFavouriteEmitEntity: FileFavouriteEmitEntity = {
-      Favourite: false,
-      FileId: this.File.FileId
-    };
 
     this.fileService.FavouriteFile(FavouriteFilePayload).subscribe({
       next: (response: ApiResponseDto) => {
@@ -149,11 +144,9 @@ export class FilePropertiesComponent {
 
         if (response.success === true && response.statusCode === 200) {
           this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.SUCCESS } });
-          FileFavouriteEmitEntity.Favourite = true;
-          this.FavouritedFile.emit(FileFavouriteEmitEntity);
+          this.UpdatedFile.emit(response.data as FileInfoEntity);
         } else {
           this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
-          this.FavouritedFile.emit(FileFavouriteEmitEntity);
         }
 
         this.menuState.close();
@@ -161,7 +154,6 @@ export class FilePropertiesComponent {
       error: (err: any) => {
         this.dialog.open(CustomAlertComponent, { data: { text: "Failed to update favourite status of this file.", type: ResponseTypeColor.ERROR } });
         this.MatProgressBar = false;
-        this.FavouritedFile.emit(FileFavouriteEmitEntity);
         this.menuState.close();
       }
     });
@@ -207,7 +199,6 @@ export class FilePropertiesComponent {
           this.DeletedFile.emit(FileDeleteEmitEntity);
         } else {
           this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
-          this.DeletedFile.emit(FileDeleteEmitEntity);
         }
 
         this.menuState.close();
@@ -215,7 +206,6 @@ export class FilePropertiesComponent {
       error: (err: any) => {
         this.dialog.open(CustomAlertComponent, { data: { text: "Failed to delete this file.", type: ResponseTypeColor.ERROR } });
         this.MatProgressBar = false;
-        this.DeletedFile.emit(FileDeleteEmitEntity);
         this.menuState.close();
       }
     });

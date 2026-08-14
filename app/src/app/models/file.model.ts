@@ -16,8 +16,3 @@ export interface FileDeleteEmitEntity {
     Deleted: boolean;
     FileId: string;
 }
-
-export interface FileFavouriteEmitEntity {
-    Favourite: boolean;
-    FileId: string;
-}

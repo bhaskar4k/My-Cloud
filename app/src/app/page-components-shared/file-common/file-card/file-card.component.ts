@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FileDetailsEntity, FileInfoEntity } from '../../../models/folder.model';
+import { FileInfoEntity } from '../../../models/folder.model';
 import { FilePropertiesComponent } from '../file-properties/file-properties.component';
 import { Subscription } from 'rxjs';
 import { FileMenuStateService } from '../../../services/file-menu-state.service';
@@ -77,14 +77,14 @@ export class FileCardComponent implements OnInit, OnDestroy {
     this.menuState.toggle(this.fileId);
   }
 
-  OnUpdateAnyFile(File: FileInfoEntity) {
-    this.File = File;
-    this.FileInfo = File;
+  OnUpdateAnyFile(UpdatedFile: FileInfoEntity) {
+    this.File = UpdatedFile;
+    this.FileInfo = UpdatedFile;
     this.UpdatedFile.emit(this.File);
   }
 
-  OnDeleteAnyFile(Deleted: FileDeleteEmitEntity) {
-    this.DeletedFile.emit(Deleted);
+  OnDeleteAnyFile(DeletedFile: FileDeleteEmitEntity) {
+    this.DeletedFile.emit(DeletedFile);
   }
 
   ngOnDestroy() {
