@@ -16,7 +16,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 })
 export class FolderContentComponent implements OnInit {
   @Input() AllFolderDetails: FolderDetailsEntity = { HasFolder: false, FolderCount: 0, FoldersList: [] };
-
+  @Input() MatExpansionState: boolean = false;
+  
   AllFolder: FolderDetailsEntity = { HasFolder: false, FolderCount: 0, FoldersList: [] };
 
   ngOnInit(): void {

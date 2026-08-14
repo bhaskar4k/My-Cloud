@@ -17,6 +17,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 })
 export class FileContentComponent {
   @Input() AllFileDetails: FileDetailsEntity = { HasFile: false, FileCount: 0, FilesList: [] };
+  @Input() MatExpansionState: boolean = false;
 
   AllFile: FileDetailsEntity = { HasFile: false, FileCount: 0, FilesList: [] };
 
