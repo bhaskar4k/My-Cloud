@@ -69,7 +69,7 @@ export class FileCardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.File = this.FileInfo;
+    this.File = structuredClone(this.FileInfo);
   }
 
   ViewMoreInFile(event: MouseEvent): void {
@@ -79,7 +79,6 @@ export class FileCardComponent implements OnInit, OnDestroy {
 
   OnUpdateAnyFile(UpdatedFile: FileInfoEntity) {
     this.File = UpdatedFile;
-    this.FileInfo = UpdatedFile;
     this.UpdatedFile.emit(this.File);
   }
 

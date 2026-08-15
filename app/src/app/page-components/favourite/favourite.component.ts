@@ -5,38 +5,30 @@ import { MatDialog } from '@angular/material/dialog';
 import { ResponseTypeColor } from '../../constants/commonConsts';
 import { FolderService } from '../../services/folder.service';
 import { ApiResponseDto } from '../../models/dto.model';
-import { catchError, map, Observable, of } from 'rxjs';
 import { FolderDetailsEntity, FolderInfoEntity } from '../../models/folder.model';
-import { FileDetailsEntity } from '../../models/file.model';
+import { FileDeleteEmitEntity, FileDetailsEntity, FileInfoEntity } from '../../models/file.model';
 import { CommonModule } from '@angular/common';
-import { FileContentComponent } from '../content/file-content/file-content.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FileService } from '../../services/file.service';
 import { FolderRoutingPage } from '../../enums/common.enum';
+import { FileCardComponent } from '../../page-components-shared/file-common/file-card/file-card.component';
 
 
 @Component({
   selector: 'app-favourite',
   imports: [
     CommonModule,
-    FileContentComponent,
+    FileCardComponent,
     MatProgressSpinnerModule
   ],
   templateUrl: './favourite.component.html',
   styleUrl: './favourite.component.css'
 })
 export class FavouriteComponent {
-  CurrentFolderId: string = 'root';
-  FullFolderPath: FolderInfoEntity[] = [];
-
-  AllFolder: FolderDetailsEntity = { HasFolder: false, FolderCount: 0, FoldersList: [] };
-  RenderFolderList: boolean = true;
-
   AllFile: FileDetailsEntity = { HasFile: false, FileCount: 0, FilesList: [] };
   RenderFileList: boolean = true;
 
   MatProgressBar = false;
-  MatProgressBar1 = false;
 
   FolderRoutingPage = FolderRoutingPage;
 
@@ -54,11 +46,11 @@ export class FavouriteComponent {
 
   GetAllChildFiles() {
     this.RenderFileList = false;
-    this.MatProgressBar1 = true;
+    this.MatProgressBar = true;
 
     this.fileService.GetAllFavouriteFiles().subscribe({
       next: (response: ApiResponseDto) => {
-        this.MatProgressBar1 = false;
+        this.MatProgressBar = false;
 
         if (response.success === false || response.statusCode !== 200) {
           this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
@@ -70,12 +62,32 @@ export class FavouriteComponent {
       },
       error: (err: any) => {
         this.dialog.open(CustomAlertComponent, { data: { text: "Failed to fetch all file lists.", type: ResponseTypeColor.ERROR } });
-        this.MatProgressBar1 = false;
+        this.MatProgressBar = false;
       }
     });
   }
 
   IsMatProgressBarVisible(): boolean {
-    return this.MatProgressBar || this.MatProgressBar1;
+    return this.MatProgressBar;
+  }
+
+  OnUpdateAnyFile(UpdatedFile: FileInfoEntity) {
+    const index = this.AllFile.FilesList.findIndex(f => f.FileId === UpdatedFile.FileId);
+    if (index !== -1) {
+      if (this.AllFile.FilesList[index].Favourite === true && UpdatedFile.Favourite === false) {
+        this.AllFile.FilesList.splice(index, 1);
+      } else {
+        this.AllFile.FilesList[index] = UpdatedFile;
+      }
+    }
+  }
+
+  OnDeleteAnyFile(DeletedFile: FileDeleteEmitEntity) {
+    if (DeletedFile.Deleted === false) return;
+
+    const index = this.AllFile.FilesList.findIndex(f => f.FileId === DeletedFile.FileId);
+    if (index !== -1) {
+      this.AllFile.FilesList.splice(index, 1);
+    }
   }
 }
