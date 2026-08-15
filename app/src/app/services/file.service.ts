@@ -15,6 +15,10 @@ export class FileService {
     return this.http.get<ApiResponseDto>(GetBaseURL() + Endpoints.File.GetAll + `/${FolderId}`);
   }
 
+  GetAllFavouriteFiles(): Observable<ApiResponseDto> {
+    return this.http.get<ApiResponseDto>(GetBaseURL() + Endpoints.File.GetAllFavourite);
+  }
+
   GetAllFavouriteChildFilesByFolderId(FolderId: string): Observable<ApiResponseDto> {
     return this.http.get<ApiResponseDto>(GetBaseURL() + Endpoints.File.GetAllFavourite + `/${FolderId}`);
   }
