@@ -36,8 +36,7 @@ export const routes: Routes = [
           { path: 'content', redirectTo: 'content/root', pathMatch: 'full' },
           { path: 'content/:folder', component: ContentBaseComponent },
 
-          { path: 'favourite', redirectTo: 'favourite/root', pathMatch: 'full' },
-          { path: 'favourite/:folder', component: FavouriteComponent },
+          { path: 'favourite', component: FavouriteComponent },
 
           { path: 'recycle-bin', component: RecycleBinComponent },
 

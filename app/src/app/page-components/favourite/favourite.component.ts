@@ -49,47 +49,7 @@ export class FavouriteComponent {
   ) { }
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      const folder = params.get('folder')!;
-      this.CurrentFolderId = folder;
-    });
-
-    this.HasAccessToFolder().subscribe(hasAccess => {
-      if (!hasAccess) {
-        this.router.navigate(['/error']);
-      } else {
-        this.GetAllChildFiles();
-      }
-    });
-  }
-
-  HasAccessToFolder(): Observable<boolean> {
-    this.MatProgressBar = true;
-
-    return this.folderService.ValidateFolderAccess(this.CurrentFolderId).pipe(
-      map((response: ApiResponseDto) => {
-        this.MatProgressBar = false;
-
-        if (response.success && response.statusCode === 200) {
-          this.FullFolderPath = response.data || [] as FolderInfoEntity[];
-
-          if (this.FullFolderPath.length === 0 || this.FullFolderPath[this.FullFolderPath.length - 1].FolderId !== this.CurrentFolderId) {
-            this.dialog.open(CustomAlertComponent, { data: { text: "Failed to validate folder access.", type: ResponseTypeColor.ERROR } });
-            return false;
-          }
-
-          return true;
-        }
-
-        this.dialog.open(CustomAlertComponent, { data: { text: response.message, type: ResponseTypeColor.ERROR } });
-        return false;
-      }),
-      catchError((ex) => {
-        this.MatProgressBar = false;
-        this.dialog.open(CustomAlertComponent, { data: { text: "Failed to validate folder access.", type: ResponseTypeColor.ERROR } });
-        return of(false);
-      })
-    );
+    this.GetAllChildFiles();
   }
 
   GetAllChildFiles() {
@@ -113,11 +73,6 @@ export class FavouriteComponent {
         this.MatProgressBar1 = false;
       }
     });
-  }
-
-  NavigateToFolder(Folder: FolderInfoEntity) {
-    console.log(Folder);
-    window.location.href = "/" + this.FolderRoutingPage.Favourite + "/" + Folder.FolderId;
   }
 
   IsMatProgressBarVisible(): boolean {
