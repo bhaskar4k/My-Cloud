@@ -30,7 +30,18 @@ public class FileController {
     @GetMapping("/get-all/{FolderId}")
     public ApiResponseDto<FileDetailsEntity> GetAll(@PathVariable String FolderId) {
         try {
-            return fileService.DoGetAllFileListByUserId(FolderId);
+            return fileService.DoGetAllFileListByFolderId(FolderId);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            return ApiResponseDto.Error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An internal error was occurred.");
+        }
+    }
+
+    @GetMapping("/get-all-favourite")
+    public ApiResponseDto<FileDetailsEntity> GetAllFavourite() {
+        try {
+            return fileService.DoGetAllFavouriteFileList();
         } catch (Exception ex) {
             ex.printStackTrace();
 
@@ -39,9 +50,9 @@ public class FileController {
     }
 
     @GetMapping("/get-all-favourite/{FolderId}")
-    public ApiResponseDto<FileDetailsEntity> GetAllFavourite(@PathVariable String FolderId) {
+    public ApiResponseDto<FileDetailsEntity> GetAllFavouriteByFolderId(@PathVariable String FolderId) {
         try {
-            return fileService.DoGetAllFavouriteFileListByUserId(FolderId);
+            return fileService.DoGetAllFavouriteFileListByFolderId(FolderId);
         } catch (Exception ex) {
             ex.printStackTrace();
 
