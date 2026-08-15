@@ -8,57 +8,44 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.List;
 
 @Repository
 public interface TFileMasterRepository extends JpaRepository<TFileMaster, Long> {
-    Optional<TFileMaster> findByFileIdAndUserIdAndDeleted(
-            String fileId,
-            Long userId,
-            Boolean deleted
-    );
+    Optional<TFileMaster> findByFileIdAndUserIdAndDeleted(String fileId, Long userId, Boolean deleted);
 
 
-    Optional<TFileMaster> findByFileIdAndUserIdAndDeletedAndStatus(
-            String fileId,
-            Long userId,
-            Boolean deleted,
-            UploadStatus status
-    );
+    Optional<TFileMaster> findByFileIdAndUserIdAndDeletedAndStatus(String fileId, Long userId, Boolean deleted, UploadStatus status);
 
 
-    List<TFileMaster> findByUserIdAndParentFolderIdAndDeletedAndStatus(
-            Long userId,
-            Long parentFolderId,
-            Boolean deleted,
-            UploadStatus status
-    );
+    List<TFileMaster> findByUserIdAndParentFolderIdAndDeletedAndStatus(Long userId, Long parentFolderId, Boolean deleted, UploadStatus status);
 
 
-    List<TFileMaster> findByUserIdAndDeletedAndStatusAndFavourite(
-            Long userId,
-            Boolean deleted,
-            UploadStatus status,
-            Boolean favourite
-    );
+    List<TFileMaster> findByUserIdAndDeletedAndStatusAndFavourite(Long userId, Boolean deleted, UploadStatus status, Boolean favourite);
 
 
-    List<TFileMaster> findByUserIdAndParentFolderIdAndDeletedAndStatusAndFavourite(
-            Long userId,
-            Long parentFolderId,
-            Boolean deleted,
-            UploadStatus status,
-            Boolean favourite
-    );
+    List<TFileMaster> findByUserIdAndParentFolderIdAndDeletedAndStatusAndFavourite(Long userId, Long parentFolderId, Boolean deleted, UploadStatus status, Boolean favourite);
 
 
-    Optional<TFileMaster> findByIdAndUserIdAndDeletedAndStatus(
-            Long id,
-            Long userId,
-            Boolean deleted,
-            UploadStatus status
-    );
+    Optional<TFileMaster> findByIdAndUserIdAndDeletedAndStatus(Long id, Long userId, Boolean deleted, UploadStatus status);
+
 
     long countByParentFolderIdAndUserId(Long parentFolderId, Long userId);
+
+
+    List<TFileMaster> findByUserIdAndParentFolderId(Long userId, Long parentFolderId);
+
+
+    @Modifying
+    @Query("""
+        UPDATE TFileMaster f
+        SET f.deleted = :deleted,
+            f.deletedAt = :deletedAt,
+            f.autoDeleteAt = :autoDeleteAt
+        WHERE f.userId = :userId
+          AND f.parentFolderId = :parentFolderId
+    """)
+    void updateDeletionStatusOfFilesByParentFolder(Long userId, Long parentFolderId, boolean deleted, LocalDateTime deletedAt, Long autoDeleteAt);
 }

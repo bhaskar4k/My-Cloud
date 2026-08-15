@@ -358,6 +358,29 @@ public class FolderService {
     }
 
 
+    private void RecursivelyUpdateDeleteStatusByFolderId(TFolderMaster CurrentFolder, boolean DeletedStatus, LocalDateTime CurrentTime, Long AutoDeleteTime, Long UserId) {
+        List<TFolderMaster> ChildFolders = folderRepository.findByUserIdAndParentFolderId(UserId, CurrentFolder.getId());
+
+        for (TFolderMaster Folder : ChildFolders) {
+            RecursivelyUpdateDeleteStatusByFolderId(Folder, DeletedStatus, CurrentTime, AutoDeleteTime, UserId);
+        }
+
+        fileMasterRepository.updateDeletionStatusOfFilesByParentFolder(
+                UserId,
+                CurrentFolder.getId(),
+                DeletedStatus,
+                (DeletedStatus ? CurrentTime : null),
+                DeletedStatus ? AutoDeleteTime : null
+        );
+
+        CurrentFolder.setDeleted(DeletedStatus);
+        CurrentFolder.setDeletedAt(DeletedStatus ? CurrentTime : null);
+        CurrentFolder.setAutoDeleteAt(DeletedStatus ? AutoDeleteTime : null);
+
+        folderRepository.save(CurrentFolder);
+    }
+
+
     @Transactional
     public ApiResponseDto<Boolean> DoDelete(FolderDeleteInputEntity Folder) {
         try {
@@ -372,12 +395,10 @@ public class FolderService {
 
             TFolderMaster CurrentFolder = GetCurrentFolderInfoFromFolderId(user.userId(), Folder.getFolderId(), false);
 
-            long AutoDeleteTime = Instant.now().getEpochSecond() + this.AutoDeleteTimeInDays * 86400L;
+            LocalDateTime CurrentTime = LocalDateTime.now();
+            Long AutoDeleteTime = Instant.now().getEpochSecond() + this.AutoDeleteTimeInDays * 86400L;
 
-            CurrentFolder.setDeleted(true);
-            CurrentFolder.setDeletedAt(LocalDateTime.now());
-            CurrentFolder.setAutoDeleteAt(AutoDeleteTime);
-            folderRepository.save(CurrentFolder);
+            RecursivelyUpdateDeleteStatusByFolderId(CurrentFolder, true, CurrentTime, AutoDeleteTime, user.userId());
 
             return ApiResponseDto.Success("Folder has been successfully moved into recycle bin.<br>It will be auto deleted from recycle bin after "
                     + this.AutoDeleteTimeInDays + " days.", true);

@@ -1,5 +1,6 @@
 package com.mycloud.data_access_layer.repositories;
 
+import com.mycloud.common_models.database_entities.TFileMaster;
 import com.mycloud.common_models.database_entities.TFolderMaster;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -20,4 +21,6 @@ public interface TFolderMasterRepository extends JpaRepository<TFolderMaster, Lo
     List<TFolderMaster> findByParentFolderIdAndUserIdAndDeletedAndFavourite(Long parentFolderId, Long userId, Boolean deleted, Boolean favourite);
 
     long countByParentFolderIdAndUserId(Long parentFolderId, Long userId);
+
+    List<TFolderMaster> findByUserIdAndParentFolderId(Long userId, Long parentFolderId);
 }
