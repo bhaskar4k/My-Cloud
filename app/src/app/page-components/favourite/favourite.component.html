@@ -10,7 +10,8 @@
         <nav aria-label="breadcrumb" class="overflow-auto">
             <ol class="breadcrumb mb-0 flex-nowrap">
                 <div class="d-flex align-items-center">
-                    <h4 class="pt-1">Favourite&nbsp;&nbsp;&nbsp;</h4>
+                    <h4 class="pt-1"><i
+                            class="bi bi-star-fill me-1 favourite_icon_color"></i>Favourite&nbsp;&nbsp;&nbsp;</h4>
 
                     <li class="breadcrumb-item cursor_pointer" *ngFor="let folder of FullFolderPath; let last = last"
                         [class.active]="last" [attr.aria-current]="last ? 'page' : null">
